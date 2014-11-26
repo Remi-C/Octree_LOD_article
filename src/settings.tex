@@ -1,0 +1,163 @@
+
+%% ---------------------------------------------------------------------
+%% Copyright 2014, Thales, IGN, Remi Cura
+%% 
+%% This file list the used package along description as well as other settings like used defined macro
+%%
+%%NOTE : 
+%% ---------------------------------------------------------------------
+
+
+%%Document structure :
+	
+	% 1 or 2 columns, chose one of the following
+		%\documentclass[preprint,12pt,authoryear,twocolumn]{elsarticle}
+		\documentclass[preprint,3p,12pt,authoryear]{elsarticle}
+		
+	%encoding
+		\usepackage[utf8]{inputenc}
+		
+	%bibliogrpahy references style
+		%%note : to remove URL from citations, comment line 371 of file elsarticle-harv.bst
+		\bibliographystyle{elsarticle-harv} 
+	
+	%hyperlink reference for inteligent pdf output
+ 		\usepackage[pagebackref=true, pdftex]{hyperref}
+		\hypersetup{colorlinks=true}
+
+	%for the images
+		\usepackage{graphicx}
+
+%%Useful
+	%adding more default colors
+		\usepackage[usenames,dvipsnames]{color}
+
+	%this package improve the spacing of letters : reduce the number of lines 
+		\usepackage{microtype} 
+		
+	%allow to use SI unit with command
+		\usepackage[squaren, Gray, cdot]{SIunits}
+
+	%this package is buggy but provides way to include/exclude comment (used to generate a "debug" version of article)
+		\usepackage{comment}
+			%chose one of the two to show/hide comments
+				\includecomment{proofreading}
+				%\excludecomment{proofreading}
+				
+				\includecomment{illustrationInline}
+				%\excludecomment{inline_illustration}
+			
+			%allow to modify the style of the commande : BUGGY : mess with subparapgraph command
+				%\specialcomment{proofreading}{\begingroup\ttfamily\scriptsize\color{Orange}}{\color{black}\endgroup}
+				%\specialcomment{proofreading}{\color{Orange}}{\color{black}}
+			
+	% add a \todo command to insert a todo and list it at the end of the document
+		%% Note : chose between the 2 options to make todo inline or in margin
+		%note : Change this package and switch to todonotes, more powerfull
+		%\usepackage[superscript]{todo}
+		%\usepackage[marginpar]{todo}  
+
+	% another todo packages
+		\usepackage[french,colorinlistoftodos]{todonotes}
+		
+	% defining a new command for emphas ein order to be able to desactivate it if necessary
+		%%Note : the first option do somehting, chose the second one to do nothing (i.e. print text wihtout emphase)
+		\newcommand{\myemph}[1]{\emph{#1}}
+		%\newcommand{\myemph}[1]{#1}
+	
+	%defining new command for todo :
+		% option to allow mutli lines in \todo[caption={Short note}
+		% option to get arrow instead of lines : fancyline
+		% option to precise author of todo : author=Xavier
+		
+		%redefining todo to add sub section number: 	
+			%\newcommand{\ntodo}[2][]{\todo[#1]{\thesubsubsection{}. #2}}
+		%use small line spacing :
+			%\newcommand{\smalltodo}[2][]
+			%{\todo[caption={#2}, #1]
+			%{\begin{spacing}{0.5}#2\end{spacing}}}
+		
+		\newcommand{\mytodo}[2][]
+		{\todo[size=\tiny,caption={#2}, #1, inline]
+		{RC:\thesubsubsection{}. #2 }
+		}
+		
+		%when a ref is missing or wrong	
+		\newcommand{\todoref}[2][] 
+			{\mytodo[color=blue!40, #1]
+			{#2 }}
+		
+		%When a inside reference is missing or wrong
+		\newcommand{\todorenv}[2][] 
+			{\mytodo[color=yellow!40, #1]
+			{#2 }}
+		
+		%When content need a rewrite
+		\newcommand{\todorewrite}[2][] 
+			{\mytodo[color=red!40, #1]
+			{#2 }}
+			
+		%general todo
+				\newcommand{\todoall}[2][] 
+					{\mytodo[color=pink!40, #1]
+					{#2 }}
+					
+		%When noting something
+		\newcommand{\todonote}[2][] 
+			{\mytodo[color=green!40, #1]
+			{#2 }}
+					
+			%color option : blue : ref , green: note , red : rewrite
+			
+			
+	%defining new command for image insertion
+		\newcommand{\myimage}[2]
+					{
+					\begin{figure} [!h]
+						\begin{center}
+							\fbox{\includegraphics[width=15cm]{#1}}
+							\caption{#2} 
+							\end{center}
+					\end{figure} 
+					}
+		
+		\newcommand{\myimagelab}[3][] 
+					{\begin{figure} [!h]
+						\begin{center}
+							\includegraphics[width=1\textwidth]{#1}
+							\caption{\label{#3} #2} 
+						\end{center}
+					\end{figure} 
+					}
+					
+		\newcommand{\myimageInline}[2]
+					{
+					\myimage{#1}{#2}
+					}	
+		
+	%defining a command to inser percent symbol
+		%note : should be done using the siunitx package			
+		\newcommand{\mypercent}{~\%}	
+							
+	%defining new command to change typo of remark area:
+		\newcommand{\myremark}[1]{
+		\color{black!80}
+		#1
+		\color{black!100}
+		}
+		%\todoall{trouver le bon style de typo pour les remarques}
+	 
+%% SETTINGS
+	%show N level of hierarchy in table of content
+		\setcounter{tocdepth}{3}%%chosing the numbe rof level in rable of contents. Default = 3
+		
+		\begin{proofreading}
+			%show N level of hierarchy in table of content
+				\setcounter{tocdepth}{4}%%chosing the numbe rof level in rable of contents. Default = 3
+		%setting the size of margin in proof to help reduce page number
+				%\usepackage[margin=1in]{geometry}
+		\end{proofreading}
+		
+	
+	
+	

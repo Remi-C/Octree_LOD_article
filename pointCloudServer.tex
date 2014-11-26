@@ -1,0 +1,76 @@
+%% ---------------------------------------------------------------------
+%% Copyright 2014, Thales, IGN, Rémi Cura
+%% 
+%% This file is the main file for the project of state of the art article
+%% ---------------------------------------------------------------------
+
+%% Inserting the settings and packages
+	\input{./src/settings.tex}
+
+%opening
+\title{In Base Processing with a Point Cloud Server}
+\author{R\'emi Cura, etc.}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+
+%% Inserting the abstract
+	\input{./src/abstract.tex}
+	\newpage
+
+%% Inserting the introduction
+	\input{./src/introduction.tex}
+	\newpage
+
+%% Inserting the Method part
+	\input{./src/method.tex}
+	\newpage
+	
+%% Inserting the Result part
+	\input{./src/result.tex}
+	\newpage
+
+%% Inserting the Result part
+	\input{./src/discussion.tex}
+	\newpage
+ 
+%% Inserting the conclusion
+	\input{./src/conclusion.tex}
+	\newpage
+
+
+
+% %Note : to generate up to date biblio: go to zotero, select all library, the right click and export as better bibtex, save a cura2014 in the root folder.
+	\section{bibliography}
+	\bibliography{In Base Processing with a Point Cloud Server}
+%\bibliography{"./src/full_lib_27032014_better_bibtex.bib}
+
+
+%%%%
+%% Inserting the todos if in proofreading mode
+	\begin{proofreading}
+	
+	%%% Inserting the annexe, contains supp. mat. that must be choosed
+	%	\input{./src/annexe.tex}
+	%	\newpage
+		
+
+	%% Inserting the todo list of remaining stuff
+	 	% %manual general todo (top down)
+	 	\newpage
+	 	\input{./src/todo.tex}
+	 	% %automatic precise todo (bottom up)
+		\newpage
+		\todototoc
+		\listoftodos
+		
+	\end{proofreading}
+
+\end{document}
+
+
+

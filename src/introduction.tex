@@ -1,0 +1,74 @@
+%% ---------------------------------------------------------------------
+%% Copyright 2014, Thales, IGN, Rémi Cura
+%% 
+%% This file contains the introduction of article
+%% ---------------------------------------------------------------------
+
+
+\section{Introduction}
+	\subsection{Problem} 
+		
+		
+		\begin{itemize}
+			\item Cool, but BIG.
+				Point cloud data is becoming more and more common. Following the same trend, the acquisition speed (points/sec) of the sensor is also increasing.
+				Thus Lidar processing is clocking on the big data door.
+			\item Store/get/process at big scales
+				We need appropriate ways to deal with data at such scale,
+				be it for efficient storing, retrieving, processing of visualizing.
+			\item multi-user/point cloud as a service
+				The use of point cloud is also spreading, going out of the traditionnal geo-spatial LIDAR community. Lidar are commonly used on robots, intelligent cars, architecture, sometimes by non-specialized users.
+				Thus new usages and needs arise which must be tackled.
+		\end{itemize}  
+	%	\paragraph{}
+	\subsection{Motivation}
+		\begin{itemize}
+			\item Pointcloud : becoming common (why)
+				Point cloud are becoming common because sensor are smaller, cheaper, easier to use. Point cloud from image (using Stereo Vision) are also easy to get with several mature structure from motion solutions.
+				Point cloud complements very well images, LIDAR pointcloud allowing to avoid the ill-posed problem of stereovision, and providing key data to virtual reality.
+			\item Growing data set + Multi sources 
+				At such the size of data set are growing, as well as the number of dataset and their diversity.
+			\item Why is it important (size of the industry) 
+				The point cloud data are now well established in a number of industries, like construction, architecture, robotics, archeology, as well as all the traditionnal GIS fields (mapping, survey, cultural heritage)
+			\item PointCLoud users = specialist in processing, not informatics/storing 
+				The LIDAR research community is very active. The focus of lidar researchers is much more on lidar processing and lidar data analysis, or the sensing device, than on the lidar data management system as a whole.
+				For instance point cloud compression has received much less attention than surface reconstruction.
+		\end{itemize}   
+	\subsection{state of the art}
+		\todorewrite{when I have access to Zotero} 
+		State of the art should include
+		\begin{itemize}
+			\item storing in filesystem (octree)
+			\item processing (some example)
+			\item paper on storing in database
+			\item what people do with poiint cloud ? (oosterom 2014)
+		\end{itemize}
+	\subsection{what's missing in biblio} 
+		%limits of the already published articles
+		\begin{itemize}
+			\item limits : file system : list the limits
+			Some of the previously cited articles proposed solution to improve storage (and sometime usage) of point cloud data on a file in a file-system.
+			However such improvements only solve a small part of the problem raised by massive point cloud management.
+			Moreover, the solutions are very specific and may need a large amount of work to be valid end efficient at bigger scales.
+			\item limits of database approach : concept papers, covers only storage (not usages), no in base processing 
+			On the other hand, some works have already considered using DBMS to store massive point cloud. These works are more theoretical and focus on studying the tractability of this kind of approaches. 
+			This article also only deals with one part of massive point cloud data management (usually the storage), and rarely propose a complete system with substantial data and comprehensive testing.
+			
+		\end{itemize} 
+	\subsection{objectiv of the paper}
+		\begin{itemize}
+			\item analogy with vector/raster world and server being commons
+				point cloud data is usually a member of the geospatial data. 
+				As such, it is interesting to watch the evolution of vector and raster data in the last decade.
+				There has been a massive trend towards server and data base solutions, be it for storage (postgresql), processing (postgis), or visualisation (mapserver).
+				Raster data is quit similar to point cloud data in term of size and semantic level. As such it is particularly interesting to observe that raster data set well above the To scale are common and are easily dealt with server based solutions.
+			\item complete, tested, open source, working system
+				As such, this article proposes a new solution for massiv point cloud data management, ranging from data storage to data retrieval, processing and visualization.
+				This solution has been tested on well sized point clouds, is based on an open source stack, and can be easily reproduced, understood and improved. 
+			\item example for each usage
+				We propose real example for common usage of pointcloud.
+			\item can scale
+				The solution is designed to scale, and is based on technology that are curently used at much bigger scale. Thus we have good theoretical indices that the solution will scale well up our tests.
+			\item easily extensible
+				Lastly this solution use a new paradigm for point cloud data management which allows much easier standardisation, re-use and extensibility.
+		\end{itemize}  
