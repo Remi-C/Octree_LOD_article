@@ -6,29 +6,67 @@
 
 
  \section{Result}
-	\subsection{Storing pg Pointcloud}
- 		6 billions points,
- 		several data set
- 		\subsubsection{compression}
- 		2 factor all inclusive
-		\subsection{system data IO}
-			
-			\subsubsection{writting data to the base}
-				write as fast as we acquire
-			\subsubsection{reading data from the base}
-	 			about 100k pts/sec
-		\subsubsection{update data (concurrently) }
-			
-	\subsection{Filtering data } 
-		few ms
-		\subsubsection{what kind o ffiltering}
-		\subsubsection{on meta data : several data sources}
-		\subsubsection{spatial}
-		\subsubsection{attribute}
-		\subsubsection{on function result} 
-	\subsection{Process data}
-		for image : few sec per image
-		for point cloud, few secs per k of points
-	\subsection{Visualize data}
-		using LOD, constantly streaming
+ 	\subsection{introduction to all experiments}
+ 		We design and execute several experiments in order to validate all points that have been introduced in the "method" part.
+ 		First we prove that is it effectively possible to leverage points order, even using out of the box most used open sources software
+ 		Second we perform MidOc ordering on very large point cloud and analyse the efficiency and quality of the results.
+ 		Third we use the number of points chosen in the MidOc ordering has a descriptors for a random forest classifier on two large data set.
+ 		We analyse the potential of this free descriptors, and what it brings when used in conjunction to other simple descriptors.
+	\subsection{Point Cloud server introduction}
+		All the experiments are performed using a Point Cloud Server (article is being written, but a very detailled presentation is accessible \todoref{put reference to postgres presentation}).
+		The key idea are that point clouds are stored inside a DBMS (postgres), as patch. Patch are groups of points along with some basic statistics about points in the group.
+		This organisation is based on the observation that in typical point cloud processing workflow, we never need a point alone, but more often a points and most likely its surrounding points.
 		
+		Having such a meta-type allows use to find points based on various criteria extremely fast. (order of magnitude : ms). 
+		Cutting a point cloud into patches provides also a very easy parallel processing possibility, which we use in our experiments.
+		
+		For our experiments we cut terrestrial Lidar point cloud into 1m3 cubes oriented on (North ,Est,Z) axis.
+		We cut aerial lidar point cloud into \todorewrite{put the cell size for Vosges dataset} m3.
+		The choice of size is a compromise between speed, index size, patch size, typical feature size, etc.
+		In fact the patch can be cut arbitrary, we chose this splitting for simplicity.
+	\subsection{Data Set used}
+		We use two data sets.
+		First \todoref{cite IGQmulus data set}, an open source urban data set with varying density, singularities, and very challenging point cloud geometry.
+		Data set is about 600Millions points, over 12 kms of road. Points are typically spaced by 5cm to 0.2 cm. It is a mutli echo laser (Riegl).
+		We have access to a training set where every point is labeled. 
+		Then \todoref{cite IGQmulus data set}, which is a very wide spread data set of 6 billions points. density is almost constant to \todo{insert avg density for Vosges}.
+		We have access to a rough ground truth about surface occupation nature (type of forest).
+		
+	\subsection{Exploiting the order of points}
+		\paragraph{experiment summary}
+			In this first experiment we check that point cloud ordering is correctly preserved by common open source point cloud processing software.
+			For this, we use a real point cloud, to whoch we add MidOc ordering as rgb. 
+			We export it as a ".txt" text file, this is the reference file.
+			Then for each processing software, we read the reference file and convert it into another format, then check that the conversion didn't change the order. 
+			The tree common open source software tested are CloudCompare, LasTools and Meshlab.
+		\paragraph{results}  
+			All softwares passes test.
+			Any software changing order of point-cloud can still be used if the order is exported as an attribute.
+	\subsection{MidOc : an ordering for gradual geometrical approximation}
+		\paragraph{experiment summary}
+			In this experiment we first test ordering on typical street objects,then on small subset of terrestrial and aerial Lidar to appreciate the fitness to use it for geometrical LOD.
+			Then we compute MidOc for two big datasets and try to qualify result visually as well as identify computing bottleneck .
+			Lastly we briefly test exploiting LOD to stream 3D point cloud with various resolution to a browser.
+		
+		\paragraph{visual evaluation}
+			Visual evaluation on typical objects (ground, facade, car, pole, vegetation)
+			Visual results on a street (benchmark street, interesting parts)
+			Visual results on aerial (Vosges).
+		\paragraph{large scale computing}
+			We test 3 implementation of MidOc.
+			Computing MidOc on very large point-cloud (parallel)
+			\todo{compute on Vosges, 12 x parallel processing}
+			Analysis -> Bottleneck is not computing , but read/update with new order.
+		
+		\paragraph{LOD stream}
+			??(parler du stream de patch dans itowns?)??
+			limitation = have to put the whole patch in memory, even when getting only few points.
+			Conclusion : as is : interesting when bandwidth limited.  
+	\subsection{using the ordering by-product as a crude dimensionality descriptor}
+		\paragraph{experiment summary}
+		\paragraph{data set}
+			present IQmulus data set
+			present Vosges data set
+		\paragraph{}
+		
+ 
