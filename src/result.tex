@@ -56,25 +56,28 @@
 				\centering
 				\caption{ number of points per LOD, plus estimated transfer time with modern internet connection}
 				\scriptsize 
-				\begin{tabular}{|c|c|c|c|c|}
-				\hline Level & \shortstack{Typical \\ spacing(cm)} & \shortstack{ points \\ number(k)} & \shortstack{percent of \\ total size} & \shortstack{estimated \\ time(s)} \\ 
-				\hline All & 0.2 to 5  & 1600 & 100 & 60 \\ 
-				\hline 0 & 100 & 3 & 0.2 & 0.1 \\ 
-				\hline 1 & 50 & 11.6 & 0.7 & 0.4 \\ 
-				\hline 2 & 25 & 41 & 2.6 & 1.5 \\ 
-				\hline 3 & 12 & 134 & 8.4 & 5 \\ 
-				\hline 4 & 6 & 372 & 23 & 14 \\  
+				\begin{tabular}{|c|c|c|c|c|c}
+				\hline Level & \shortstack{Typical \\ spacing(cm)} & \shortstack{ points \\ number(k)} & \shortstack{percent of \\ total size} & \shortstack{estimated \\ time Internet(s)} & \shortstack{estimated \\ time LAN(s)} \\
+				\hline All & 0.2 to 5  & 1600 & 100 & 60 & 3 \\ 
+				\hline 0 & 100 & 3 & 0.2 & 0.1 & 0.005\\ 
+				\hline 1 & 50 & 11.6 & 0.7 & 0.4 & 0.02\\ 
+				\hline 2 & 25 & 41 & 2.6 & 1.5 & 0.075\\ 
+				\hline 3 & 12 & 134 & 8.4 & 5 & 0.25\\ 
+				\hline 4 & 6 & 372 & 23 & 14 & 0.7\\  
 				
 				\hline 
 				\end{tabular} 
 			\end{table}
-				
+			\myimage{./illustrations/LOD/LOD_assembled.jpg}{All successive levels, lighting by Ambiant Occlusion for visual comfort} 
+			
 			Visual results on a street (benchmark street, interesting parts)
-			Visual results on aerial (Vosges).
+			
+			\todorewrite{Visual results on aerial (Vosges).}
+			
 		\subsubsection{large scale computing}
 			We use 3 implementations of MidOc, two being pure plpgsql (postgres script langage), and one python.
 			Computing MidOc on very large point-cloud (parallel)
-			\todo{compute on Vosges, 12 x parallel processing}
+			\todorewrite{compute on Vosges, 12 x parallel processing}
 			Analysis -> Bottleneck is not computing , but read/update with new order. 
 		\subsubsection{LOD stream}
 			??(parler du stream de patch dans itowns?)??
