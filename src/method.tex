@@ -123,6 +123,9 @@
 			Now this number of chosen points per level gives an indication on the geometric nature of the object in the point cloud. 
 			We demonstrate the use of this extremely simple descriptor with a classical Random Forest classifier on a real world dataset publicly available.
 			@\todorewrite{ cite Demantké thesis because he creates sophisticated dimensionality indicators}
+			We don't try to provide a per point classification, but a classification per group of points (i.e patch) . 
+			The idea is that for many points we may only use this simple classifier. So we could speed up a very complex classifier by first using the simple one, then use the complex one on parts that the simple classifier is not confident with.
+			Another application is filtering. If the classification process is very fast, one can easily eliminate large parts of the point cloud when looking for a given type of points (for instance, looking for ground points).
 		\subsubsection{conceptual example}
 			@\todo{ put 3 images, pole, road, vegetation}
 			For instance, we take 3 typical street extracts : a pole, a piece of ground, and a piece of tree.

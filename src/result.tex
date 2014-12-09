@@ -53,17 +53,23 @@
 			Visual results on a street (benchmark street, interesting parts)
 			Visual results on aerial (Vosges).
 		\paragraph{large scale computing}
-			We test 3 implementation of MidOc.
+			We use 3 implementations of MidOc, two being pure plpgsql (postgres script langage), and one python.
 			Computing MidOc on very large point-cloud (parallel)
 			\todo{compute on Vosges, 12 x parallel processing}
-			Analysis -> Bottleneck is not computing , but read/update with new order.
-		
+			Analysis -> Bottleneck is not computing , but read/update with new order. 
 		\paragraph{LOD stream}
 			??(parler du stream de patch dans itowns?)??
 			limitation = have to put the whole patch in memory, even when getting only few points.
 			Conclusion : as is : interesting when bandwidth limited.  
 	\subsection{using the ordering by-product as a crude dimensionality descriptor}
 		\paragraph{experiment summary}
+			When computing MidOc ordering, we can easily store the number of points chosen per level.
+			This experiment tries to evaluate the utility of such crude dimensionality descriptor using random forest as classifier.
+			This dimensionality descriptor cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionnaly very similar).
+			We evaluate first what kind of reliable prediction can be made with the dimensionnality feature,
+			then we add several very simple feature to provide a result to compare to.
+			
+			
 		\paragraph{data set}
 			present IQmulus data set
 			present Vosges data set
