@@ -24,7 +24,7 @@
 			
 			This fact is common for every point cloud format. At one point, points must be written to disk, and they become ordered. In fact it would be quite hard to store the point in a totally unordered fashion (true random is expansive).
 			The first contribution of this article is to propose to exploit this ordering to store information.
-			The key idea is : we \bf{order} the points of the point cloud so that when reading the points from beginning to end, we get gradually a better and better geometrical approximation of the point cloud. We call this ordering "MidOc" ordering, but the idea to use order to store LOD works with any ordering.
+			The key idea is : we order the points of the point cloud so that when reading the points from beginning to end, we get gradually a better and better geometrical approximation of the point cloud. We call this ordering "MidOc" ordering, but the idea to use order to store LOD works with any ordering.
 			
 		\subsubsection{conceptual example}
 			So for instance if we have a list L of points ordered from 1 to n.

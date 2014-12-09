@@ -33,36 +33,55 @@
 		We have access to a rough ground truth about surface occupation nature (type of forest).
 		
 	\subsection{Exploiting the order of points}
-		\paragraph{experiment summary}
+		\subsubsection{experiment summary}
 			In this first experiment we check that point cloud ordering is correctly preserved by common open source point cloud processing software.
 			For this, we use a real point cloud, to whoch we add MidOc ordering as rgb. 
 			We export it as a ".txt" text file, this is the reference file.
 			Then for each processing software, we read the reference file and convert it into another format, then check that the conversion didn't change the order. 
 			The tree common open source software tested are CloudCompare, LasTools and Meshlab.
-		\paragraph{results}  
+		\subsubsection{results}  
 			All softwares passes test.
 			Any software changing order of point-cloud can still be used if the order is exported as an attribute.
 	\subsection{MidOc : an ordering for gradual geometrical approximation}
-		\paragraph{experiment summary}
+		\subsubsection{experiment summary}
 			In this experiment we first test ordering on typical street objects,then on small subset of terrestrial and aerial Lidar to appreciate the fitness to use it for geometrical LOD.
 			Then we compute MidOc for two big datasets and try to qualify result visually as well as identify computing bottleneck .
 			Lastly we briefly test exploiting LOD to stream 3D point cloud with various resolution to a browser.
 		
-		\paragraph{visual evaluation}
+		\subsubsection{visual evaluation}
 			Visual evaluation on typical objects (ground, facade, car, pole, vegetation)
+			\paragraph{visual evaluation on a portion of street}
+			
+			\begin{table}[ht]
+				\centering
+				\caption{ number of points per LOD, plus estimated transfer time with modern internet connection}
+				\scriptsize 
+				\begin{tabular}{|c|c|c|c|c|}
+				\hline Level & \shortstack{Typical \\ spacing(cm)} & \shortstack{ points \\ number(k)} & \shortstack{percent of \\ total size} & \shortstack{estimated \\ time(s)} \\ 
+				\hline All & 0.2 to 5  & 1600 & 100 & 60 \\ 
+				\hline 0 & 100 & 3 & 0.2 & 0.1 \\ 
+				\hline 1 & 50 & 11.6 & 0.7 & 0.4 \\ 
+				\hline 2 & 25 & 41 & 2.6 & 1.5 \\ 
+				\hline 3 & 12 & 134 & 8.4 & 5 \\ 
+				\hline 4 & 6 & 372 & 23 & 14 \\  
+				
+				\hline 
+				\end{tabular} 
+			\end{table}
+				
 			Visual results on a street (benchmark street, interesting parts)
 			Visual results on aerial (Vosges).
-		\paragraph{large scale computing}
+		\subsubsection{large scale computing}
 			We use 3 implementations of MidOc, two being pure plpgsql (postgres script langage), and one python.
 			Computing MidOc on very large point-cloud (parallel)
 			\todo{compute on Vosges, 12 x parallel processing}
 			Analysis -> Bottleneck is not computing , but read/update with new order. 
-		\paragraph{LOD stream}
+		\subsubsection{LOD stream}
 			??(parler du stream de patch dans itowns?)??
 			limitation = have to put the whole patch in memory, even when getting only few points.
 			Conclusion : as is : interesting when bandwidth limited.  
 	\subsection{using the ordering by-product as a crude dimensionality descriptor}
-		\paragraph{experiment summary}
+		\subsubsection{experiment summary}
 			When computing MidOc ordering, we can easily store the number of points chosen per level.
 			This experiment tries to evaluate the utility of such crude dimensionality descriptor using random forest as classifier.
 			This dimensionality descriptor cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionnaly very similar).
@@ -70,9 +89,9 @@
 			then we add several very simple feature to provide a result to compare to.
 			
 			
-		\paragraph{data set}
+		\subsubsection{data set}
 			present IQmulus data set
 			present Vosges data set
-		\paragraph{}
+		\subsubsection{}
 		
  
