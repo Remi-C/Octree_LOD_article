@@ -49,52 +49,49 @@
 			Lastly we briefly test exploiting LOD to stream 3D point cloud with various resolution to a browser.
 		
 		\subsubsection{visual evaluation}
-			Visual evaluation on typical objects (ground, façade, car, pole, vegetation)
-			\paragraph{visual evaluation on a portion of street}
-			
-			\begin{table}[ht]
-				\centering
-				\caption{ number of points per LOD, plus estimated transfer time with modern internet connection}
-				\scriptsize 
-				\begin{tabular}{|c|c|c|c|c|c}
-				\hline Level & \shortstack{Typical \\ spacing(cm)} & \shortstack{ points \\ number(k)} & \shortstack{percent of \\ total size} & \shortstack{estimated \\ time Internet(s)} & \shortstack{estimated \\ time LAN(s)} \\
-				\hline All & 0.2 to 5  & 1600 & 100 & 60 & 3 \\ 
-				\hline 0 & 100 & 3 & 0.2 & 0.1 & 0.005\\ 
-				\hline 1 & 50 & 11.6 & 0.7 & 0.4 & 0.02\\ 
-				\hline 2 & 25 & 41 & 2.6 & 1.5 & 0.075\\ 
-				\hline 3 & 12 & 134 & 8.4 & 5 & 0.25\\ 
-				\hline 4 & 6 & 372 & 23 & 14 & 0.7\\  
-				
-				\hline 
-				\end{tabular} 
-			\end{table}
-			
-			
-			Visual results on a street (benchmark street, interesting parts)
+			\paragraph{Visual evaluation on typical objects (ground, façade, car, pole, vegetation)}
+				See fig XX \todorenv{put correct renv}
 			
 			\todorewrite{Visual results on aerial (Vosges).}
+			\paragraph{visual evaluation on a portion of street}			
+				See fig XX \todorenv{put correct renv}
+				\begin{table}[ht]
+					\centering
+					\caption{ number of points per LOD, plus estimated transfer time with modern internet connection}
+					\scriptsize 
+					\begin{tabular}{|c|c|c|c|c|c}
+					\hline Level & \shortstack{Typical \\ spacing(cm)} & \shortstack{ points \\ number(k)} & \shortstack{percent of \\ total size} & \shortstack{estimated \\ time Internet(s)} & \shortstack{estimated \\ time LAN(s)} \\
+					\hline All & 0.2 to 5  & 1600 & 100 & 60 & 3 \\ 
+					\hline 0 & 100 & 3 & 0.2 & 0.1 & 0.005\\ 
+					\hline 1 & 50 & 11.6 & 0.7 & 0.4 & 0.02\\ 
+					\hline 2 & 25 & 41 & 2.6 & 1.5 & 0.075\\ 
+					\hline 3 & 12 & 134 & 8.4 & 5 & 0.25\\ 
+					\hline 4 & 6 & 372 & 23 & 14 & 0.7\\  
+					
+					\hline 
+					\end{tabular} 
+				\end{table}
 			
+			 
 		\subsubsection{large scale computing}
 			We use 3 implementations of MidOc, two being pure plpgsql (postgres script langage), and one python.
 			Computing MidOc on very large point-cloud (parallel)
 			\todorewrite{compute on Vosges, 12 x parallel processing}
+			Sucess : even on "singularity" : big accumulation of points
 			Analysis -> Bottleneck is not computing , but read/update with new order. 
 		\subsubsection{LOD stream}
 			??(parler du stream de patch dans itowns?)??
 			limitation = have to put the whole patch in memory, even when getting only few points.
 			Conclusion : as is : interesting when bandwidth limited.  
+			
+			
 	\subsection{using the ordering by-product as a crude dimensionality descriptor}
 		\subsubsection{experiment summary}
 			When computing MidOc ordering, we can easily store the number of points chosen per level.
 			This experiment tries to evaluate the utility of such crude dimensionality descriptor using random forest as classifier.
-			This dimensionality descriptor cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionnaly very similar).
-			We evaluate first what kind of reliable prediction can be made with the dimensionnality feature,
-			then we add several very simple feature to provide a result to compare to.
-			
-			
-		\subsubsection{data set}
-			present IQmulus data set
-			present Vosges data set
+			This dimensionality descriptor cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionnaly very similar, yet semantically very different).
+			We evaluate first what kind of reliable prediction can be made with the dimensionality feature,
+			then we add several very simple feature to provide a result to compare to.  
 		\subsubsection{}
 		
  

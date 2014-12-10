@@ -125,7 +125,7 @@
 			@\todorewrite{ cite Demantké thesis because he creates sophisticated dimensionality indicators}
 			We don't try to provide a per point classification, but a classification per group of points (i.e patch) . 
 			The idea is that for many points we may only use this simple classifier. So we could speed up a very complex classifier by first using the simple one, then use the complex one on parts that the simple classifier is not confident with.
-			Another application is filtering. If the classification process is very fast, one can easily eliminate large parts of the point cloud when looking for a given type of points (for instance, looking for ground points).
+			Another application is filtering. If the classification process is very fast, one can easily eliminate large parts of the point cloud when looking for a given type of points (for instance, looking for ground points, or tree points).
 		\subsubsection{conceptual example}
 			@\todo{ put 3 images, pole, road, vegetation}
 			For instance, we take 3 typical street extracts : a pole, a piece of ground, and a piece of tree.
@@ -136,11 +136,26 @@
 			Lastly a piece of tree foliage is going to be very volumetric in nature, due to fact that leaf are about the same size as point spacing and are partly transparent for laser (leading to several echo).
 			So a foliage patch would typically be (1,8,64,512) (if enough points), so a 8**L function.
 			
-		\subsubsection{method}	
+		\subsubsection{method}
+			Again we don't work at the point level, but at the patch level (max 1m3).
+			We order all patches following MidOc ordering, and for each patch ordered, we associate the number of points per level that where chosen.
+			We train a random forest classifier using the number of chosen points per level (Vmidoc=[N1,n2,n3,n4...]).
+			We use the number of points per level 1 to 4 included. For each level, we normalize number of points by the maximum number of points possible (8**i), so every feature is in [0,1].
+			
+			We use the IQmulus benchmark, where each point has a class.
+			Our first goal is to determinate which classes are susceptible to be successfully classified using only this descriptor.
+			Our first strategy is then to learn/predict on all our classes using 10-fold strategy, then construct an affinity matrix out of random forest score.
+			This allow us to cluster the classes into groups than can or cannot be effectively separated using only this descriptor.
+			
+			We randomly chose patches on which to work, correcting the uniform distribution to have almost equal number of patches reprensenting each class.
+			
+			We then train / predict with the classifier using a 10 fold strategy to have significant result.
+			 
+			
 		\subsubsection{advantages}
 			\paragraph{simple}
 				Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers. However This kind of feature is generally designed at the point level, and is more complex.
-				Using the result of the MidOc ordering has the advantage of being free and simple. 
+				Using the result of the MidOc ordering has the advantage of being free and extremely simple. 
 			\paragraph{Efficient}
 				Moreover, because x, x**2, x**3 diverge very fast, we only need to use few levels to have a quite good descriptor. For instance, using L=2, we have D=4, 16 or 64 , which are very distinguishable values, and don't require a density above 70 points/patch. 
 			\paragraph{Density and scale independent}
