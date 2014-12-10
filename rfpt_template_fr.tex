@@ -1,0 +1,238 @@
+%%
+%% Copyright 2011 Clement Mallet IGN Societe Francaise de 
+%% Photogrammetrie et de Teledetection
+%% ======================================================================
+%% WARNING! ENGLISH SPEAKING AUTHORS SHOULD READ rfpt_template_eng.tex
+%%          FILE INSTEAD
+%% ======================================================================
+
+\documentclass{rfpt}
+
+%% --------------------------------------------------------------
+%% FIGURES
+%% Pour des figures en PostScript dans votre article
+%% utilisez le paquet graphics pour de simples commandes
+%% \usepackage{graphics}
+%% ou le paquet graphicx pour des commandes plus compliquées
+%% \usepackage{graphicx}
+
+%% --------------------------------------------------------------
+%% BIBLIOGRAPHIE
+%% Merci de ne pas utiliser le package cleveref
+%% Le package natbib est utilise par defaut, et presente de nombreuses
+%% fonctionnalites. Vous pouvez par exemple vous referer ici
+%% http://merkel.zoneo.net/Latex/natbib.php?lang=fr
+
+%% --------------------------------------------------------------
+%% UTILISATION DE CARACTERES ACCENTUES AU CLAVIER ?
+%% (le codage du clavier depend du systeme d'exploitation)
+% \usepackage[applemac]{inputenc} % MacOS
+% \usepackage[ansinew]{inputenc}  % Windows ANSI
+% \usepackage[cp437]{inputenc}    % DOS, page de code 437
+% \usepackage[cp850]{inputenc}    % DOS, page de code 850
+% \usepackage[cp852]{inputenc}    % DOS, page de code 852
+% \usepackage[cp865]{inputenc}    % DOS, page de code 865
+%\usepackage[latin1]{inputenc}   % UNIX, codage ISO 8859-1
+% \usepackage[decmulti]{inputenc} % VMS
+% \usepackage[next]{inputenc}
+% \usepackage[latin2]{inputenc}
+% \usepackage[latin3]{inputenc}
+
+
+\usepackage{amssymb,amsthm}
+
+\begin{document}
+
+\begin{frontmatter}
+
+%% Titre, auteurs, affiliation & adresse
+
+%% Garder cet exemple
+%% \title{Titre}
+%% \author{Prénom Nom}
+%% \address{Affiliation + adresse}
+
+\title{Instructions aux auteurs soumettant à la Revue Française de Photogrammétrie et de Télédétection -- Format \LaTeXe}
+
+\author[A1]{Michel Bertrand}
+\author[A1,A2]{Pierre-Jean Dupont}
+\author[A3]{Jacques Pierre}
+
+\address[A1]{Laboratoire Machin, mon adresse, 00000 Maville, France}
+\address[A2]{Laboratoire Truc, mon autre adresse, 00100 Monautreville, Cedex, France}
+  \address[A3]{Universit\'e Ville III, mon lieu, 00200 Encoreuneautreville, Espagne}
+
+\begin{resume}
+Les auteurs publiant à la RFPT et utilisant le
+traitement de texte \LaTeXe\ trouveront ci-dessous quelques
+indications destinées à leur faciliter la tâche. Le
+fichier \texttt{rfpt\_template\_fr.tex} permet la création de ce document et de respecter les contraintes de style de la revue. Vous pouvez l'utiliser comme base.
+\end{resume}
+%%%%%%%%
+
+
+\begin{motscle}
+%% Les mots clés ici, séparés de la commande \sep
+Mot clé 1 \sep Mot clé 2 \sep Mot clé 3
+\end{motscle}
+
+\begin{abstract}
+RFPT authors using\LaTeXe\ will find
+below some information to help them. The file \texttt{rfpt\_template\_fr.tex} allows to create this document and respect the layout of the journal. You may use it as a basis.\end{abstract}
+%%%%%%%%
+
+
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+Keyword 1 \sep Keyword \sep Keyword 3
+\end{keyword}
+
+
+\end{frontmatter}
+
+
+%%%%%%%%%%%%
+\section{Format du document}
+%%%%%%%%%%%%
+\subsection{La classe \texttt{rfpt}}
+Votre article n'est pas limité en taille. La classe \texttt{rfpt.cls} au format
+\LaTeXe\ que nous vous recommandons d'utiliser vous permet de
+réaliser automatiquement la mise en page, à l'aide de la
+commande :
+\begin{verbatim}
+    \documentclass{rfpt}
+\end{verbatim}
+Dans le préambule de votre fichier, vous devrez alors entrer les
+informations suivantes :
+\begin{itemize}
+
+    \item le titre de l'article :\\
+    \verb!\title{Titre de l'article}!
+
+    \item le prénom et le nom de chaque auteur, précédé d'un numéro
+    renvoyant à son adresse :\\
+    \verb!\author[A1]{Michel Bertrand}!\\
+    \verb!\author[A1,A2]{Pierre-Jean Dupont}!
+
+    \item l'adresse de chaque auteur, pouvant inclure l'adresse électronique de celui-ci :\\
+    \verb!\address[A1]{Laboratoire Machin,!\\
+     \verb!mon adresse, 00000 Maville, France}! \\
+
+
+    \item les résumés en français et en anglais :\\
+    \verb!\begin{resume}R\'esum\'e français!\\
+    \verb!\end{resume}! \\
+    \verb!\begin{abstract}English written!\\
+    \verb! abstract\end{abstract}!
+
+    \item enfin, le texte de votre article, et votre bibliographie: \\
+    \verb!\begin{document}! \\
+    \verb!Texte de l'article! \\
+    \verb!\bibliographystyle{rfpt_fr}!\\
+    \verb!\bibliography{biblio}! \\
+    \verb!\end{document}!
+
+\end{itemize}
+
+\subsection{Titre et sous-titres}
+Ce document utilise la commande \verb!\section! et la commande
+\verb!\subsection!. Plus bas dans la hiérarchie, voici ce qui est
+obtenu :
+\subsubsection{Sous-sous-titre}
+\`A l'aide de la commande \verb!\subsubsection!.
+\paragraph{Sous-sous-sous-titre}
+\`A l'aide de \verb!\paragraph!.
+
+\section{Langue et typographie}
+Votre article étant rédigé en français, merci d'utiliser les règles de typographie
+françaises. La classe \texttt{rfpt.cls} inclus le paquet \texttt{babel} avec l'option
+\texttt{english,francais}. 
+\subsection{Le paquet \texttt{babel}}
+Ceci indique que le language par défaut est le français.
+L'anglais est nécessaire pour le texte de votre résumé en
+anglais. 
+
+\subsection{Saisie}
+La ponctuation haute (\verb&; : ? !&) doit être
+précédée d'un espace, comme sur une machine à
+écrire. 
+Enfin, les majuscules doivent être accentuées.
+
+\section{Tableaux, figures \\ et mathématiques}
+Tous les tableaux et toutes les figures doivent être accompagnés d'une légende.
+Les tableaux doivent être suivis de leur
+légende, comme cela est fait pour le tableau
+\ref{puissancededeux}.\\
+La légende est entrée à l'aide de la commande
+\verb!\caption! habituelle. Elle doit commencer par une majuscule et se terminer par un point.
+\begin{table}[htb]
+    \begin{center}
+    \begin{tabular}{||c||*{8}{c|}|}
+        \hline\hline
+        $n$   & 1 & 2 & 3 &  4 &  5 &  6 &   7 &   8 \\ \hline
+        $2^n$ & 2 & 4 & 8 & 16 & 32 & 64 & 128 & 256 \\
+        \hline\hline
+    \end{tabular}
+        \caption{\label{puissancededeux}Puissance de 2.}
+    \end{center}
+\end{table}
+Le même principe est suivi pour les figures.
+\begin{figure}[htb]
+    \begin{center}
+    \setlength{\unitlength}{0.5cm}
+    \begin{picture}(5,5)
+        \put(2.5,2.5){\oval(5,5)}
+        \put(1,1){\line(1,0){3}}
+        \put(4,1){\line(0,1){3}}
+        \put(1,4){\line(1,0){3}}
+        \put(1,1){\line(0,1){3}}
+    \end{picture}
+    \end{center}
+    \caption{Un carré dans un ovale.}
+    \label{cercle}
+\end{figure}
+
+L'insertion de figure \texttt{PostScript} peut être faite
+efficacement à l'aide des paquets \texttt{graphics},
+\texttt{graphicx} ou \texttt{epsfig}. 
+Quant aux formules mathématiques, leur aspect pourra être
+amélioré en utilisant le paquet \texttt{amsmath} de la
+librairie $\mathcal{AMS}$-\LaTeX. Elles seront num\'erot\'ees, comme c'est
+le cas de la formule \ref{formule} :
+\begin{equation}
+   \label{formule}
+   F(x) = \int_{-\infty}^x f(u)\,du
+\end{equation}
+
+\section{Bibliographie}
+Toutes les références citées dans le texte doivent être dans la liste finale (et vice versa). Il est recommandé d'éviter de citer des  travaux non (encore) publiés ainsi que des communications personnelles.\\
+
+\subsection{Comment citer ?}
+Le paquet \texttt{natbib} est utilisé pour générer la bibliographie. Vous pouvez vous référer à la documentation disponible sur Internet pour voir l'étendue de ses fonctionnalités.
+Si vous ne possédez pas ce paquet et que la compilation échoue, il suffit de télécharger le fichier \texttt{natbib.sty} et de l'inclure dans le dossier où se trouve le présent fichier.
+Les deux principales options sont:
+\begin{itemize}
+    \item "\ldots comme décrit dans \citep{companion}", en écrivant  \\
+    \verb!\citep{companion}!
+        \item et "\citet{lamport94a} pense que\ldots" en écrivant\\
+    \verb!\citet{lamport94a}!
+\end{itemize}
+
+\subsection{Langue}
+L'utilisation de la classe \texttt{rfpt\_fr} pour la bibliographie ne nécessite pas d'adaptation particulière du fichier de bibliographie pour la langue française. Celle-ci se fait automatiquement \citep{mathese}.
+
+\subsection{Format}
+\begin{itemize}
+\item Auteurs: ils doivent tous être séparés par le terme "and".
+\item Journaux: le volume, le numéro ainsi que les numéros de page doivent être spécifiés.
+\item Conférences: le lieu et le pays de la conférence doivent être mentionnés. Le formattage doit être identique pour toutes les citations faisant référence à la même conférence, quelquesoit l'année.
+\item Web: les références doivent au moins contenir une url et une date de visite du site web mentionné.
+\end{itemize}
+
+\bibliographystyle{rfpt_fr}
+\bibliography{biblio}
+
+\end{document}
+
+%%
+%% End of file `rfpt_template.tex'.
