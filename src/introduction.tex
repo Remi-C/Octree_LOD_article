@@ -8,74 +8,72 @@
 \section{Introduction}
 	\subsection{Problem} 
 	 
-		Point cloud data is becoming more and more common. Following the same trend, the acquisition speed (points/sec) of the sensor is also increasing.
-		Thus Lidar processing is clocking on the big data door.
-		The precision of the sensors is also increasing, leading to more and more detailed point cloud.
+		Point cloud data is becoming more and more common. Following the same trend, the acquisition frequency and precision are also increasing.
+		Thus Lidar processing is clocking on the Big Data door.
 		
-		Yet the usage of point cloud data is also spreading and going out of the traditional communities that used it. 
-		Lidar are commonly used on robots, intelligent cars, architecture, sometimes by non-specialized users. 
+		Yet the usage of point cloud data is also spreading and going out of the traditional user communities. 
+		Lidar are now commonly used by non-specialized users. 
 		
 		
-		For all this usage, having the raw, complete point cloud is often unnecessary, or even damageable.
-		Thus we are facing a simpler version of a problem tat the vector community has faced for a long time : how to generalize point cloud, with data sets that are several order of magnitude bigger than usual vector data set?
+		For many usages, having the raw, complete point cloud is unnecessary, or even damageable.
+		Thus we deal with a simpler version of a problem tat the vector community has faced for a long time : how to generalize point cloud, with data sets that are several order of magnitude bigger than usual vector data set?
 		
-		This kind of problem is very common in data processing. Having a big data set, how to reduce its size while preserving its characteristics.
-		It is the base problem of compression for instance.
+		It is after all a problematic very common in data processing. Having a big data set, how to reduce its size while preserving its characteristics.
+		It is the essence of compression for instance.
 		
-		The problem is also made complex by the mix of point cloud with varying density.For instance an aerial lidar map augmented at certain places by terrestrial scanners, or vehicle-based lidar acquisition, where the density varies with speed and scene geometry.
+		Generalization is also more difficult when mixing data set with varying densities. For instance an aerial Lidar map augmented at certain places by terrestrial scanners, or vehicle-based Lidar acquisition, where the density varies with speed and scene geometry.
 		
-		Here we deal with a simplified version : given a point cloud, how to efficiently generate Level Of Detail of this point cloud while preserving the geometric characteristic, without duplicating data.
-		The key to Level Of Detail approach is efficiency. We accept to loose a part of the information in exchange of a massive reduction of data size. A solution using LOD must then by nature be efficient.
+		Here we deal with a simplified version : given a point cloud, how to efficiently generate Level Of Detail (LOD for the remainder of this article) of this point cloud while preserving the geometric characteristic, without duplicating data.
+		The key to LOD approach is efficiency. We accept to loose a part of the information in exchange of a massive reduction of data size. A solution using LOD must then by nature be efficient.
 		
 	%	\paragraph{}
 	\subsection{Motivation}
 		\begin{itemize}
-			\item Pointcloud : becoming common (why)
+			\item Point cloud : becoming common (why)
 				Point cloud are becoming common because sensor are smaller, cheaper, easier to use. Point cloud from image (using Stereo Vision) are also easy to get with several mature structure from motion solutions.
-				Point cloud complements very well images, LIDAR pointcloud allowing to avoid the ill-posed problem of stereovision, and providing key data to virtual reality.
+				Point cloud complements very well images, Lidar point cloud allowing to avoid the ill-posed problem of stereo-vision, and providing key data to virtual reality.
 			\item Growing data set + Multi sources 
 				At such the size of data set are growing, as well as the number of dataset and their diversity.
 			\item Why is it important (size of the industry) 
-				The point cloud data are now well established in a number of industries, like construction, architecture, robotics, archeology, as well as all the traditionnal GIS fields (mapping, survey, cultural heritage)
+				The point cloud data are now well established in a number of industries, like construction, architecture, robotics, archaeology, as well as all the traditional GIS fields (mapping, survey, cultural heritage)
 			\item PointCLoud users = specialist in processing, not informatics/storing 
-				The LIDAR research community is very active. The focus of lidar researchers is much more on lidar processing and lidar data analysis, or the sensing device, than on methods to render the data size tractable. 
+				The LIDAR research community is very active. The focus of Lidar researchers is much more on Lidar processing and Lidar data analysis, or the sensing device, than on methods to render the data size tractable. 
 		\end{itemize}   
 		
 	\subsection{state of the art}
 		\todorewrite{when I have access to Zotero} 
 		State of the art should include 
 		\begin{itemize}
-			\item what people do with poiint cloud ? (oosterom 2014)
+			\item what people do with point cloud ? (oosterom 2014)
 		\end{itemize}
 	\subsection{what's missing in biblio} 
 		%limits of the already published articles
 		
-		Point cloud generalization are far from the subtlety of vector generalization ( // mettre des references).
-		If we take the State of the art software CloudCompare (//mettre reference), we can choose between a random subsampling and a minimum distance subsampling.
+		Point cloud generalization methods are far from the subtlety of vector generalization ( // mettre des references).
 		
 		More generally, proposed methods usually focus on data compression and computing acceleration.
 		
-		Another common practice coming from Computer Graphics field is to compute an octree over the point cloud, then for each cell , compute a subsampled version of the pointcloud.
+		Another common practice coming from Computer Graphics field is to compute an octree over the point cloud, then for each cell , compute a sub-sampled version of the point cloud.
 		This allows to have simple and efficient Level of Detail , at the price of data duplication, and high sensibility to density variation.
 		
-		Morevover, all the method are specific and depend on a specific data structure that has to be stored extra to the point cloud data.Steaming from this the interoperability is non existant (moving from one software to another, one loose the data structure).
+		Moreover, all the method are specific and depend on a specific data structure that has to be stored extra to the point cloud data.Steaming from this the interoperability is non existent (moving from one software to another, one loose the data structure).
 		
-		We have then the classicla and seemingly intractable problem : if we precompute a data structure, we have to store it. If we compute it on the fly, we may end up using lot's of computing time performing the same processing several time.
+		We have then the classical and seemingly intractable trade-off between computing and storage : if we pre-compute a data structure, we have to store it extra. If we dot he computing on the fly, we may end up performing the same operations a lot's of time.
 	
 	\subsection{contribution}
 		
-		In this paper, we focus on simplicity, efficiency and re-use of existing and well established methods. All the methods are tested on Billion scale pointcloud, and are open source for reproductibility test and reuse.
+		In this paper, we focus on simplicity, efficiency and re-use of existing and well established methods. All the methods are tested on Billion scale point cloud, and are open source for reproducibility test and reuse.
 		We propose a simple method that enable portable computation free geometrical level of detail.
-		The first contribution is that we propose to store the LOD information directly into the ordering of points rather than compute new subsampled point cloud for each LOD.
+		The first contribution is that we propose to store the LOD information directly into the ordering of points rather than compute new sub-sampled point cloud for each LOD.
 		Thus, the more we read points, the more precise of an approximation of the point cloud we get. If we read all the points, we have the original point cloud.
 		
-		The second contribution is a simple way to order points so that we have a varying geometric approximation of the point cloud.
+		The second contribution is a simple way to order points so that we have a varying geometric approximation of the point cloud when following this order.
 		
-		The third contribution is to use the ordering construction by-product as simple and free dimensionnality descriptors, with usuability demonstrated in a Radom forest classification experiment.
+		The third contribution is to use the ordering construction by-product as simple and free dimensionality descriptors, with usability demonstrated in a Random forest classification experiment.
 			
 		
 	\subsection{plan of the article}
 		The rest of this article is organized as follow :
 		In the next section we present the methods.  
 		In the section XX, we present some results and order of magnitude
-		In the last section we discuss the results, the limitation and improvments of our solution.
+		In the last section we discuss the results, the limitation and improvements of our solution.
