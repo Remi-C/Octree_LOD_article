@@ -116,11 +116,20 @@
 					{
 					\begin{figure} [!h]
 						\begin{center}
-							\fbox{\includegraphics[width=15cm]{#1}}
-							\caption{#2} 
+							\fbox{\includegraphics[width=\textwidth/2,keepaspectratio]{#1}}
+							\caption{} 
 							\end{center}
 					\end{figure} 
 					}
+		\newcommand{\myimageFullPage}[2]
+						{
+						\begin{figure*} [!h]
+							\begin{center}
+								\fbox{\includegraphics[height=\textheight,keepaspectratio ]{#1}}
+								\caption{} 
+								\end{center}
+						\end{figure*} 
+						}
 		
 		\newcommand{\myimagelab}[3][] 
 					{\begin{figure} [!h]
@@ -134,7 +143,7 @@
 		\newcommand{\myimageInline}[2]
 					{
 					\myimage{#1}{#2}
-					}	
+					}	 
 		
 	%defining a command to inser percent symbol
 		%note : should be done using the siunitx package			
