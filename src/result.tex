@@ -8,78 +8,120 @@
  \section{Result}
  	\subsection{introduction to all experiments}
  		We design and execute several experiments in order to validate all points that have been introduced in the "method" part.
- 		First we prove that is it effectively possible to leverage points order, even using out of the box most used open sources software
+ 		First we prove that is it effectively possible to leverage points order, even using canonical open sources software out of the box.
  		Second we perform MidOc ordering on very large point cloud and analyse the efficiency and quality of the results.
- 		Third we use the number of points chosen in the MidOc ordering has a descriptors for a random forest classifier on two large data set.
+ 		Third we use the number of points chosen in the MidOc ordering as a descriptors for a random forest classifier on two large data sets.
  		We analyse the potential of this free descriptors, and what it brings when used in conjunction to other simple descriptors.
 	\subsection{Point Cloud server introduction}
-		All the experiments are performed using a Point Cloud Server (article is being written, but a very detailled presentation is accessible \todoref{put reference to postgres presentation}).
-		The key idea are that point clouds are stored inside a DBMS (postgres), as patch. Patch are groups of points along with some basic statistics about points in the group.
-		This organisation is based on the observation that in typical point cloud processing workflow, we never need a point alone, but more often a points and most likely its surrounding points.
+		\subsubsection{principle}
+			\paragraph{server}
+				All the experiments are performed using a Point Cloud Server (article is being written, but a very detailed presentation is accessible \todoref{put reference to postgres presentation}).
+				The key idea are that point clouds are stored inside a DBMS (postgres), as patch. Patch are groups of points along with some basic statistics about points in the group. Patch are compressed using various strategies.
+				This organisation is based on the observation that in typical point cloud processing workflow, we never need a point alone, but more often a points and most likely its surrounding points.
+			
+			\paragraph{fast filtering}
+				Each patch of points is then indexed in an R tree for most interesting attributes (obviously X and Y, but also time of acquisition, meta data, number of points, distance to source, etc.)
+				
+				Having such a meta-type with powerful indexes allows use to find points based on various criteria extremely fast. (order of magnitude : ms). 
+				As an example we can find all points with given for a data set over 2 Billion points in a matter of milliseconds 
+				 - between -1 and 3 meters high in reference to vehicle wheels
+				 - in a given 2D area defined by any polygon
+				 - close to a street called Rue Madame (according to IGN BDTopo)
+				 - between 3 and 5 meters to the sensor position 
+				 - not in buildings according to Open Data Paris building layer 
+				 - acquired in the second passage of the vehicle a this place
+				 - acquired between 8h and 8h10
+		 
+		    \paragraph{parallelism friendly}
+				Cutting a point cloud into patches provides also a very easy parallel processing possibility, which we extensively use in our experiments.
 		
-		Having such a meta-type allows use to find points based on various criteria extremely fast. (order of magnitude : ms). 
-		Cutting a point cloud into patches provides also a very easy parallel processing possibility, which we use in our experiments.
+			\paragraph{point cloud splitting}
+				For our experiments we cut terrestrial Lidar point cloud into 1m3 cubes oriented on (North ,Est,Z) axis.
+				We cut aerial lidar point cloud into 50 m cubes.
+				The choice of size is a compromise between speed, index size, patch size, typical feature size, etc.
+				In fact the patch can be cut arbitrary, we chose this splitting for simplicity.
 		
-		For our experiments we cut terrestrial Lidar point cloud into 1m3 cubes oriented on (North ,Est,Z) axis.
-		We cut aerial lidar point cloud into \todorewrite{put the cell size for Vosges dataset} m3.
-		The choice of size is a compromise between speed, index size, patch size, typical feature size, etc.
-		In fact the patch can be cut arbitrary, we chose this splitting for simplicity.
 	\subsection{Data Set used}
 		We use two data sets.
-		First \todoref{cite IGQmulus data set}, an open source urban data set with varying density, singularities, and very challenging point cloud geometry.
-		Data set is about 600Millions points, over 12 kms of road. Points are typically spaced by 5cm to 0.2 cm. It is a mutli echo laser (Riegl).
-		We have access to a training set where every point is labeled. 
-		Then \todoref{cite IGQmulus data set}, which is a very wide spread data set of 6 billions points. density is almost constant to \todo{insert avg density for Vosges}.
-		We have access to a rough ground truth about surface occupation nature (type of forest).
+		\subsubsection{IQmulus data set}
+			First \todoref{cite IQmulus data set}, an open source urban data set with varying density, singularities, and very challenging point cloud geometry.
+			Data set is about 600 Millions points , over 12 kms of road. Points are typically spaced by 5cm to 0.2 cm. It is a multi echo laser (Riegl).
+			We have access to a training set where every point is labeled in a hierarchy of 100 classes. The training set is only 12 millions points. Only 22 classes are represented.
+			We will refer to this data set as Paris data set.
+			
+		\subsubsection{Vosges data set}
+			We also use the Vosges data set, which is a very wide spread aerial data set of 6 billions points. 
+			
+			Density is much more constant to 10k pts/patch .
+			We have access to a vector ground truth about surface occupation nature (type of forest), produced by the French Forest Agency.
+			We will refer to this data set as the Vosges data set.
 		
 	\subsection{Exploiting the order of points}
 		\subsubsection{experiment summary}
 			In this first experiment we check that point cloud ordering is correctly preserved by common open source point cloud processing software.
-			For this, we use a real point cloud, to whoch we add MidOc ordering as rgb. 
-			We export it as a ".txt" text file, this is the reference file.
+			For this, we use a real point cloud, which we order by MidOc ordering. 
+			We export it as a text file as the reference file.
 			Then for each processing software, we read the reference file and convert it into another format, then check that the conversion didn't change the order. 
 			The tree common open source software tested are CloudCompare, LasTools and Meshlab.
 		\subsubsection{results}  
-			All softwares passes test.
-			Any software changing order of point-cloud can still be used if the order is exported as an attribute.
+			All software passes test.
+			We stress that even if software change order, it is still very easy to add the order as an attribute, thus making it fully portable.
+			
 	\subsection{MidOc : an ordering for gradual geometrical approximation}
 		\subsubsection{experiment summary}
-			In this experiment we first test ordering on typical street objects,then on small subset of terrestrial and aerial Lidar to appreciate the fitness to use it for geometrical LOD.
-			Then we compute MidOc for two big datasets and try to qualify result visually as well as identify computing bottleneck .
-			Lastly we briefly test exploiting LOD to stream 3D point cloud with various resolution to a browser.
+			In this experiment we first test ordering on typical street objects,then on terrestrial dataset to visually appreciate the fitness to use it for geometrical LOD.
+			Then we compute MidOc for both our dataset and evaluate the trade-off between point cloud size and point cloud LOD.
+			We briefly consider computing bottleneck.
+			
+			Lastly as a proof of concept we stream 3D point cloud with various LOD to a browser.
 		
 		\subsubsection{visual evaluation}
 			\paragraph{Visual evaluation on typical objects (ground, façade, car, pole, vegetation)}
 				See fig XX \todorenv{put correct renv}
 			
 			\todorewrite{Visual results on aerial (Vosges).}
-			\paragraph{visual evaluation on a portion of street}			
+			\paragraph{visual evaluation aerial lidar}			
 				See fig XX \todorenv{put correct renv}
-				\begin{table}[ht]
-					\centering
-					\caption{ number of points per LOD, plus estimated transfer time with modern internet connection}
-					\scriptsize 
-					\begin{tabular}{|c|c|c|c|c|c}
-					\hline Level & \shortstack{Typical \\ spacing(cm)} & \shortstack{ points \\ number(k)} & \shortstack{percent of \\ total size} & \shortstack{estimated \\ time Internet(s)} & \shortstack{estimated \\ time LAN(s)} \\
-					\hline All & 0.2 to 5  & 1600 & 100 & 60 & 3 \\ 
-					\hline 0 & 100 & 3 & 0.2 & 0.1 & 0.005\\ 
-					\hline 1 & 50 & 11.6 & 0.7 & 0.4 & 0.02\\ 
-					\hline 2 & 25 & 41 & 2.6 & 1.5 & 0.075\\ 
-					\hline 3 & 12 & 134 & 8.4 & 5 & 0.25\\ 
-					\hline 4 & 6 & 372 & 23 & 14 & 0.7\\  
-					
-					\hline 
-					\end{tabular} 
-				\end{table}
-			
+		
+		\subsubsection{size versus LOD tradeoff}
+			We compute the size and canonical transfer time associated for a representative street and aerial point cloud.
+			 	 
+			 \begin{table}[ht]
+				\centering
+				\caption{ number of points per LOD, plus estimated transfer time with modern internet connection}
+				\scriptsize 
+				\begin{tabular}{|c|c|c|c|c|c}
+				\hline Level & \shortstack{Typical \\ spacing(cm)} & \shortstack{ points \\ number(k)} & \shortstack{percent of \\ total size} & \shortstack{estimated \\ time Internet(s)}   \\
+				\hline All & 0.2 to 5  & 1600 & 100 & 60 \\ 
+				\hline 0 & 100 & 3 & 0.2 & 0.1 \\ 
+				\hline 1 & 50 & 11.6 & 0.7 & 0.4 \\ 
+				\hline 2 & 25 & 41 & 2.6 & 1.5 \\ 
+				\hline 3 & 12 & 134 & 8.4 & 5 \\ 
+				\hline 4 & 6 & 372 & 23 & 14 \\  
+				
+				\hline 
+				\end{tabular} 
+			\end{table}
 			 
 		\subsubsection{large scale computing}
-			We use 3 implementations of MidOc, two being pure plpgsql (postgres script langage), and one python.
-			Computing MidOc on very large point-cloud (parallel)
-			\todorewrite{compute on Vosges, 12 x parallel processing}
-			Sucess : even on "singularity" : big accumulation of points
-			Analysis -> Bottleneck is not computing , but read/update with new order. 
+		
+			\paragraph{MidOc implementation} 
+				We use 3 implementations of MidOc, two being pure plpgsql (postgreSQL script langage), and one python.
+			\paragraph{Computing on very large dataset}
+				We successively order all the Paris and Vosges data sets with MidOc, using 20 parallel workers, with a plpgsql implementation.
+				The ordering is successful on all patches, even in very challenging areas where there are big singularities in density, and many outliers.
+				The total speed is about 100 millions points/hour, which we consider as extremely slow.
+				We briefly analyse performances, and conclude that data IO limits the number of efficient workers to 10, and that most of the time is actually not spend on computing, but on getting the points and writing them back.
+				We note that a huge speed up is easily reachable by directly reading and writing binary patches (and not array of points), and use more reasonable C code instead of plpgsql script.
+				
 		\subsubsection{LOD stream}
+			As a proof of concept we stream points from the data base to a browser \todoref{citer ITowns}.
+			For this experiment we only stream a given number of points per patch, which allows to accelerate greatly data loading.
+			
+			
+			limitation
+			However we didn't use the LOD to perfom a distance-dependend density :  display patch with varying LOD given their distance to camera.
+			
 			??(parler du stream de patch dans itowns?)??
 			limitation = have to put the whole patch in memory, even when getting only few points.
 			Conclusion : as is : interesting when bandwidth limited.  
@@ -87,11 +129,59 @@
 			
 	\subsection{using the ordering by-product as a crude dimensionality descriptor}
 		\subsubsection{experiment summary}
-			When computing MidOc ordering, we can easily store the number of points chosen per level.
-			This experiment tries to evaluate the utility of such crude dimensionality descriptor using random forest as classifier.
-			This dimensionality descriptor cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionnaly very similar, yet semantically very different).
-			We evaluate first what kind of reliable prediction can be made with the dimensionality feature,
-			then we add several very simple feature to provide a result to compare to.  
-		\subsubsection{}
+			For each patch, we store the associated number of points chosen per level while computing MidOc ordering. We call this descriptor points_per_level.
+			
+			This dimensionality descriptor alone cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionally very similar, yet semantically very different).
+						
+			We descriptors we use are (P : for Paris , V : for Vosges: 
+			  - points_per_level, level 1 to 4 (P+V)
+			  - average of intensity (P+V)
+			  - average of number_of_echo (P+V)
+			  - average of height regarding laser origin(P)
+			  - average Z (V)
+			  - patch height (P)
+			  - patch_bounding_box_area (P) : 
+			 
+		\subsubsection{choosing classes in class hierarchy}
+			Choosing which level of the class hierarchy uses depends on data set and applications.
+			
+			\paragraph{canonical classification}
+			
+				In a canonical classification perspective, we have to strongly reduce the number of classes if we want to have significant results.
+				However reducing the number of class (i.e use a higher level in the classes hierarchy) also means that classes are more heterogeneous.
+				
+				We planned to automatically chose classes by clustering the confusion matrix (understood as an affinity matrix for the clustering method), but the wide difference in statistical weight and the variance of predictions for small classes deterred us from this approach.
+				
+				Both data set are extremely unbalanced (factor 100 or more frequent). Thus our simple and direct Random Forest approach is ill suited for dealing with extremely small classes. (we would need to use some kind of cascading or appropriate one versus all learning).
+				
+				For Vosges data set a short analysis convince us to use 3 classes : Forest, Land, and other, on this three classes, the Land class is statistically overweighted by the 2 others.	
+			
+				For the Paris data set, the representation of classes is very ill-balanced.
+				Keeping only the class above 0.5 \% reduce the number of classes to 12.
+				The class under-represented have a strong variability in result.
+				Also, some class cannot be properly defined without context (e.g. the side-walk, which is by definition the space between building and road, hence is defined contextually).
+		 	
+			The main sources of error is that many patches contains mixes of classes, especially for class of small objects. 
+			\paragraph{balancing data set}
+				 We abandoned the under-sampling approach because we think that in this case it can introduce significant bias.
+				 The urban objects are very diverse, and so each class is quite heterogeneous. Thus, by under-sampling, we artificially increase the variability of the results.
+				 We prefer the approach with weight, even if it performs poorly when the difference beteen classes is to large.
+				
+			\paragraph{classifying}
+				
+				The computing time (10 fold, tree = 100) is between one and 20 minutes depending on the number of observation and the number of classes.
+				
+				We note that most errors are on patches with mixed contents.
+				We perform a analysis of error on Vosges dataset and we remark that the error seems to be significately correlated to distance ot borders.
+				
+				\todo{put results on vosges, all classes }
+				\todo{put results on vosges, 3 classes }
+				
+				
+				\todo{put results on Paris, all classes }
+				\todo{put results on Paris, main classes }
+								
+				 
+				 
 		
  
