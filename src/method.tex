@@ -132,26 +132,22 @@
 				 On this illustration the point $P$ has coordinates $(5,2)$ in a $[0,2^3-1]^2$ system. Reading the coordinates as binary gives $(b'101',b'010')$.
 				 Thus we now that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
 				 For the next level, we divide the previous cell in 2, and read the next binary coordinate. $P$ will be in the left (x=$b'x0x'$) up (y=$b'y1y'$) cell. There is no computing required, only bit mask and data reading.
-				 
-		\subsubsection{conceptual example}
-		\todo{put example image of an area with very high density in the middle (vehicle stopped), plus object, plus tree. } 
-			
 			
 		\subsubsection{advantages}	
-			\paragraph{Well known, Simple and efficient}
-				This method is extremely classical and based on Octree This make it simple to implement, and possibly extremely memory and CPU efficient.
+			\paragraph{Common, Simple and efficient}
+				This method feels classical and is based on Octree. This makes it simple to implement, and possibly extremely memory and CPU efficient.
 
-				The complexity is O(n*L) or less .				
-				Octree construction can even be performed on GPU for extreme speed up.
-				It is a matter of days to implement it.
-			\paragraph{fixed density}
-				This method guarantee an almost constant density for given levels, even when the acquisition process produced varying-density point cloud.
-				Thus using the output of this method is a safeguard for most of the complex point cloud processing methods that may be badly affected by singularity in density.
-			\paragraph{permissive}
-				This method is permissive because we make very few hypothesis on the points properties. In particular, this method works well with 2.5D point cloud (aerial single echo Lidar) and full 3D point cloud (urban 3D cloud with multi echo).
-			\paragraph{construction descriptors}
-				Lastly, we can leverage the information given by this ordering as a good geometrical descriptor of the point cloud.
-				We can keep the number of points per level for each level, which is a crude dimensionality descriptor of the geometrical nature (at the patch scale) for the object contained by the point cloud.
+				The complexity is $O(n_points*Levels)$ or less. It is very simple to implement.				
+				Octree construction has been commonly done on GPU for more than a decade.
+				
+			\paragraph{Fixed density}
+				This method can be used to guarantee an almost constant density for a given levels, even when the acquisition process produced varying-density point cloud.
+				Thus using the output of this method is a safeguard for most of the complex point cloud processing methods that may be badly affected by extrem variation in density ( real world case illustrated in \href{fig:density-variation}{this illustration}).
+			\paragraph{Generic}
+				Few hypothesis are made on the points properties. In particular, this method works well with 2.5D point cloud (aerial single echo Lidar) and full 3D point cloud (urban 3D cloud with multi echo).
+			\paragraph{Construction Descriptors}
+				Lastly, the information given by this ordering can be used as a  geometrical descriptor of the point cloud.
+				The number of points per level for each level gives a crude dimensionality descriptor of the geometrical nature (at the patch scale) for the object contained by the point cloud.
 				
 	\subsection{using the ordering by-product as a crude dimensionality descriptor}
 		\subsubsection{principle}
