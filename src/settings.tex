@@ -33,6 +33,8 @@
 	%adding more default colors
 		\usepackage[usenames,dvipsnames]{color}
 
+	%allowing to display simple algorithm
+		\usepackage{algorithm2e}
 	%this package improve the spacing of letters : reduce the number of lines 
 		\usepackage{microtype} 
 		
@@ -121,7 +123,7 @@
 							\end{center}
 					\end{figure} 
 					}
-		\newcommand{\myimageFullPage}[2]
+		\newcommand{\myimageFullPageHeight}[2]
 						{
 						\begin{figure*} [!h]
 							\begin{center}
@@ -130,6 +132,15 @@
 								\end{center}
 						\end{figure*} 
 						}
+		\newcommand{\myimageFullPageWidth}[2]
+								{
+								\begin{figure*} [!h]
+									\begin{center}
+										\fbox{\includegraphics[width=\textwidth,keepaspectratio ]{#1}}
+										\caption{} 
+										\end{center}
+								\end{figure*} 
+								}
 		
 		\newcommand{\myimagelab}[3][] 
 					{\begin{figure} [!h]

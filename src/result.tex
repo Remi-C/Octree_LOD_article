@@ -5,7 +5,7 @@
 %% ---------------------------------------------------------------------
 
 
- \section{Result}
+ \section{\label{sec:result}Result}
  	\subsection{introduction to all experiments}
  		We design and execute several experiments in order to validate all points that have been introduced in the "method" part.
  		First we prove that is it effectively possible to leverage points order, even using canonical open sources software out of the box.
@@ -129,18 +129,18 @@
 			
 	\subsection{using the ordering by-product as a crude dimensionality descriptor}
 		\subsubsection{experiment summary}
-			For each patch, we store the associated number of points chosen per level while computing MidOc ordering. We call this descriptor points_per_level.
+			For each patch, we store the associated number of points chosen per level while computing MidOc ordering. We call this descriptor $points_per_level$.
 			
 			This dimensionality descriptor alone cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionally very similar, yet semantically very different).
 						
 			We descriptors we use are (P : for Paris , V : for Vosges: 
-			  - points_per_level, level 1 to 4 (P+V)
+			  - $points_per_level$, level 1 to 4 (P+V)
 			  - average of intensity (P+V)
-			  - average of number_of_echo (P+V)
+			  - average of $number_of_echo$ (P+V)
 			  - average of height regarding laser origin(P)
 			  - average Z (V)
 			  - patch height (P)
-			  - patch_bounding_box_area (P) : 
+			  - area of $patch_bounding_box$ (P) : 
 			 
 		\subsubsection{choosing classes in class hierarchy}
 			Choosing which level of the class hierarchy uses depends on data set and applications.

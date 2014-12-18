@@ -9,34 +9,34 @@
 	\subsection{Problem} 
 	 
 		Point cloud data is becoming more and more common. Following the same trend, the acquisition frequency and precision are also increasing.
-		Thus Lidar processing is clocking on the Big Data door.
+		Thus point cloud processing is clocking on the Big Data door.
 		
 		Yet the usage of point cloud data is also spreading and going out of the traditional user communities. 
 		Lidar are now commonly used by non-specialized users. 
 		
 		
-		For many usages, having the raw, complete point cloud is unnecessary, or even damageable.
-		Thus we deal with a simpler version of a problem tat the vector community has faced for a long time : how to generalize point cloud, with data sets that are several order of magnitude bigger than usual vector data set?
+		For many usage, having the raw, complete point cloud is unnecessary, or even damageable.
+		Thus we deal with a simpler version of a problem that the G.I.S community has faced for a long time : how to generalize point cloud, with data sets that are several order of magnitude bigger than usual vector data set?
 		
 		It is after all a problematic very common in data processing. Having a big data set, how to reduce its size while preserving its characteristics.
 		It is the essence of compression for instance.
 		
 		Generalization is also more difficult when mixing data set with varying densities. For instance an aerial Lidar map augmented at certain places by terrestrial scanners, or vehicle-based Lidar acquisition, where the density varies with speed and scene geometry.
 		
-		Here we deal with a simplified version : given a point cloud, how to efficiently generate Level Of Detail (LOD for the remainder of this article) of this point cloud while preserving the geometric characteristic, without duplicating data.
-		The key to LOD approach is efficiency. We accept to loose a part of the information in exchange of a massive reduction of data size. A solution using LOD must then by nature be efficient.
+		Here we deal with a simplified version : given a point cloud, how to efficiently generate Level Of Detail (LOD, cf \href{banner_image}{figure ~\ref{fig:banner_image}} ) of this point cloud while preserving the geometric characteristic, without duplicating data?
+		The key to LOD approach is efficiency. Indeed LOD approaches sacrifices of a part of information in exchange of a massive reduction of data size. That's why a solution using LOD must by nature be efficient, or the information loss would be pointless.
 		
 	%	\paragraph{}
 	\subsection{Motivation}
 		\begin{itemize}
-			\item Point cloud : becoming common (why)
+			\item Point cloud : becoming common
 				Point cloud are becoming common because sensor are smaller, cheaper, easier to use. Point cloud from image (using Stereo Vision) are also easy to get with several mature structure from motion solutions.
 				Point cloud complements very well images, Lidar point cloud allowing to avoid the ill-posed problem of stereo-vision, and providing key data to virtual reality.
-			\item Growing data set + Multi sources 
+			\item Growing data set and Multi sources 
 				At such the size of data set are growing, as well as the number of dataset and their diversity.
-			\item Why is it important (size of the industry) 
+			\item a now widely use data type
 				The point cloud data are now well established in a number of industries, like construction, architecture, robotics, archaeology, as well as all the traditional GIS fields (mapping, survey, cultural heritage)
-			\item PointCLoud users = specialist in processing, not informatics/storing 
+			\item Much less focus on informatics/storing 
 				The LIDAR research community is very active. The focus of Lidar researchers is much more on Lidar processing and Lidar data analysis, or the sensing device, than on methods to render the data size tractable. 
 		\end{itemize}   
 		
@@ -46,7 +46,7 @@
 		\begin{itemize}
 			\item what people do with point cloud ? (oosterom 2014)
 		\end{itemize}
-	\subsection{what's missing in biblio} 
+	\subsection{discussion of bibliography} 
 		%limits of the already published articles
 		
 		Point cloud generalization methods are far from the subtlety of vector generalization ( // mettre des references).
@@ -54,26 +54,26 @@
 		More generally, proposed methods usually focus on data compression and computing acceleration.
 		
 		Another common practice coming from Computer Graphics field is to compute an octree over the point cloud, then for each cell , compute a sub-sampled version of the point cloud.
-		This allows to have simple and efficient Level of Detail , at the price of data duplication, and high sensibility to density variation.
+		This allows to have simple and efficient LOD , at the price of data duplication, and high sensibility to density variation.
 		
-		Moreover, all the method are specific and depend on a specific data structure that has to be stored extra to the point cloud data.Steaming from this the interoperability is non existent (moving from one software to another, one loose the data structure).
+		Moreover, all the methods are specific and depend on a specific data structure that has to be stored extra to the point cloud data.Steaming from this, the interoperability is non existent (moving from one software to another, one loose the data structure).
 		
-		We have then the classical and seemingly intractable trade-off between computing and storage : if we pre-compute a data structure, we have to store it extra. If we dot he computing on the fly, we may end up performing the same operations a lot's of time.
+		It is the classical and seemingly intractable trade-off between computing and storage : When pre-computing a data structure, it need to be stored extra. When doing the computing on the fly, the exact same operations many time.
 	
 	\subsection{contribution}
 		
-		In this paper, we focus on simplicity, efficiency and re-use of existing and well established methods. All the methods are tested on Billion scale point cloud, and are open source for reproducibility test and reuse.
-		We propose a simple method that enable portable computation free geometrical level of detail.
-		The first contribution is that we propose to store the LOD information directly into the ordering of points rather than compute new sub-sampled point cloud for each LOD.
+		This paper re-use and combine existing and well established methods with a focus on  simplicity and efficiency. AS such, all the methods are tested on Billions scale point cloud, and are open source for sake of reproducibility test and improvements.
+		We propose a simple method that enable portable, computation-free, geometrical Level Of Detail.
+		Our first contribution is to propose to store the LOD information directly into the ordering of points rather than externally, avoiding any data duplication.
 		Thus, the more we read points, the more precise of an approximation of the point cloud we get. If we read all the points, we have the original point cloud.
 		
-		The second contribution is a simple way to order points so that we have a varying geometric approximation of the point cloud when following this order.
+		The second contribution is a simple way to order points in order to have a increasingly better geometric approximation of the point cloud when following this order.
 		
-		The third contribution is to use the ordering construction by-product as simple and free dimensionality descriptors, with usability demonstrated in a Random forest classification experiment.
+		The third contribution is to use the ordering construction by-product as a simple and free dimensionality descriptor. We demonstrate the interest of this descriptor in a Random forest classification (training-filtering) experiment.
 			
 		
 	\subsection{plan of the article}
 		The rest of this article is organized as follow :
-		In the next section we present the methods.  
-		In the section XX, we present some results and order of magnitude
-		In the last section we discuss the results, the limitation and improvements of our solution.
+		In the next section \ref{sec:method} we present the methods.  
+		In the result section \ref{sec:result} we give results and order of magnitude
+		. We discuss it and possible limitations in the \ref{sec:discussion}.  
