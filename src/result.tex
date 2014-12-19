@@ -9,7 +9,7 @@
  	\subsection{introduction to all experiments}
  		We design and execute several experiments in order to validate all points that have been introduced in the "method" part.
  		First we prove that is it effectively possible to leverage points order, even using canonical open sources software out of the box.
- 		Second we perform MidOc ordering on very large point cloud and analyse the efficiency and quality of the results.
+ 		Second we perform MidOc ordering on very large point cloud and analyse the efficiency, quality and applications of the results.
  		Third we use the number of points chosen in the MidOc ordering as a descriptors for a random forest classifier on two large data sets.
  		We analyse the potential of this free descriptors, and what it brings when used in conjunction to other simple descriptors.
 	\subsection{Point Cloud server introduction}
@@ -36,8 +36,8 @@
 				Cutting a point cloud into patches provides also a very easy parallel processing possibility, which we extensively use in our experiments.
 		
 			\paragraph{point cloud splitting}
-				For our experiments we cut terrestrial Lidar point cloud into 1m3 cubes oriented on (North ,Est,Z) axis.
-				We cut aerial lidar point cloud into 50 m cubes.
+				For our experiments we cut terrestrial Lidar point cloud into $1$ \cubic \meter cubes oriented on (North ,Est,Z) axis.
+				We cut aerial lidar point cloud into $50^3$ \cubic \meter cubes.
 				The choice of size is a compromise between speed, index size, patch size, typical feature size, etc.
 				In fact the patch can be cut arbitrary, we chose this splitting for simplicity.
 		
@@ -73,6 +73,7 @@
 			Then we compute MidOc for both our dataset and evaluate the trade-off between point cloud size and point cloud LOD.
 			We briefly consider computing bottleneck.
 			
+			We demonstrate an immediate application of LOD for fast abnormal density detection and correction.
 			Lastly as a proof of concept we stream 3D point cloud with various LOD to a browser.
 		
 		\subsubsection{visual evaluation}
@@ -113,6 +114,23 @@
 				The total speed is about 100 millions points/hour, which we consider as extremely slow.
 				We briefly analyse performances, and conclude that data IO limits the number of efficient workers to 10, and that most of the time is actually not spend on computing, but on getting the points and writing them back.
 				We note that a huge speed up is easily reachable by directly reading and writing binary patches (and not array of points), and use more reasonable C code instead of plpgsql script.
+		\subsubsection{Fast abnormal density detection and correction}
+			
+			\myimage{./illustrations/density_detection_and_correction.png}{\label{fig:density-correction}Abnormal density detection and correction}
+			
+			\paragraph{density abnormality (peak)}
+				Important variation of density can be a serious issue for some processing methods, or simply performances (especially in parallel environment). 
+				The illustration shows a place where the density is 5 times over the normal value for this data set.
+				In this context of terrestrial Lidar, this density peak is simply due to the fact that the acquisition vehicle stopped at this place, while continuing to sense data.
+			\paragraph{Fast detection}
+				We analyse the data set to find places of abnormally high density.
+				It can be performed extremely fast at the patch level. (0.1 s for Vosges dataset, or a 2 Billion points urban dataset ). 
+				The Top left image shows the number of points per \cubic \meter directly read from database, increasing from blue to yellow to red)
+				In comparison, computing the density per point with neighbourhood is extremely slow (only for this 1.5 Million extract, 1 minute with CloudCompare,4x2.5GHz, 10cm rad) (top right illustration), and after the density is computed for each points, all the point cloud still need to be filtered to find abnormal density spot.
+			
+			\paragraph{simple correction}
+				If the patch are ordered following MidOc, unneeded points are removed by simply putting a threshold on points per patch (bottom left, 1 to 5k points \per \cubic \meter , bottom right , 5k to 24 k pts \per \cubic \meter). It considerably reduces the number of points (-33%).
+			
 				
 		\subsubsection{LOD stream}
 			As a proof of concept we stream points from the data base to a browser \todoref{citer ITowns}.
