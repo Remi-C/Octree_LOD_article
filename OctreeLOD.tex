@@ -9,7 +9,7 @@
 
 %opening
 \title{ A Simple Ordering Solution for Efficient Geometrical Level Of Details on Lidar Point Cloud}
-\author{Rémi Cura, Julien Perret, Nicolas Paparoditis}
+\author{R\'emi Cura, Julien Perret, Nicolas Paparoditis}
 
 \begin{document}
 
@@ -17,6 +17,16 @@
 %\tableofcontents
 \newpage
  
+remarques de Gildas :
+limitation ordering : le fait de stocker les points selon MidOc est très dommageable pour la localité des données, ce qui peut avoir un impact fort sur les accès mémoire.
+\\
+Le fait qu'on a déjà une acceleration spatiale sur les patch, et que donc on n en a pas besoin au niveau point n'est pas clair
+\\
+la partie sur la construction d'octree n'est pas forcément necessaire. Il faudrait mettre une grosse ref pour montrer qu'il y a eu enormement de travail dessus.
+\\
+Pour l'utilisation des LOD pour de la visu, il faudrait préciser que les critères peuvent être subtiles/visuel (par exemple screen space error : on fait le rendu, on mesure la taille de l'objet, puis on décide le niveau). Il faudrait préciser que ceci est compatible avec la methode proposée.
+\\
+Dans la conclusion, il faudrait parler de l'utilisation de niveaux de détails continus.
 
 
 %% Inserting the abstract
