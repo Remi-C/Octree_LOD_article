@@ -10,12 +10,15 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="708.66138"
-   height="885.82672"
+   width="512.06989"
+   height="627.55658"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="Nouveau document 1">
+   sodipodi:docname="class_clustering_fusion.svg"
+   inkscape:export-filename="E:\RemiCura\PROJETS\Article_biblio\Octree_LOD\illustrations\classif\class_clustering\class_clustering_fusion.png"
+   inkscape:export-xdpi="200"
+   inkscape:export-ydpi="200">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,8 +29,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="804.71392"
-     inkscape:cy="350.93079"
+     inkscape:cx="793.27241"
+     inkscape:cy="110.95963"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -36,7 +39,11 @@
      inkscape:window-height="1131"
      inkscape:window-x="-4"
      inkscape:window-y="-4"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     fit-margin-top="0.3"
+     fit-margin-right="0.3"
+     fit-margin-bottom="0.3"
+     fit-margin-left="0.3" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -53,10 +60,10 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-166.53412)">
+     transform="translate(-11.441507,-184.83314)">
     <image
-       y="188.60405"
-       x="7.7857141"
+       y="195.46306"
+       x="22.071428"
        id="image2993"
        xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAADFEAAAfoCAYAAABY96TCAAAABHNCSVQICAgIfAhkiAAAIABJREFU
 eJzs3W245mdZ3/vvNTN5mJAECAmQQFEKyEZBxQdEBEWKbqsoVgsV1Fp0V2tbrYoKtUBEsRJAQbG1
@@ -9060,11 +9067,11 @@ AAAAAAAAAGBDUKIAAAAAAAAAAAAAAAA2BCUKAAAAAAAAAAAAAABgQ1CiAAAAAAAAAAAAAAAANgQl
 CgAAAAAAAAAAAAAAYENQogAAAAAAAAAAAAAAADYEJQoAAAAAAAAAAAAAAGBDUKIAAAAAAAAAAAAA
 AAA2hP8PCrWxMX//kecAAAAASUVORK5CYII=
 "
-       height="452.34003"
-       width="696.52429" />
+       height="318.74411"
+       width="490.81003" />
     <image
-       y="663.40381"
-       x="39.779221"
+       y="557.29529"
+       x="64.084839"
        id="image3004"
        xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACzYAAAdCCAYAAAD6cJzAAAAABHNCSVQICAgIfAhkiAAAIABJREFU
 eJzs3HmYnXV99/H378yWTPaFsCWRADnsKiCrIgiigBtqtS519+nTPtK61D4tarXaqtVapYrax2qt
@@ -15566,7 +15573,7 @@ AAAAAAAANE7YDAAAAAAAAAAAAAA0TtgMAAAAAAAAAAAAADRO2AwAAAAAAAAAAAAANE7YDAAAAAAA
 AAAAAAA0TtgMAAAAAAAAAAAAADRO2AwAAAAAAAAAAAAANE7YDAAAAAAAAAAAAAA0TtgMAAAAAAAA
 AAAAADRO2AwAAAAAAAAAAAAANO7/AYIyj4PH/zcAAAAAAElFTkSuQmCC
 "
-       height="346.92743"
-       width="571.80933" />
+       height="244.46448"
+       width="402.92886" />
   </g>
 </svg>
