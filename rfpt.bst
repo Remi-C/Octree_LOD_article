@@ -280,7 +280,7 @@ FUNCTION {eng.ord}
 FUNCTION {write.url}
 { url empty$
     { skip$ }
-    { "\newline\urlprefix\url{" url * "}" * write$ newline$ }
+  %% ²{ "\newline\urlprefix\url{" url * "}" * write$ newline$ }
   if$
 }
 
