@@ -5,53 +5,52 @@
 %% ---------------------------------------------------------------------
 
 
-\section{\label{sec:method}Method}
-	\subsection{introduction}
+\section{Method}
+	\label{sec:method}
+	\subsection{Introduction}
 	 	In this section we introduce a simple method which proposes free geometrical LOD features, at the price of a small preprocessing time.
-	 	The method relies on ordering the points so that reading the point following this order is going to gradually increase details of the point cloud.
-	 	We use a by-product of this method to perform efficient training and filtering with random forest.
+	 	The method relies on ordering the points so that reading the points following this order is going to gradually increase the details of the point cloud.
+	 	We use a by-product of this method to perform efficient training and filtering with Random Forest.
 	 	
-	 	
-	 	This method has been designed to work with Lidar data set, but may be used on noisy Structure from Motion (SfM) point clouds after filtering.
-	 	This method has been used inside our point cloud data management system which is centered on a Point Cloud Server (the article is being written, see \todorewrite{put Point Cloud Server presentation}for a very detailed presentation of it).
-	 	
-	 	We stress that Point Cloud Server work with patches, , which are groups of points obtained by cutting the original point cloud into regular pieces (1 meter wide cube for Paris data set,50 meter wide cube for Vosges dataset ).
-	 	A Patch is technically a subset of a point cloud, so also a point cloud. For generality we will use the term point cloud to describe both patch and global point cloud for the rest of this article, as our method can be used indifferently on patches and on the global point cloud.
-	 	
-	 	
-	 	Lastly computing this LOD gives interesting by-product that can be used as crude local dimensionality descriptor. We use that to perform extremely fast rough-filtering of massive point cloud. 
+	 	This method has been designed to work with Lidar data sets, but may be used on noisy Structure from Motion (SfM) point clouds after filtering.
+	 	This method has been used inside our point cloud data management system which is centered on a Point Cloud Server (see \cite{Cura2014} for a very detailed presentation of it).
+	 	\\
+	 	We stress that Point Cloud Server works with patches, which are groups of points obtained by cutting the original point cloud into regular pieces ( $1^3$ meter wide cube for Paris data set, $50^3$ meter wide cube for Vosges dataset).
+	 	\\
+	 	A patch is technically a subset of a point cloud, so also a point cloud. For generality we will use the term point cloud to describe both patch or a global point cloud for the rest of this article, as our method can be used indifferently on patches and on the global point cloud.
+	 	\\
+	 	Lastly, computing this LOD gives interesting by-product that can be used as a crude local dimensionality descriptor. We use that to perform extremely fast rough-filtering of massive point cloud. 
 	 	 
-	\subsection{Exploiting The Order Of Points }
+	\subsection{Exploiting the order of points }
 		\subsubsection{Principle} 
 			
-			\myimage{./illustrations/LOD/short_illustration_concept_lod/concept_Level_Of_Detail.png}{arg2}
+			\myimage{./illustrations/LOD/short_illustration_concept_lod/concept_Level_Of_Detail.png}{3 geometrical Level Of Detail (LOD) for the same point cloud. Starting from very low detail by reading the first point of the patch, reading further points increases the details.}{fig:lod-principle}
 			
-			Starting from a patch (i.e. a piece of point cloud) and we generate geometrical levels of details on it.
-			
+			Starting from a patch (i.e. a piece of point cloud) we generate geometrical Levels Of Details on it.
 			Point clouds are physically stored as a list of points (compressed or not). 
-			
 			Once the points are written to the disk, the information contained by a list of point is not the sum of information for each point. The big difference is that a list is ordered.
+			This fact is common for every point cloud format, they are inherently ordered. In fact it would be quite hard to store the points in an unordered fashion (true randomness is expansive).
 			
-			This fact is common for every point cloud format, they are inherently ordered. In fact it would be quite hard to store the point in an unordered fashion (true random is expansive).
 			
 			The first contribution of this article is to propose to exploit this ordering to store information.
-			The key idea is to order the points of the point cloud so that when reading the points from the beginning to the end, we get gradually a more accurate geometrical approximation of the point cloud. 
+			The key idea is to order the points of the point cloud so that when reading the points from the beginning to the end, we get gradually a more accurate geometrical approximation of the point cloud.
+			This is then a continuously better LOD.
 			
-			We demonstrate it with an ordering presented in  \ref{subsec:midoc} , but we could use any ordering.
+			We demonstrate it with an ordering presented in \ref{subsec:midoc} , but we could use any ordering methods.
 			
-		\subsubsection{Conceptual Example}
+		\subsubsection{Conceptual example}
 			For a given list $L$ of points ordered from $1$ to $N$.
 			Reading the points $1$ to $5$ is going to give a rough approximation of the point cloud, and reading another $16$ points (points $1$ to $21$) is going to give a slightly better approximation. Reading points $1$ to $N$ is going to get the exact point cloud, so there is no data loss, nor data duplication.
 		
 		\subsubsection{Advantages}
 			This method has 3 majors advantages.
 			\paragraph{No on-line processing time}
-				Except a pre-processing step to write the point cloud following a given ordering, each time the user wants to get a level of detail version of the point cloud, there is no computing at all (only data reading).
+				Except a pre-processing step to write the point cloud following a given ordering, each time the user wants to get a Level Of Detail version of the point cloud, there is no computing at all (only data reading).
 				This may not make a big difference for non-frequent reading, but in a context where the same point cloud is going to get used several times at several levels and by several users simultaneously (for instance Point Cloud as a Service), no processing makes a big difference.
 				(See \href{fig:all_lod_illustration}{this illustration} for an example with LOD visualisation.) 		
 			\paragraph{No data duplication}
 				Another big advantage of using the order of points to store the LOD information rather than using external structure data is that it is free regarding the storage.
-				This is an advantage on low level. First it saves disk space, it ensure that all the information is at the same place, which avoids to perform OS level commands like going trough directories, opening the structure file, etc.
+				This is an advantage on low level. First it saves disk space, it ensures that all the information is at the same place, which avoids to perform OS level commands like going trough directories, opening the structure file, etc.
 				Having no data duplication is also a security in concurrent use.
 				In the scenario where a point cloud and the associated data structure are separated, and both are accessed by concurrent users, it is possible that one user change the point cloud. The associated data structure is then updated, but during this laps of time it is possible for another user to get updated point cloud and the wrong associated data structure.  
 				On the opposite, when the ordering gives the LOD information, a user either get the old points with the old ordering, or the new points with the new ordering, which guarantee that data is in a coherent state.
@@ -62,8 +61,9 @@
 				Even if a tool were to change the order, it is easy to add the ordering number as an attribute, which increases a little bit storage size, but is totally portable and can be used with all existing tools.
 				This simplicity also implies that adapting tools to use this ordering is very easy.
 	
-	\subsection{ \label{subsec:midoc} MidOc : an ordering for gradual geometrical approximation}
-		\subsubsection{principle}
+	\subsection{ MidOc : an ordering for gradual geometrical approximation}
+		\label{subsec:midoc}
+		\subsubsection{Principle}
 			Ordering the points necessitate an efficient method, because using LOD is already a trade-off between data information loss and data size reduction.
 			
 			We note that having usable LOD is only possible because Lidar point clouds have intrinsic structure we must exploit. 
@@ -78,10 +78,10 @@
 				
 				that is, depending on the sensing situation, we some parts of the cloud are more or less dense, but this has nothing to do with the nature of the object sensed, thus must not be preserved.
 			\end{itemize}
-			We rely on a classical middle of octree subsampling (called MidOc in this article for simplicity) to create an ordering. This is a re-use of well known and well proven existing methods (for instance, the octree subsampling is used in \todoref{put reference to CloudCompare}).
+			We rely on a classical middle of octree subsampling (called MidOc in this article for simplicity) to create an ordering. This is a re-use of well known and well proven existing methods (for instance, the octree subsampling is used in \cite{Girardeau-Montaut2014}. 
 			We name this ordering for clarity of this article, nonetheless we don't think we are the first to use it.
 			
-			\myimage{./illustrations/octree_ordering.png}{\label{fig:midoc-principle}principle of MidOc explained on a Quad tree for comfort}
+			\myimage{./illustrations/octree_ordering.png}{Principle of MidOc explained on a Quad tree for comfort. Blue dotes are a 2D point cloud. Black dotes are centers of each cell, green dotes are the point selected per non empty cell per level that is the closest to the center of the cell (black dotes). Red continuous tone represents the distance to center of cell }{fig:midoc-principle}
 			
 			Again the principle is very simple, and is to take for each level the points closest to centre of its octree voxel, if any.
 			\begin{algorithm}
@@ -90,20 +90,32 @@
 				
 				\ForEach{$level$ in [0..L-1]}{
 					\ForEach{$cell$ of $level$ that is non empty}{
-						compute $center$ of the $cell$\;
+						Compute $center$ of the $cell$\;
 						Choose the point in the $cell$ that is closest to the $center$, if it exists\;
 					}
 				}
-				order chosen points by level (coarse to fine), random (or hash or inverted Z curve)\;
+				Order chosen points by level (coarse to fine), random (or hash or inverted Z curve)\;
 				\caption{MidOc principle}
 			\end{algorithm} 
 			 
 			 We illustrate this principle on 
 			\href{fig:midoc-principle}{this figure} in 2D (quad tree) for graphical comfort. The layer are level 0 to 2. For each layer we compute the closest point(large green point) to the center of each cell (medium black point) using the squared euclidian distance (continuous red tone). The points picked on a level are not available for further level (no duplication of information).
-			When reaching the desired max level, all the remaining points are ordered either randomly or deterministically (for instance, with an inverted Z Morton curve (read backward) ).
+			When reaching the desired max level, all the remaining points are ordered either randomly or deterministically (for instance, with an inverted Z Morton curve (read backward) , ).
 			We use the same random or deterministic order for points picked on the same level.
 			Overall, the ordering is then (tree depth ascending, random or inverted Morton).
+		
+		\subsubsection{Applications}
+			We see 3 type of application for this ordering :
+			\begin{itemize}
+				\item graphical LOD : service for point cloud visualisation.
+				\item density correction : service for complex processing that may fail to deal with important density variation
+				\item point cloud generalisation, service for processing that may use only a fraction of points.
+			\end{itemize}	
 			
+			We stress that the LOD are in fact almost continous (as in the third illustrations of \ref{fig:banner_image}).
+			\myimage{./illustrations/Objects/Objects_assembled.jpg}{All successive levels for common objects (car, window, 2 wheelers, light, tree, people, pole, ground), color is intensity for other points.}{fig:lod-common-objects}
+					
+					
 		\subsubsection{Implementation}
 			
 			This method has the same complexity as an octree construction. Similar strategies can be followed, pending on available resources.
@@ -120,7 +132,10 @@
 			We propose this kind of implementation in Python with extensive use of bit-level operations (cf \ref{subsubsec:bit_coordinates}) as proof of concept.
 			The octree is not stored in memory, but it may prove difficult to parallelize (which is done at the data level anyway for our experiments). 
 			
-		\subsubsection{\label{subsubsec:bit_coordinates}efficiency and performance}
+			
+			
+		\subsubsection{Efficiency and performance}
+			\label{subsubsec:bit_coordinates}
 			Octree construction may be avoided by simply reading coordinates bitwise in a correctly centred/scaled point cloud.
 			We centre a point cloud so that the lowest point of all dimension is $(0,0,0)$, and scale it so that the biggest dimension is in $[0,1[$.
 			The point cloud is then quantized into $[0..2**L-1]$ for each coordinate.
@@ -128,12 +143,13 @@
 			This means performing that this centring/scaling/quantization directly gives the octree. Moreover, further operations can be performed using bit arithmetic, which is extremely fast.
 			
 			\paragraph{Example} 
-				 \myimage{./illustrations/LOD/principle_of_binary_coordinate.png}{\label{fig:binary_coordinates_example}Principle of binary coordinates for a centered, scaled and quantized point cloud}
+				 \myimage{./illustrations/LOD/principle_of_binary_coordinate.png}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{fig:binary_coordinates_example}
+				 
 				 On this illustration the point $P$ has coordinates $(5,2)$ in a $[0,2^3-1]^2$ system. Reading the coordinates as binary gives $(b'101',b'010')$.
 				 Thus we now that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
 				 For the next level, we divide the previous cell in 2, and read the next binary coordinate. $P$ will be in the left (x=$b'x0x'$) up (y=$b'y1y'$) cell. There is no computing required, only bit mask and data reading.
 			
-		\subsubsection{advantages}	
+		\subsubsection{Advantages}	
 			\paragraph{Common, Simple and efficient}
 				This method feels classical and is based on Octree. This makes it simple to implement, and possibly extremely memory and CPU efficient.
 
@@ -153,24 +169,53 @@
 		\subsubsection{Principle}
 			During the ordering process the number of chosen point per each level can be stored.
 			This number of chosen points per level gives an indication on the geometric nature of the object in the point cloud. 
-			We demonstrate the use of this crude descriptor with a Random Forest classifier on a real world dataset publicly available.
-			@\todorewrite{ cite Demantké thesis because he creates sophisticated dimensionality indicators}
-			We don't try to provide a per point classification, but a classification per  patch. 
-			The idea is that for many patches we may only use this simple classifier. 
-			For instance a complex classifier could be speeded by first using the simple one, then use the complex one on parts that the simple classifier is not confident with.
-			This type of descriptor could then be used for cascaded or hierarchical classification. 
-			Another application is filtering. If the classification process is very fast, one can easily eliminate large parts of the point cloud when looking for a given type of points (for instance, looking for ground points, or tree points).
+			We demonstrate the use of this crude descriptor along with other simple feature with a Random Forest classifier on a real world dataset publicly available. 
+			This patch classification can be used in other ways than pure classification.
+		
 		\subsubsection{Conceptual example}
-			 
-			In the \href{fig:lod-common-objects}{figure \ref{fig:lod-common-objects}}, we manually segmented a typical street extracts in the Paris dataset: a car, a wall with window, a 2 whelers, a public light, a tree, a person, poles and piece of ground including curbs.
+			
+			In the \href{fig:lod-common-objects}{figure \ref{fig:lod-common-objects}}, we manually segmented typical parts of a street in the Paris dataset: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
 			\\
 			Due to the geometry of acquisition and sampling, the public light is almost a 3D line, resulting in the occupation of very few octree cells.
 			A typical number of points chosen per level  for the public light would then be $(1,2,4,8)$, which looks like a $2^L$ function.
 			A piece of ground is often extremely flat and very similar to a plan, which means that the points chosen per level could be $(1,4,16,64)$, a $4^L$ function.
 			Lastly a piece of tree foliage is going to be very volumetric in nature, due to the fact that a leaf is about the same size as point spacing and is partly transparent to laser (leading to several echo).
 			Then a foliage patch would typically be $(1,8,64,512)$ (if enough points), so a $8^L$ function.
+	
+	 
 			
-		\subsubsection{Method}
+		\subsubsection{Patch classifier aspplications}
+		
+			The base method is to use Random Forest to classify patches (and not points directly).
+			
+			Because patches may contains points belonging to several classes, transferring the patch classes to points naturally increases the errors.
+			
+			We can forsee three type of application for patch classification.
+			
+			\paragraph{Speeding a complex point classifier}
+				The first application could be to speed up and/or improve a complex per point classifier.
+				For a speed up, the patch classifier could perform a first basic classification extremely fast, thus eliminating a large number of points, before the complex classifier is used. 
+				If necessary, it is possible to artificially increase recall at the cost of a diminution of precision, like in \ref{fig:recall-increase}.
+				 
+				
+			\paragraph{Improving a complex point classifier}
+				Patch classifier can also be used to improve result of a complex classifier by performing a first rough analysis which may determinate which complex classifier to use amongst several, like Cascaded classifier.
+				For instance a patch classified as urban object would lead to chose a classifier specialized in urban object, and not the general classifier. This is especially precious for classes that are statistically very minoritary.
+				If necessary it is possible to artificially increase precision at the cost of recall.
+				
+				
+				
+			\paragraph{Filtering}
+				Another application is filtering for applications that only require one class. When the learning is done, classifying is extremely fast.
+				
+				Many applications only need one class, and do not require all the points in it, but only a subset with good confidence.
+				For this it is possible to artificially boost the precision by accepting only high confidence prediction.
+				For instance computing a Digital Terrain Model (DTM) only requires ground points. Morevover, the ground will have many parts missing due to objects, so using only a part of all the points will suffice anyway. The patch classifier allow to find the ground patch extremely fast.
+				Another example is registration. A registration process typically require reliable points to perform mapping and registration. In this case there is no need to use all points, and the patch classification can provide patches from ground and facade with high accuracy (for point cloud to point cloud or point cloud to 3D model registration) , or patches of objects and trees (for points cloud to landmark registration).
+				In other applications, finding only a part of the points may be sufficient, for instance when computing a building map from façade patches.
+				  
+			
+		\subsubsection{Descriptors}  
 			\paragraph{Crude dimensionality descriptor}
 				Again we work at the patch level ($1^3$ or $50^3$ \cubic \meter).
 				We order all patches following the MidOc ordering. For each ordered patch, we associate the number of points per level that where chosen.
@@ -178,54 +223,69 @@
 				We use the number of points for the level $[1..4]$ included. For each level, the number of points is normalized by the maximum number of points possible ($8^i$), so every feature is in $[0,1]$.
 			
 			\paragraph{Other simple features}
-				We also use other very simple features that are almost do not require computing. Features usage is then analysed afterwards.
+				We also use other very simple features that require almost no computing. Feature usage is then analysed afterwards.
 				For the sake of simplicity and efficiency, all the feature use basic statistics per patch that need to be precomputed anyway by the storage compression mechanism. This free statistics are min, max, and average of any attribute.
 				\\
 				Contextual features are avoided. They are more in the spirit of complex classification, would require computing, and could introduce a bias (in our favor) in the result.
 				However using the context after the classification is a lever to significantly improve recall.
-			
-			\paragraph{Choosing a class in class hierarchy}
-				Both data sets have a class hierarchy. Because our goal is not to classify every classes, but efficiently filter patches, we first determinate which classes are separable using only this simple descriptors. 
-				This allow to choose which level of the hierarchy can be used.
+		
+		\subsubsection{Analyzing data set classes}
+			\paragraph{Analysing class hierarchy} 
+				The Paris data set classes are organized in a hierarchy (100 classes). 
+				Because of the hierarchy and the unbalancing of classes, we first determinate or similar the classes are for the simple descriptors. This information is extracted from the confusion matrix, which is used as an affinity matrix. The matrix is clustered by spectral clustering and the result are interpreted as a graph of classes.
+				From this we choose the classes to use.
 				
-			\paragraph{Balancing data set}
-			\todo{Proof reading stopped here! }
+			\paragraph{Balancing the data set} 
 				We tried two classical strategies to balance the data set regarding the number of observation per class.
 				The first is undersampling : we randomly undersample the observations to get roughly the same number of observation in every class.
 				
 				The second strategy is to compute a statistical weight for every observation based on the class prevalance. 
-				We then use this to weight the learning.
+				This weight is then used in the learning process.
 				
-				To ensure significant results we use a K-fold strategy. 
+		
+		\subsubsection{Patch classifier}
+ 
+				
+				To ensure significant results we follow a K-fold cross-validation method. 
 				We randomly split the observations into K parts, then for each part, we use the K-1 others to learn and predict on the part.
-				
 				All the evaluation are then performed on the total of predicted observations.
 				
-			\paragraph{classifying}
 				
-				The second step is to perform classification to evaluate its potential.
 				Contrary to classical classification method, we are not only interested in precision and recall per class, but also by the evolution of precision when prediction confidence varies.
 				
 				In fact, for a filtering application, we can leverage the confidence information provided by the Random Forest method to artificially boost precision (at the cost of recall diminution). We can do this by limiting the minimal confidence allowed for every prediction.
+				Similarly, it is possible for some classes to increase recall at the cost of precision by using the result of a first patch classification and then incorporate in the result the other neighbour patches. 
 			 	
 			 	We stress that if the goal is to detect objects (and not classify each point), this strategy can be extremely efficient.
 			 	For instance if we are looking for objects that are big enough to be in several patches (e.g. a car).
 			 	In this case we can perform the classification (which is very fast and efficient), then keep only highly confident predictions, and then use the position of predictions to perform a local search for car limits.
-			 	In this case the classical solution would be to perform a per point classification on each point.
+			 	The classical alternative solution would be to perform a per point classification on each point, which would be extremely slow.
 			 	
 			 	
-		\subsubsection{advantages}
-			\paragraph{simple}
-				Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
-				Using the result of the MidOc ordering has the advantage of being free and extremely simple. 
-			\paragraph{Efficient}
-				Moreover, because x, x**2, x**3 diverge very fast, we only need to use few levels to have a quite good descriptor. For instance, using L=2, we have D=4, 16 or 64 , which are very distinguishable values, and don't require a density above 70 points/patch. 
-			\paragraph{Density and scale independent}
-				As long as the patch contains a minimal number of points, the descriptors is density and scale invariant.
-			\paragraph{Mixed result}
-				Lastly a mixed result (following neither of the x**n function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
-				
+		\subsubsection{Advantages}
+			\paragraph{Dimensionality descriptor}
+			\begin{itemize}			
+				\item simple : 
+					Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
+					Using the result of the MidOc ordering has the advantage of being free and extremely simple. 
+				\item Efficient :
+					Moreover, because $x_0 \rightarrow (2^0)^x$,
+					 $x_1 \rightarrow (2^1)^x$, $x_2 \rightarrow (2^2)^x$ diverge very fast, we only need to use few levels to have a quite good descriptor. For instance, using $L=2$, we have $D=4$, $16$ or $64$ , which are very distinguishable values, and don't require a density above $70$ points \per patch. 
+				\item Density and scale independent :
+					As long as the patch contains a minimal number of points, the descriptors is density and scale invariant.
+				\item Mixed result : 
+					Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
+			\end{itemize}	
 			
+			\paragraph{Patch classification}
+			\begin{itemize}
+				\item simple and fast
+					When the Random Forest classifier is trained, prediction is extremely fast.
+				\item good result
+					Even if the classifier works on patch that may contain points from several classes, the global results for well represented classes are not far from state of the art.
+				\item many applications
+					teh classification is not necessarly interesting per see, but also for fast filtering or other applications.
+			\end{itemize}
 			
 		
 		

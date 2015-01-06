@@ -17,10 +17,11 @@
 		
 	%encoding
 		\usepackage[utf8]{inputenc}
-		
+	
+		%\usepackage[url=false]{biblatex}
 	%bibliogrpahy references style
 		%%note : to remove URL from citations, comment line 371 of file elsarticle-harv.bst
-		\bibliographystyle{elsarticle-harv} 
+		\bibliographystyle{rfpt} 
 	
 	%hyperlink reference for inteligent pdf output
  		\usepackage[pagebackref=true, pdftex]{hyperref}
@@ -114,30 +115,36 @@
 			
 			
 	%defining new command for image insertion
-		\newcommand{\myimage}[2]
+		\usepackage{svg}
+		
+		\newcommand{\myimage}[3]
 					{
 					\begin{figure} [!h]
 						\begin{center}
-							\fbox{\includegraphics[width=\textwidth/2,keepaspectratio]{#1}}
-							\caption{} 
+							\includegraphics[width=\linewidth,keepaspectratio]{#1}
+							\caption{#2}  
+							\label{#3}
 							\end{center}
 					\end{figure} 
 					}
-		\newcommand{\myimageFullPageHeight}[2]
+					
+		\newcommand{\myimageFullPageHeight}[3]
 						{
 						\begin{figure*} [!h]
 							\begin{center}
-								\fbox{\includegraphics[height=\textheight,keepaspectratio ]{#1}}
-								\caption{} 
-								\end{center}
+								\includegraphics[height=\textheight,keepaspectratio ]{#1}
+								\caption{#2}  
+								\label{#3} 
+							\end{center}
 						\end{figure*} 
 						}
-		\newcommand{\myimageFullPageWidth}[2]
+		\newcommand{\myimageFullPageWidth}[3]
 								{
-								\begin{figure*} [!h]
+								\begin{figure*} [ht!]
 									\begin{center}
-										\fbox{\includegraphics[width=\textwidth,keepaspectratio ]{#1}}
-										\caption{} 
+										\includegraphics[width=\textwidth,keepaspectratio ]{#1}
+										\caption{#2}  
+										\label{#3} 
 										\end{center}
 								\end{figure*} 
 								}
@@ -146,7 +153,8 @@
 					{\begin{figure} [!h]
 						\begin{center}
 							\includegraphics[width=1\textwidth]{#1}
-							\caption{\label{#3} #2} 
+							\caption{#2}  
+							\label{#3}
 						\end{center}
 					\end{figure} 
 					}

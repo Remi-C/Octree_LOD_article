@@ -5,5 +5,12 @@
 %% ---------------------------------------------------------------------
 
 
-\section{Conclusion}
-\todorewrite{A ecrire !}
+\section{Conclusion} 
+	We propose todo
+	o store LOD in the order of points. For visualization application, the best ordering may not be geometrical (like MidOc), but may depends on visual saliency of the points. In this case the LOD of each patch should be adapted to the distance to camera.
+	\\
+	Theoretically $ppl$ descriptor could be decomposed on a pure dimensionality base.
+	For all applications, it could be interesting to find methods to group patches (and merge $ppl$) to enable dimensionality analysis at several scales.
+	\\
+	Because some patches contain mixed classes, a bias is introduced which mechanically lower the average per points results. The random forest classifier should be in fact a random forest regressor, predicting for each patch not a class, but classes distribution.
+	 

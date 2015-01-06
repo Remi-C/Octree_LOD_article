@@ -5,12 +5,146 @@
 %% ---------------------------------------------------------------------
 
 
- \section{ \label{sec:discussion} Discussion}
- 
- \subsection{ordering}
- 	limits: changing the order may be detrimental if we rely on it (acquisition topology)
- 	
- \subsection{MidOc}
- 	could use kdtree rather than octree if we don't want constant density
-  	minimal number of points per patch : issues with vegetation
-  	
+ \section{ Discussion }
+	 \label{sec:discussion}
+	 In this section we discuss the results following the result section, and give limitations of the methods.
+	 
+	 \subsection{Point cloud server}
+		The focus of this article is not the Point cloud server, thus we discuss only briefly it.
+		The point cloud server has been proven to work easily with different type of point cloud, for many traditional application of point cloud. It is to the best of our knowledge the fastest and easiest way to filter very big point cloud using complex spatial and temporal criteria.
+		It is also the only solution that is natively integrated with other GIS data (raster, vector).
+		\paragraph{Point cloud server limitation}
+		\label{par:pointcloudserver-limitation}
+		The limitations are that the multi-acquisition process is not defined, the lack of facilities to easily ad attributes to an existing point cloud, and more importantly, the fact that accessing only few points in a patch still requires to read the whole patch (all points and all dimensions of this patch ).
+		We note that these limitations are not fundamental but simply require more work. 
+		
+	 \subsection{Data set}
+		 \paragraph{Vosges data set}
+			 The figure \ref{fig:hist-density-dataset} exposes important density variation, even for aerial lidar point cloud (green) that are supposed to be more homogeneous. The variation of density may be due to variation of plan speed, and more importantly, variation of distance between plan and ground (due to height of plan or ground). 
+			 \\
+			 Some of this variation is also artificial and due to the way the acquisition is loaded into the point cloud server : the acquisition we use consist of thousand of las files.\\
+			 Those files are separated into $50^3$ \cubic \meter\space patches individually, which means that some patches on the border may be less filled.
+		 \paragraph{Paris data set}
+			 Surprisingly the Paris data set density distribution seems to match a linear distribution (in the log /log space of the figure \ref{fig:hist-density-dataset} ).
+			 For a short period of time, we assume building and ground form a U shape, the laser device being in the middle. The laser rotates on himself around the back-front of the vehicle axis, and acquire points at fixed angles (about 1/10 of degree). It creates points more and more spaced along the building height.
+			 
+		 \paragraph{Limitation of the data set}
+			 The data set used are representative of urban and aerial Lidar point cloud. However the methods are not tested with indoor point cloud, or Structure from Motion point cloud.
+		 
+	 \subsection{Exploiting the order of points}
+		 \paragraph{Limitation}
+			 Schematically, the method proposes to exploit order to store LOD information. There is a strong and evident theoretical limitation : the order may already contain a useful information !
+			 For instance with a static Lidar device the neighbourhood information can be reconstructed from the order. We note that for the Paris data set the point are initially ordered by time of acquisition. Because the time of acquisition is also an attribute, this ordering can be reconstructed if necessary.
+			 
+	 \subsection{MidOc : an ordering for gradual geometrical approximation}
+		 \subsubsection{Visual evaluation}
+			 The illustration \ref{fig:visual_LOD_left_right} gives visual example of LOD result and how it could be used to vary density depending on the distance to camera.
+			 
+			 Figure \ref{fig:lod-common-objects} also gives visual examples for common objects of different dimensionality.
+			 It is visually clear that the rate of increase of points from LOD 0 to 4 for floor lamp (1D) window (2D) and tree (3D) is very different.
+			 Small details are also preserved like the poles or the antenna of the car. preserving those detail with random or distance based subsampling would be difficult.
+			 
+		 \subsubsection{Size versus LOD trade-off}
+		 \label{point-cloud-server-troughput}
+			 The table \ref{tab:lod-size-time} shows that using the level 3 may speed the transfer time by a 10 factor.
+			 The point cloud server throughput is about 2-3 \mega $byte$ \per \second  (monoprocess),  sufficient for an internet troughput, but not fast enough for a LAN 10 \mega $byte$ \per \second.
+			 This relatively slow troughput is due to current point cloud server limitation (cf \ref{par:pointcloudserver-limitation}).
+		 \subsubsection{Large scale computing}
+			 
+			 The relatively slow computing (100 Millions points \per \second ) is a very strong limitation.
+			 About $2/3$ of the computing time is spend on data transformation because algorithm works and output a list of points, which must then be desagregated/aggregated from/to a patch.
+			 This could be avoided by a C implementation which can access raw patch, and would also be faster for ordering points.
+			    
+		 \subsubsection{Fast abnormal density detection and correction}
+			 \paragraph{Fast detection}
+				 Density abnormality detection at the patch level offer the great advantage of avoiding to read points. This is the key to the speed of this method. We don't know any method that is as fast and easy.
+				 \\
+				 The limitations stems from the aggregated nature of patch. the number of points per patch doesn't give the density per point, but a quantized version of this per patch.
+				 So it is not possible to have a fine per point density.
+				 It also introduces the classical sampling limits : only density abnormalities spatially bigger than 2 patches (at least 2 \meter \space wide for Paris) can be detected.
+				 
+			 \paragraph{Simple correction}
+				 The correction of density peak we propose has the advantage of being instantaneous and not induce any data loss.
+				 It is also easy to use as safeguard for an application that may be sensible to density peak : the application simply defines the highest number of points \per \cubic \meter it can handle, and the Point cloud server will always output less than that.
+				 \\
+				 The most important limitation this method doesn't guarantee homogeneous density.
+				 For instance if an application requires 1000 points \per \cubic \meter for ground patches, all the patches must have more than 1000 points, and patch must have been ordered with MidOc for level 0 to at least 5 ($4^5=1024$). 
+				 The homogeneous density may also be compromised when the patch are not only split spatially, but with other logics (in our case, points in patch can't be separated by more than 30 seconds, and all points in a patch must come from the same acquisition file).
+				 
+		 \subsubsection{LOD stream}
+			 Streaming low level of detail patches greatly accelerate visualisation, which is very useful when the full point cloud is not needed. However all patches should not have the same LOD, but the required LOD should vary for each patch based on distance to camera.
+			 \myimage{./illustrations/LOD/visual_result_distance_dependent.png}{Schematique example of LOD depending on distance to camera}{fig:lod-dist-to-camera}
+			 \\
+			 As seen before (\ref{point-cloud-server-troughput}), the point cloud server is fast enough for an internet connection, but is currently slower than a file-based points streaming. Thus for the moment LOD stream is interesting only when bandwidth is limited.  
+			 
+	 \subsection{Dimensionality descriptor and patch classification}
+		 \subsubsection{Ppl as a crude dimensionality descriptor }
+			 Figure \ref{fig:ppl-separator-power} is obtained fully automatically (excepting the red arrows), using only the $ppl$ descriptor. Yet objects of pure dimensions 1D,2D and 3D are neatly separated, with mixed dimensionnality classes being in the center, which support the role of $ppl$ as a crude dimensionality descriptor.
+			 Further evidence can be observed on the 2D axes. Sidewalk are not pure 2D because patches may contains parts of other objects. Building is also mostly 2D but balcony, building decoration and floors introduce lot's of object-like patches, which explain that building is closer to the object cluster.
+			 
+			 \paragraph{Limitations}
+				 
+				 As expected, $ppl$ descriptor are  not sufficient to correctly separate complex objects, which is the main limitation.
+				 \\
+				 There is a more fundamental limitation of $ppl$ as crude dimensionality descriptor. Because $ppl$ are per patch and not per point, dimensionality can only be estimated for objects that are bigger than a patch (1 \cubic \meter for paris dataset).
+				 And for this estimation to be possible, a patch must also contains a sufficient number of points, which is not completely the case for distant tree patches for example.
+			 
+			 
+		 \subsubsection{Analyzing data set classes}
+			 \paragraph{Balancing the data sets}
+				 Strategies to balance data sets have a big impact on result. We observe that some classes have simply not enough support and too much diversity to be correctly predicted.
+				 This is the limit of our approach where all classes are learned and predicted at once. For classes with very small support the one against all strategy should be tested. 
+				 
+			 \paragraph{Analysing class hierarchy}
+				 The figure \ref{fig:class-clustering-all-features} shows automatic class clustering using the confusion matrix between classes with all simple features.
+				 Interestingly, the layout preserve the separation between pure 1D,2D, 3D, and mixed dimensions.
+				 The distinct meta classes that will be possible to separate correctly are vegetation (3D), ground (2D), poles (1D) , objects , vehicle and buildings.
+				 This illustration also shows the limit of a classification without contextual information. For instance the class grid and buildings are similar because in Paris buildings balcony are typically made of grids.
+				 
+		 \subsubsection{Patch classifier}
+			 \paragraph{Vosges data set}	
+				 First the feature usage for vosges data set clearly shows that amongst all the simple descriptor, the $ppl$ descriptor is largely favored.
+				 This may be explained by the fact that forest and bare land have very different dimensionality, which is conveyed by the $ppl$ descriptor.
+				 
+				 Second the patch classifier appears to have very good result to predict if a patch is forest or not. The precision is almost perfect for forest.
+				 Because most of the errors are on border area, the recall for forest can also be easily artificially increased. The percent of points in patch that are in the patch class allow to compare result with a point based method. 
+				 For instance the average precision per point for closed forest would be $0.99*0.883=0.874$ . We stress that this is averaged results, and better precision per point could be achieved because we may use random forest confidence to guess border area (with a separate learning for instance).
+				 For comparison with point methods, the patch classifier predict with very good precision and support over 6 billions points in few seconds (few minutes fro training). We don't know other method that have similar result while being as fast and natively 3D.
+				 
+				 The Moor class can't be separated without more specialised descriptor, because Moor and no forest classes are geometrically very similar.
+				  
+				 The principal limitation is that for this kind of aerial Lidar data set the 2.5D approximation may be sufficient, which enables many raster based methods that may be more performant or faster.
+				 
+			 \paragraph{Paris data set}
+				 The figure \ref{fig:result-paris} gives full results for paris data set, at various class hierarchy level.
+				 Because the goal is filtering and not pure classification, we only comment the 7 classes result. The proposed methods appears very effective to find building, ground and trees.
+				 Even taking into consideration the fact that patch may contains mixed classes (column mix.), the result are in the range of state of the art point classifier, while being extremely fast. 
+				 This result are sufficient to increase recall or precision to 1 if necessary.
+				 We stress that even results appearing less good (4+wheelers , 0.69 precision, 0.45 recall) are in fact sufficient to increase recall to 1 (by spatial dilatation of the result), which enables then to use more subtle methods on filtered patches.
+				 
+				 $ppl$ descriptor are less used than for the Vosges data set, but is still useful, particularly when there are few classes.
+				 It is interesting to note that the mean intensity descriptor seems to be used to distinguish between objects, which makes it less useful in the 7 classes case.
+				 
+				 The patch classifier for Paris data set is clearly limited to separate simple classes. In particular, the performances for objects are clearly lower than the state of the art. A dedicated approach should be used (cascaded or one versus all classifier). 
+				 
+		 \subsubsection{Patch classifier Applications}
+			 Because the propose methods are preprocess of filtering step, it can be advantageous to increase precision or recall.
+			 \paragraph{Artificial increase of precision}
+				 In the figure \ref{fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
+				 In this case it would be much easier to perform line detection starting from red patches rather than blue patches.
+				 \\
+				 The limitation of artificial precision increase is 
+				 that it is only possible when precision is roughly a rising function of random forest confidence, as seen on the illustration \ref{fig:precision-vs-confidence}.
+				 For this class, by accepting only prediction of random forest that have a confidence over $0.3$ the precision goes from $0.68$ to $0.86$, at the cost of ignoring half the predictions for this class.
+				 This strategy is not possible for incoherent class, like unclassified class.
+				 
+				 
+			\paragraph{Filtering: artificial increase of recall}
+				The method we present for artificial recall increase is only possible if at least one patch of each object is retrieved, and objects are spatially dense.
+				This is because a spatial dilatation operation is used.
+				This is the case for 4+wheelers objects in the paris data set for instance.
+				The whole method is possible because spatial dilatation is very fast in point cloud server (because of index).
+				Moreover, because the global goal is to find all patches of a class while leaving out some patches, it would be senseless to dilate with a very big distance. In this case recall would be $1$, but all patches would be in the result, thus there would be no filtering, and no speeding.
+				\\
+				The limitation is that this recall increase method is more like a deformation of already correct results rather than a magical method that will work with all classes.
+				
