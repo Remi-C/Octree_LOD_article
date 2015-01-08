@@ -10,7 +10,7 @@
 \begin{figure*}[t!]
 	\begin{center}
 		\fbox{\includegraphics[width=\textwidth,keepaspectratio ]{./illustrations/banner_for_paper.png}}
-		\caption{Data flow : starting from Lidar point cloud, we split it into patches, then reorder the patches to obtain free LOD (a gradient of LOD on this illustration). Lastly we use this ordering as feature for learning and efficient filtering} 
+		\caption{Data flow : a Lidar point cloud (1), is split it into patches (2) , patches are re-ordered to obtain free LOD (3 : a gradient of LOD here). Lastly the ordering is used as a feature for learning and efficient filtering (4) } 
 		\label{fig:banner_image}
 	\end{center}
 \end{figure*} 
@@ -29,8 +29,7 @@
 		It is after all a problematic very common in data processing. Having a big data set, how to reduce its size while preserving its characteristics.
 		It is the essence of compression for instance.
 		
-		Generalization is also more difficult when mixing data set with varying densities. For instance an aerial Lidar map augmented at certain places by terrestrial scanners, or vehicle-based Lidar acquisition, where the density varies with speed and scene geometry.
-		This illustration \ref{fig:hist-density-dataset} shows the density variation in the two data set used for experiments in this article.
+		Generalization is also more difficult when mixing data set with varying densities. For instance an aerial Lidar map augmented at certain places by terrestrial scanners, or vehicle-based Lidar acquisition, where the density varies with speed and scene geometry. The illustration \ref{fig:hist-density-dataset} } shows the density variation in the two data set used for experiments in this article.
 		
 		Here we deal with a simplified version: given a point cloud, how to efficiently generate Level Of Detail (LOD, cf \href{banner_image}{figure ~\ref{fig:banner_image}}) of this point cloud while preserving the geometric characteristic, without duplicating data?
 		The key to LOD approach is efficiency. Indeed LOD approaches sacrifices of a part of information in exchange of a massive reduction of data size. That's why a solution using LOD must by nature be efficient, or the information loss would be pointless.
