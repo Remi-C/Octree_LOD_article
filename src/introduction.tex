@@ -44,12 +44,12 @@
 
 	\subsection{State of the Art} 
 		
-		Maybe the most basic method to reduce the number of points is to perform a subsampling of the points. For instance, taking one point every ten would reduce the dataset by an order of magnitude.
-		However this may introduce aliasing issue if the data is regularly sampled. We may solve this by randomly choosing the points to keep,
-		yet those points may not be the best chosen to represent the sensed object, and such random sub sampling would be sensible to variation of points density (points in the denser part would be more chosen than points in less-dense part).
-		
-		
-		One way to tackle data size is to use a Level Of Detail strategy. Octree methods have been common in computer graphics for several decades \cite{Meagher1982}. They are used in many methods to speed computing, or compress data, like in the work of \cite{Schnabel2006,Huang2006} (which have not been designed to scale).
+        \todoall{ajouter citation de bereuter \cite{Bereuter2015} , \cite{Schwartges2013} \cite{sester2001}  }
+        
+        \todoall{parler de Halton sequence, low discrepancy comme autre candidats à sampler uniformément l espace avec un peu d'aléatoire}
+        
+        \todoall{parler de \cite{Trapp2008} en precisant que visualisation et generalisation peuvent etre mélangé, et que ce n'est pas toujours une question de perfomance, mais de choisir ce que l'utilisateur voit (similaire au flou au cinéma)}
+		One way to tackle data size is to use a Level Of Detail strategy. Octree methods have been common in computer graphics for several decades \citep{Meagher1982}. They are used in many methods to speed computing, or compress data, like in the work of \cite{Schnabel2006,Huang2006} (which have not been designed to scale).
 		
 		\cite{Elseberg2013} give a good overview of octree usage for point clouds. Their method proposes to directly store the points and octree in a file. They explore many applications that could benefit from our method (visual LOD, registration, processing). We share many objectives. It is an extremely effective approach that also enables visual LOD, but is very specialized on geometry. In particular, this method is not integrated with other GIS data (Geographical Information System), point cloud fast querying is not possible on attributes or metadata, and point cloud format is extremely specific.
 		\\
