@@ -49,11 +49,11 @@
 		yet those points may not be the best chosen to represent the sensed object, and such random sub sampling would be sensible to variation of points density (points in the denser part would be more chosen than points in less-dense part).
 		
 		
-		One way to tackle data size is to use a Level Of Detail strategy. Octree methods have been common in computer graphics for several decades \citep{Meagher1982}. They are used in many methods to speed computing, or compress data, like in the work of \cite{Schnabel2006,Huang2006} (which have not been designed to scale).
+		One way to tackle data size is to use a Level Of Detail strategy. Octree methods have been common in computer graphics for several decades \cite{Meagher1982}. They are used in many methods to speed computing, or compress data, like in the work of \cite{Schnabel2006,Huang2006} (which have not been designed to scale).
 		
 		\cite{Elseberg2013} give a good overview of octree usage for point clouds. Their method proposes to directly store the points and octree in a file. They explore many applications that could benefit from our method (visual LOD, registration, processing). We share many objectives. It is an extremely effective approach that also enables visual LOD, but is very specialized on geometry. In particular, this method is not integrated with other GIS data (Geographical Information System), point cloud fast querying is not possible on attributes or metadata, and point cloud format is extremely specific.
 		\\
-		Another orthogonal way is to not use file, but store point cloud in DBMS.  \cite{vanOosterom2014} implements such system at very big scale and discuss how it can answer to various need. This approach has gained recent interest \citep{pgPointCloud2014} because it is generic, it scales naturally to very large data set and is easier to implement than starting from scratch. We also observe that most of Big Data system use methods from the DBMS world.
+		Another orthogonal way is to not use file, but store point cloud in DBMS.  \cite{vanOosterom2014} implements such system at very big scale and discuss how it can answer to various need. This approach has gained recent interest (\cite{pgPointCloud2014}) because it is generic, it scales naturally to very large data set and is easier to implement than starting from scratch. We also observe that most of Big Data system use methods from the DBMS world.
 		\\ 
 		\cite{Demantke2014} introduces a sophisticated per-point dimensionality descriptor, which is used to find optimal neighbourhood size. A main difference is that this feature is computed for each point (thus is extremely costly to compute), and that dimensionality is influenced by density variation.
 		

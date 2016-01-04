@@ -13,17 +13,26 @@
 	% 1 or 2 columns, chose one of the following
 		%\documentclass[preprint,12pt,authoryear,twocolumn]{elsarticle}
 		%\documentclass[preprint,3p,12pt,authoryear]{elsarticle}
-		\documentclass{rfpt}
+		%\documentclass{rfpt}
+		\documentclass{isprs}
+		\usepackage{subfigure}
+		\usepackage{setspace}
+		\usepackage{geometry}
+		\geometry{a4paper, top=25mm, left=20mm, right=20mm, bottom=25mm, headsep=10mm, footskip=12mm}
+		
+		%encoding
+		\usepackage[utf8]{inputenc}
 		
 	%encoding
-		\usepackage[utf8]{inputenc}
+%		\usepackage[utf8]{inputenc}
+	\usepackage{nameref}
 	
 		%\usepackage[url=false]{biblatex}
 	%bibliogrpahy references style
 		%%note : to remove URL from citations, comment line 371 of file elsarticle-harv.bst
 		\bibliographystyle{rfpt} 
 	
-	%hyperlink reference for inteligent pdf output
+	%hyperlink reference for inteligent pdf output 
  		\usepackage[pagebackref=true, pdftex]{hyperref}
 		\hypersetup{colorlinks=true}
 
@@ -31,7 +40,7 @@
 		\usepackage{graphicx}
 
 %%Useful
-	%adding more default colors
+	%adding more default colors%
 		\usepackage[usenames,dvipsnames]{color}
 
 	%allowing to display simple algorithm
