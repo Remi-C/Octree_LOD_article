@@ -18,44 +18,35 @@
 	\subsection{Problem}  
 		Point cloud data is becoming more and more common. Following the same trend, the acquisition frequency and precision of the Lidar device are also increasing.
 		Thus point cloud processing is entering in the Big Data realm.
-		
 		Point cloud data usage is also spreading and going out of their traditional user communities. 
 		Lidar are now commonly used by non-specialized users. 
-		
 		The now common datasets in the multi billion point range can not fit in computer memory. 
-		
 		Furthermore, having the complete and fully detailed point cloud is impracticable, unnecessary, or even damageable for most applications.
-	 
-		Thus we deal with a simpler version of a problem common for Geographical Information System (GIS): how to generalize information contained in huge datasets, that is reduce the details of the data while retaining its principal organization.
 		
-		Because the data is so big, 
-		This problematic is very commons accross research field, and could be seen as a problem of compression, clustering, dimensionality reduction, etc.
+		Reducing the number of point is then a vital need for practical point cloud management.
 		
-		There are basically 2 levers to reduce the amount of data considered. The first would be to filter data based on characteristics (spatial, time, semantic), thus a a portion of the original data, but still the original data.
-		The second would be to abstract the data, thus using the generalisation process.
+		There are basically two levers to reduce the amount of data considered. The first would be \textbf{{filtering} data based on characteristics (position, time, semantic, etc), thus keeping the original data, but only a portion of it.
+		The second lever would be to generalise the data, that is replace many points with few objects that represent them well. Those objects can be more abstract (geometric primitives like plane for example), or simply some well chosen points (subset).
 		
 		For instance, to visualize the parts of a massive point cloud, we might fetch only the points that are visible (filtering),
 		and not display all the points but only the sufficient number to understand the scene (generalisation).
+		(See Figure \ref{fig:two_reduction})
+		\myimage{"./illustrations/two_reduction_strategy/two_reduction_strategy"}{Two strategies to limit the amount of points to work on.}{fig:two_reduction}
 		
-		\myimage{"./illustrations/two_reduction_strategy/two_reduction_strategy"}{2 strategies to limit the amount of points to work on.}.
+		The system we propose un \cite{cura2015} is compatible with both, and extensively covers the filtering and abstracting part. In this article we focus on the generalisation problem using points.
 		
-		The system we propose un \cite{cura2015} is compatible with both, and extensively covers the filtering part. In this article we focus on the generalisation problem using points.
-
-		In \cite{cura2015} we proposed to use the Point Cloud Server (PCS) to store groups of points and use generalisation for those groups tailored for special use case. For instance the groups of points may be generalised by planes, which would be well adapted for fast registration.
-		
-		Yet those generalisations introduce more abstract data than point cloud, and necessitate ad-hoc methods to be used.
-		
-		In simplest use case we may simply want to abstract the data by reducing the number of points.
+		Thus we deal with a simpler version of a problem common for Geographical Information System (GIS): how to generalize information contained in huge datasets, that is reduce the details of the data while retaining its principal organisation.
+		 
+		This problematic is very commons accross research field, and could be seen as a problem of compression, clustering, dimensionality reduction, etc.
+	  
 		This particular problem applied to visualisation is commonly called Level Of Details (LOD, cf \href{banner_image}{figure ~\ref{fig:banner_image}}).
 		
 		The problem is then how to reduce the amount of points while preserving the geometric characteristics of the underlying sensed object, in an efficient manner, and while being robust to the way the sensing was done?
 		Indeed LOD approaches sacrifices of a part of information in exchange of a massive reduction of data size which is necessary for efficient usage/visualisation. In this regard, a LOD method must by nature be efficient, or the information loss would be pointless.
 		
-		We can see point cloud as a sampling of a surface (or volume) of the sensed object. This sensing may be structured for the sensing device (for instance a Lidar may sense point using a constant angle), but not necessary for the sensed object (see figure \ref{fig:irregular_sampling})
-		\myimage{"./illustrations/problem_in_sampling/regular_vs_irregular_sampling"}{Regular sensing does not imply regular sampling}{fig:irregular_sampling}.
 		
 
-	\subsection{State of the Art} 
+	\subsection{Related Work} 
 		
         \todoall{ajouter citation de bereuter \protect\cite{Bereuter2015} , \protect\cite{Schwartges2013} \protect\cite{sester2001}  }
         
@@ -63,6 +54,10 @@
         
         \todoall{parler de \cite{Trapp2008} en precisant que visualisation et generalisation peuvent etre mélangé, et que ce n'est pas toujours une question de perfomance, mais de choisir ce que l'utilisateur voit (similaire au flou au cinéma)}
 		One way to tackle data size is to use a Level Of Detail strategy. Octree methods have been common in computer graphics for several decades \citep{Meagher1982}. They are used in many methods to speed computing, or compress data, like in the work of \cite{Schnabel2006,Huang2006} (which have not been designed to scale).
+		
+		
+		We can see point cloud as a sampling of a surface (or volume) of the sensed object. This sensing may be structured for the sensing device (for instance a Lidar may sense point using a constant angle), but not necessary for the sensed object (see figure \ref{fig:irregular_sampling})
+		\myimage{"./illustrations/problem_in_sampling/regular_vs_irregular_sampling"}{Regular sensing does not imply regular sampling.}{fig:irregular_sampling}.
 		
 		\cite{Elseberg2013} give a good overview of octree usage for point clouds. Their method proposes to directly store the points and octree in a file. They explore many applications that could benefit from our method (visual LOD, registration, processing). We share many objectives. It is an extremely effective approach that also enables visual LOD, but is very specialized on geometry. In particular, this method is not integrated with other GIS data (Geographical Information System), point cloud fast querying is not possible on attributes or metadata, and point cloud format is extremely specific.
 		\\
@@ -91,4 +86,10 @@
 		The rest of this article is organized as follows:
 		in the next section \ref{sec:method} we present the methods.  
 		In the result section \ref{sec:result} we give the results.
-		We discuss it and the possible limitations in section \ref{sec:discussion}. 
+		We discuss it and the possible limitations in section \ref{sec:discussion}.
+		
+		Following the IMRAD format~\citep{Wu2011}, the remainder of this article is divided into three sections.
+		Section~\ref{sec:method} presents the LOD solution, how it produces a dimensionality descriptor, and how this can leveraged for classification.  
+		Section~\ref{sec:result} reports on the experiments validating the methods.
+		Finally, the details, the limitations, and potential applications are discussed in Section~\ref{sec:detailed-discussion}.
+		
