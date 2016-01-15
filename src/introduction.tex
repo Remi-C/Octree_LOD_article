@@ -10,7 +10,7 @@
 \begin{figure*}[t!]
 	\begin{center}
 		\fbox{\includegraphics[width=\textwidth,keepaspectratio ]{./illustrations/banner_for_paper.png}}
-		\caption{Graphical Abstract : a Lidar point cloud (1), is split it into patches (2) , patches are re-ordered to obtain free LOD (3 : a gradient of LOD here). Lastly the ordering is used as a feature for learning and efficient filtering (4) } 
+		\caption{Graphical Abstract : a Lidar point cloud (1), is split it into patches (2) and stored in the PCS (\cite{Cura2015}), patches are re-ordered to obtain free LOD (3 : a gradient of LOD here). Lastly the ordering is used as a feature for learning and efficient filtering (4) } 
 		\label{fig:banner_image}
 	\end{center}
 \end{figure*} 
@@ -19,15 +19,28 @@
 		Point cloud data is becoming more and more common. Following the same trend, the acquisition frequency and precision of the Lidar device are also increasing.
 		Thus point cloud processing is entering in the Big Data realm.
 		
-		Yet the usage of point cloud data is also spreading and going out of their traditional user communities. 
+		Point cloud data usage is also spreading and going out of their traditional user communities. 
 		Lidar are now commonly used by non-specialized users. 
 		
+		The now common datasets in the multi billion point range can not fit in computer memory. 
 		
-		For many usages, having the raw, complete point cloud is unnecessary, or even damageable. In these cases, only a well chosen sub-sample of the data, or a more abstract representation are needed.
-		Thus we deal with a simpler version of a problem common for Geographical Information System (GIS): how to generalize information, that is reduce the details of the data while retaining its principal organization, with huge data sets?
+		Furthermore, having the complete and fully detailed point cloud is impracticable, unnecessary, or even damageable for most applications.
+	 
+		Thus we deal with a simpler version of a problem common for Geographical Information System (GIS): how to generalize information contained in huge datasets, that is reduce the details of the data while retaining its principal organization.
 		
-		Such a problematic is very common, and we could consider it as a case of compression, clustering, dimensionality reduction, etc.
+		Because the data is so big, 
+		This problematic is very commons accross research field, and could be seen as a problem of compression, clustering, dimensionality reduction, etc.
 		
+		There are basically 2 levers to reduce the amount of data considered. The first would be to filter data based on characteristics (spatial, time, semantic), thus a a portion of the original data, but still the original data.
+		The second would be to abstract the data, thus using the generalisation process.
+		
+		For instance, to visualize the parts of a massive point cloud, we might fetch only the points that are visible (filtering),
+		and not display all the points but only the sufficient number to understand the scene (generalisation).
+		
+		\myimage{"./illustrations/two_reduction_strategy/two_reduction_strategy"}{2 strategies to limit the amount of points to work on.}.
+		
+		The system we propose un \cite{cura2015} is compatible with both, and extensively covers the filtering part. In this article we focus on the generalisation problem using points.
+
 		In \cite{cura2015} we proposed to use the Point Cloud Server (PCS) to store groups of points and use generalisation for those groups tailored for special use case. For instance the groups of points may be generalised by planes, which would be well adapted for fast registration.
 		
 		Yet those generalisations introduce more abstract data than point cloud, and necessitate ad-hoc methods to be used.
