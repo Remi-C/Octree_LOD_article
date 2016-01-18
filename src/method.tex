@@ -7,34 +7,67 @@
 
 \section{Method}
 	\label{sec:method}
+	
+	In this section, we first present the Point Cloud Server (section \ref{method.PCS})(PCS \cite{cura2015})
+	upon which this article is based. Then we introduce the LOD solution that we propose (\ref{method.intro})
+	, which consists of reordering groups of points from less to more details (\ref{method.order}), and then choose which LOD is needed.
+	Although any ordering can be used, we propose a simple geometric one (\ref{method:midoc}) which is fast and robust to density variation. 
+	Furthermore, constructing this ordering produces a rough dimensionality descriptor (\ref{method.dimdescriptor}). 
+	This descriptor can be used in the PCS to perform classification at the patch level (\ref{method.classif}). This classification can be directly transferred to points, or indirectly exploited in a pre-filtering step.
+	
 	\subsection{the Point Cloud Server}
-		summing up the PCS system (only the feature we are interested in).
-		concept : store points as group
-		powerful index on those groups
-		I/O fast.
-		coupling with other GIS data.
+	\label{method.PCS}
+		\myimage{./illustrations/PCS/PCS}{Overall and storage organisations of the Point Cloud Server.}{fig:PCS}
 		
-		This method has been designed to work with Lidar data sets, but may be used on noisy Structure from Motion (SfM) point clouds after filtering.  
-	\subsection{Introduction}
-		creating a lod -> order points
-		by product as dimensionnality descriptor
-		classification
-		leveraging classification for pre-filtering
-	
+		This article strongly depends on using the Point Cloud Server described in \cite{cura2015},
+		therefore we introduce its principle and key relevant features (see figure \ref{fig:PCS}).
 		
-	
-	
-	 	In this section we introduce a simple method which proposes free geometrical LOD features, at the price of a small preprocessing time.
-	 	The method relies on ordering the points so that reading the points following this order is going to gradually increase the details of the point cloud.
-	 	We use a by-product of this method to perform efficient training and filtering with Random Forest. 
-	 	A patch is technically a subset of a point cloud, so also a point cloud. For generality we will use the term point cloud to describe both patch or a global point cloud for the rest of this article, as our method can be used indifferently on patches and on the global point cloud.
-	 	\\
-	 	Lastly, computing this LOD gives interesting by-product that can be used as a crude local dimensionality descriptor. We use that to perform extremely fast rough-filtering of massive point cloud. 
+		The PCS is a complete and efficient point cloud management system based on a database server that works on groups of points rather than individual points.
+		This system is specifically designed to solve all the needs of point cloud users:
+		fast loading, compressed storage, powerful filtering, easy data access and exporting, and integrated processing.
+		
+		The core of the PCS is to store groups of points (called patches) that are multi-indexed (spatially, on attributes, etc.), and represented with different generalisation depending on the applications.
+		Points can be grouped with any rules.
+		In this article, the points are regrouped spatially by cubes 1 \metre (Paris) or 50 \metre (Vosges) wide.
+		
+		All the methods described in this article are applied on patches.
+		So what we propose is to reorder each patch following the MidOc ordering, allowing LOD and producing a dimensionality descriptor per patch. It can then be used to classify patches.
+		
+		We stress that our method used on any point cloud will provide LOD,
+		but that using it with the PCS is much more interesting,
+		and adds key feature such as spatial indexing, fast filtering, etc. 
+	 
+%	\subsection{Introduction}
+%	\label{method.intro}
+%	
+%		creating a lod -> order points
+%		by product as dimensionnality descriptor
+%		classification
+%		leveraging classification for pre-filtering
+%	 
+%	 	In this section we introduce a simple method which proposes free geometrical LOD features, at the price of a small preprocessing time.
+%	 	The method relies on ordering the points so that reading the points following this order is going to gradually increase the details of the point cloud.
+%	 	Many ordering could be used, we propose one 
+%	 	We use a by-product of this method to perform efficient training and filtering with Random Forest. 
+%	 	A patch is technically a subset of a point cloud, so also a point cloud. For generality we will use the term point cloud to describe both patch or a global point cloud for the rest of this article, as our method can be used indifferently on patches and on the global point cloud.
+%	 	\\
+%	 	Lastly, computing this LOD gives interesting by-product that can be used as a crude local dimensionality descriptor. We use that to perform extremely fast rough-filtering of massive point cloud. 
+%	 	
+%	 	
+%	 	This method has been designed to work with Lidar data sets, but may be used on noisy Structure from Motion (SfM) point clouds after filtering.  
+%	 	 
 	 	 
 	\subsection{Exploiting the order of points}
+		\label{method.order}
 		\subsubsection{Principle} 
 			
 			\myimage{./illustrations/LOD/short_illustration_concept_lod/concept_Level_Of_Detail.png}{3 geometrical Level Of Detail (LOD) for the same point cloud. Starting from very low detail by reading the first point of the patch, reading further points increases the details.}{fig:lod-principle}
+			
+			We propose to exploit the ordering of points to indirectly store LOD information.
+			Indeed, whatever the format, be it file or database based, points ends up as a list, which is by definition ordered.
+			
+			The idea is then to change the order of this list, 
+			so that reading the list will give a more and more detailed version of the point cloud (see figure ).
 			
 			Starting from a patch (i.e. a piece of point cloud) we generate geometrical Levels Of Details on it.
 			Point clouds are physically stored as a list of points (compressed or not). 
@@ -72,7 +105,7 @@
 				This simplicity also implies that adapting tools to use this ordering is very easy.
 	
 	\subsection{ MidOc : an ordering for gradual geometrical approximation}
-		\label{subsec:midoc}
+		\label{method:midoc}
 		\subsubsection{Principle}
 			Ordering the points necessitate an efficient method, because using LOD is already a trade-off between data information loss and data size reduction.
 			
@@ -176,6 +209,9 @@
 				The number of points per level for each level gives a crude dimensionality descriptor of the geometrical nature (at the patch scale) for the object contained by the point cloud.
 				
 	\subsection{Using the ordering by-product as a crude dimensionality descriptor}
+	
+	
+		\label{method.dimdescriptor}
 		\subsubsection{Principle}
 			During the ordering process the number of chosen point per each level can be stored.
 			This number of chosen points per level gives an indication on the geometric nature of the object in the point cloud. 
@@ -298,5 +334,6 @@
 			\end{itemize}
 			
 		
-		
+	\subsection{Classification with the PCS}
+		\label{method.classif}
 		
