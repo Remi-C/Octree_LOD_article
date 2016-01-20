@@ -50,7 +50,27 @@
 		
         \todoall{ajouter citation de bereuter \protect\cite{Bereuter2015} , \protect\cite{Schwartges2013} \protect\cite{sester2001}  }
         
+        \todoall{parler de Latin Hypercube sampling : c est le nom savant poru faire une grille 3D et prendre un echantillon max par voxel}
+        
+        \todoall{parler de Rainville2012, un bon résumé de ce qui se fait}
+        
         \todoall{parler de Halton sequence, low discrepancy comme autre candidats à sampler uniformément l espace avec un peu d'aléatoire}
+        
+        \todoall{parler de l'alternative : reconstruire une surface, interpoller les attributes dessus, puis choisir le point centrale --> depend de la présence d'une surface; 
+        ou methode d'optimisation, comment construire le point qui minimiserait l erreur
+        
+        Fil rouge à raconter : on veut en fait sampler les fonctions x,y,z, attributs.
+        Ce dont on est sur c est x,y,z, donc dans l'ideal on trouverait le sampling sur la surface qui minimise la perte d'erreur. Comme on est meme pas sur d'avoir une surface, on peut pas faire ça. On a meme pas un sampling uniforme, ce qui nous interdit d'utiliser les moindres carrées (pas le choix, c'est la variation de densité qui le veut).
+        A la place on prend l'autre approche, on crée un sampling regulier, et comme on veut pas se dépatouiller des attributs, on prend un point déjà existant.
+        De plus on veut pouvoir etre utile az plusieurs applciations, donc on cherche pas le meilleur lod pour une application, mais un bon lod pour toutes les applications.
+        }
+        
+        Because points are not only 3D but may also have attributes, a perfect ordering would require extensive knowledge of those attributes and of the usage to be made with the point cloud.
+        For instance lets consider a point cloud containing a classification, and suppose the application is to identify the presence of a very rarely present class C.
+        In this case a purely geometrical LOD would probably hide C until the very detailed levels, as such the optimal ordering strategy would need to depend on this classification attributes.
+        Orthogonally, even when using only the geometry to order points, the ordering may again depend on the application. For instance an application of visualisation of point cloud of man-made objects would probably benefits from ordering points based on curvature (as an approximation of visual saliency).
+        
+        
         
         \todoall{parler de \cite{Trapp2008} en precisant que visualisation et generalisation peuvent etre mélangé, et que ce n'est pas toujours une question de perfomance, mais de choisir ce que l'utilisateur voit (similaire au flou au cinéma)}
 		One way to tackle data size is to use a Level Of Detail strategy. Octree methods have been common in computer graphics for several decades \citep{Meagher1982}. They are used in many methods to speed computing, or compress data, like in the work of \cite{Schnabel2006,Huang2006} (which have not been designed to scale).
