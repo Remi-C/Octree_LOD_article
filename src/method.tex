@@ -119,34 +119,37 @@
 		\subsubsection{Introducing the MidOc ordering}
 		
 		We propose to a re-use of well known and well proven existing methods that is the octree subsampling (for instance, the octree subsampling is used in \cite{Girardeau-Montaut2014}.
-		On build an octree over the point cloud, then for each cel of the octree the LOD point is the barycentre of the points in the cell.  With this, browsing the octree breadth-first provides the points of the different levels.
+		An octree is built over a point cloud, then for each cell of the octree the LOD point is the barycentre of the points in the cell.  With this, browsing the octree breadth-first provides the points of the different levels.
 		
 		We adapt this to cope with density variation, and to avoid creating new point by aggregating.   
 		We name this ordering MidOc (middle of octree subsampling) for clarity of this article, nonetheless we are probably not the first to use it.
 		
-		\myimage{./illustrations/octree_ordering.png}{Principle of MidOc explained on a Quad tree for comfort. Blue dotes are a 2D point cloud. Black dotes are centers of each cell, green dotes are the point selected per non empty cell per level that is the closest to the center of the cell (black dotes). Red continuous tone represents the distance to center of cell }{fig:midoc-principle}
+		\myimage{./illustrations/octree_ordering/octree_ordering_legend}{MidOc explained in 2D. Given a point cloud (Blue) and a quad tree cells (dashed grey), the chosen point (green ellipse) is the one closest to the centre (black point) of the cell.}{fig:midoc-principle}
 		
-		The principle is very simple, and is to take for each cell of the octree the point closest to this octree voxel centre, if any.
-		\begin{algorithm}
-			\KwData{A list of $N$ points}
-			\KwResult{the MidOc ordering of the points for an octree of $L$ depth } 
-			
-			\ForEach{$level$ in [0..L-1]}{
-				\ForEach{$cell$ of $level$ that is non empty}{
-					Compute $center$ of the $cell$\;
-					Choose the point in the $cell$ that is closest to the $center$, if it exists\;
-					Remove this point from the octree.
-				}
-			}
-			Order chosen points by level (coarse to fine), random (or hash or inverted Z curve)\;
-			\caption{MidOc principle}
-		\end{algorithm} 
-			 
-			 We illustrate this principle on 
-			\href{fig:midoc-principle}{this figure} in 2D (quad tree) for graphical comfort. The layer are level 0 to 2. For each layer we compute the closest point(large green point) to the center of each cell (medium black point) using the squared euclidian distance (continuous red tone). The points picked on a level are not available for further level (no duplication of information).
-			When reaching the desired max level, all the remaining points are ordered either randomly or deterministically (for instance, with an inverted Z Morton curve (read backward) , ).
-			We use the same random or deterministic order for points picked on the same level.
-			Overall, the ordering is then (tree depth ascending, random or inverted Morton).
+		The principle is very simple, and necessitate an octree over the point cloud.
+		We illustrate it on Figure \ref{fig:midoc-principle} (in 2D for graphical comfort).
+		We walk the octree breadth-first.
+		For each non-empty cell, the point closest to the cell centre is chosen and assigned the cell level,
+		and removed from the point possible to pick.
+		The process can be reached before having chosen all possible points,
+		in which case the remaining points are added to the list, with the level $L_\infty$.
+		
+		The result is a set of points with level $(P,L_i)$.
+		Inside one level $L_i$, points can be ordered following various strategies (see Section \ref{method.intralevel}).
+		
+	
+		  
+		\subsubsection{Intra-level ordering}
+		\label{method.intralevel}
+		The intra-level ordering will have an impact if the LOD is used in a continuous way,
+		and moreover may influence methods that relies on low-discrepancy.
+		
+		When reaching the desired max level, all the remaining points are ordered either randomly or deterministically (for instance, with an inverted Z Morton curve (read backward) , ).
+				We use the same random or deterministic order for points picked on the same level.
+				Overall, the ordering is then (tree depth ascending, random or inverted Morton).
+				
+		\todoall{ajouter illustrations et explication de l'importance du choix de l'ordonnancement inter level
+				penser que Linfiny est aussi un niveau}
 		
 		\subsubsection{Applications}
 			We see 3 type of application for this ordering :
