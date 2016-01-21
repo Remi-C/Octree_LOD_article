@@ -118,13 +118,13 @@
 		
 		\subsubsection{Introducing the MidOc ordering}
 		
+		\myimage{./illustrations/octree_ordering/octree_ordering_legend}{MidOc explained in 2D. Given a point cloud (Blue) and quad tree cells (dashed grey), the chosen point (green ellipse) is the one closest to the centre (black point) of the cell.}{fig:midoc-principle}
+		
 		We propose to a re-use of well known and well proven existing methods that is the octree subsampling (for instance, the octree subsampling is used in \cite{Girardeau-Montaut2014}.
 		An octree is built over a point cloud, then for each cell of the octree the LOD point is the barycentre of the points in the cell.  With this, browsing the octree breadth-first provides the points of the different levels.
 		
 		We adapt this to cope with density variation, and to avoid creating new point by aggregating.   
 		We name this ordering MidOc (middle of octree subsampling) for clarity of this article, nonetheless we are probably not the first to use it.
-		
-		\myimage{./illustrations/octree_ordering/octree_ordering_legend}{MidOc explained in 2D. Given a point cloud (Blue) and a quad tree cells (dashed grey), the chosen point (green ellipse) is the one closest to the centre (black point) of the cell.}{fig:midoc-principle}
 		
 		The principle is very simple, and necessitate an octree over the point cloud.
 		We illustrate it on Figure \ref{fig:midoc-principle} (in 2D for graphical comfort).
@@ -141,12 +141,18 @@
 		  
 		\subsubsection{Intra-level ordering}
 		\label{method.intralevel}
+		
+		\myimage{./illustrations/intralevel_ordering/intralevel_ordering}{Several possible ordering with varying coverage.}{fig:intralevel_ordering}
+		
 		The intra-level ordering will have an impact if the LOD is used in a continuous way,
 		and moreover may influence methods that relies on low-discrepancy.
+		Lets take the example where the goal is to find the plan that best fits a set of points
+		and the method to do so in online (for instance it could be based on online robust PCA like in (\cite{Feng2013})).
+		The plan fitting method reads the points of a designated level $L_i$, and compute online the best plan.
+		See Figure \ref{fig:intralevel_ordering}
+		If the point  
+		The points are ordered either randomly or deterministically (for instance, with an inverted Z Morton curve (read backward) , ).
 		
-		When reaching the desired max level, all the remaining points are ordered either randomly or deterministically (for instance, with an inverted Z Morton curve (read backward) , ).
-				We use the same random or deterministic order for points picked on the same level.
-				Overall, the ordering is then (tree depth ascending, random or inverted Morton).
 				
 		\todoall{ajouter illustrations et explication de l'importance du choix de l'ordonnancement inter level
 				penser que Linfiny est aussi un niveau}
@@ -197,6 +203,8 @@
 				 For the next level, we divide the previous cell in 2, and read the next binary coordinate. $P$ will be in the left (x=$b'x0x'$) up (y=$b'y1y'$) cell. There is no computing required, only bit mask and data reading.
 			
 		\subsubsection{Advantages}	
+		
+			\todoall{si barycentre proche du centre du l'octree (ce qui arrive en moyenne), le point choisi est celui qui minimise lerreur parmi les points du nuage de points.}
 			\paragraph{Common, Simple and efficient}
 				This method feels classical and is based on Octree. This makes it simple to implement, and possibly extremely memory and CPU efficient.
 
