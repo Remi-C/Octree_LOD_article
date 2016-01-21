@@ -10,7 +10,10 @@
 \begin{figure*}[t!]
 	\begin{center}
 		\fbox{\includegraphics[width=\textwidth,keepaspectratio ]{./illustrations/banner_for_paper.png}}
-		\caption{Graphical Abstract : a Lidar point cloud (1), is split it into patches (2) and stored in the PCS (\cite{Cura2015}), patches are re-ordered to obtain free LOD (3 : a gradient of LOD here). Lastly the ordering is used as a feature for learning and efficient filtering (4) } 
+		\caption{Graphical Abstract : a Lidar point cloud (1), is split it into patches (2) 
+		and stored in the PCS (\cite{Cura2015}), patches are re-ordered to obtain free LOD 
+		(3 : a gradient of LOD here).
+		Lastly the ordering is used as a feature for learning and efficient filtering (4) } 
 		\label{fig:banner_image}
 	\end{center}
 \end{figure*} 
@@ -57,13 +60,13 @@
         \todoall{parler de Halton sequence, low discrepancy comme autre candidats à sampler uniformément l espace avec un peu d'aléatoire}
         
         \todoall{parler de l'alternative : reconstruire une surface, interpoller les attributes dessus, puis choisir le point centrale --> depend de la présence d'une surface; 
-        ou methode d'optimisation, comment construire le point qui minimiserait l erreur
+        ou methode d'optimisation, comment construire le point qui minimiserait l erreur}
         
         Fil rouge à raconter : on veut en fait sampler les fonctions x,y,z, attributs.
-        Ce dont on est sur c est x,y,z, donc dans l'ideal on trouverait le sampling sur la surface qui minimise la perte d'erreur. Comme on est meme pas sur d'avoir une surface, on peut pas faire ça. On a meme pas un sampling uniforme, ce qui nous interdit d'utiliser les moindres carrées (pas le choix, c'est la variation de densité qui le veut).
-        A la place on prend l'autre approche, on crée un sampling regulier, et comme on veut pas se dépatouiller des attributs, on prend un point déjà existant.
+        Ce dont on est sur c est x,y,z, donc dans l ideal on trouverait le sampling sur la surface qui minimise la perte d erreur. Comme on est meme pas sur d avoir une surface, on peut pas faire ça. On a meme pas un sampling uniforme, ce qui nous interdit d utiliser les moindres carrées (pas le choix, c est la variation de densité qui le veut).
+        A la place on prend l autre approche, on crée un sampling regulier, et comme on veut pas se dépatouiller des attributs, on prend un point déjà existant.
         De plus on veut pouvoir etre utile az plusieurs applciations, donc on cherche pas le meilleur lod pour une application, mais un bon lod pour toutes les applications.
-        }
+       
         
         Because points are not only 3D but may also have attributes, a perfect ordering would require extensive knowledge of those attributes and of the usage to be made with the point cloud.
         For instance lets consider a point cloud containing a classification, and suppose the application is to identify the presence of a very rarely present class C.
