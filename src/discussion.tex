@@ -72,7 +72,10 @@
 				 The homogeneous density may also be compromised when the patch are not only split spatially, but with other logics (in our case, points in patch can't be separated by more than 30 seconds, and all points in a patch must come from the same acquisition file).
 				 
 		 \subsubsection{LOD stream}
-			 Streaming low level of detail patches greatly accelerate visualisation, which is very useful when the full point cloud is not needed. However all patches should not have the same LOD, but the required LOD should vary for each patch based on distance to camera.
+			 Streaming low level of detail patches greatly accelerate visualisation,
+			 which is very useful when the full point cloud is not needed.
+			 However all patches should not have the same LOD,
+			 but the required LOD should vary for each patch based on distance to camera.
 			 \myimage{./illustrations/LOD/visual_result_distance_dependent.png}{Schematique example of LOD depending on distance to camera}{fig:lod-dist-to-camera}
 			 \\
 			 As seen before (\ref{point-cloud-server-troughput}), the point cloud server is fast enough for an internet connection, but is currently slower than a file-based points streaming. Thus for the moment LOD stream is interesting only when bandwidth is limited.  
