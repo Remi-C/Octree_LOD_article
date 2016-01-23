@@ -135,27 +135,29 @@
 		in which case the remaining points are added to the list, with the level $L_\infty$.
 		
 		The result is a set of points with level $(P,L_i)$.
-		Inside one level $L_i$, points can be ordered following various strategies (see Section \ref{method.intralevel}).
-		
-	
+		Inside one level $L_i$, points can be ordered following various strategies (see Section \ref{method.intralevel}). 
 		  
 		\subsubsection{Intra-level ordering}
 		\label{method.intralevel}
 		
-		\myimage{./illustrations/intralevel_ordering/intralevel_ordering_combined}{Several possible ordering with varying coverage.}{fig:intralevel_ordering}
+		\myimage{./illustrations/intralevel_ordering/intralevel_ordering_combined}{Several possible orders with coverage from bad to good.}{fig:intralevel_ordering}
 		
 		The intra-level ordering will have an impact if the LOD is used in a continuous way,
 		and moreover may influence methods that relies on low-discrepancy.
+		More precisely, if only a part of the points in a level are going to be used,
+		it may be essential that they cover well the spatial layout of the totality of points.
 		Lets take the example where the goal is to find the plan that best fits a set of points
 		and the method to do so in online (for instance it could be based on online robust PCA like in (\cite{Feng2013})).
-		The plan fitting method reads the points of a designated level $L_i$, and compute online the best plan.
-		See Figure \ref{fig:intralevel_ordering}
-		If the point  
-		The points are ordered either randomly or deterministically (for instance, with an inverted Z Morton curve (read backward) , ).
+		The plan fitting method reads one by one the points of a designated level $L_i$, and compute successively better plan estimation.
+		The Figure \ref{fig:intralevel_ordering} presents some possible ordering. 
+		If the plan detection method was applied on the Y ordering, it would necessitate a great number of points to compute a stable plan. For instance the first 16 points (1 column) would not permit to compute a plan.
+		Similarly, if the point were ordered randomly, estimating a plan would still require lots of points, because uniform randomly chosen points are not well spread out (on the figure, the first 25 points are over represented in the upper left part).
+		On the opposite, using a low discrepancy ordering like the Halton sequence makes the points well spread, while being quasi-random.
+		Inverted space filling curves like the Morton or Hilbert curves also cover well space, but are much more regulars.
 		
-				
-		\todoall{ajouter illustrations et explication de l'importance du choix de l'ordonnancement inter level
-				penser que Linfiny est aussi un niveau}
+		The Halton sequence ordering is obtained by generating a Halton sequence (nD points) and successively picking points closest to the Halton generated points.
+		The revert Morton ordering and revert Hilbert ordering are the distance along Morton or Hilbert curve expressed in bit and read backward.
+		
 		
 		\subsubsection{Applications}
 			We see 3 type of application for this ordering :
