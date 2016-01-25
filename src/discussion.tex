@@ -37,6 +37,42 @@
 			 For instance with a static Lidar device the neighbourhood information can be reconstructed from the order. We note that for the Paris data set the point are initially ordered by time of acquisition. Because the time of acquisition is also an attribute, this ordering can be reconstructed if necessary.
 			 
 	 \subsection{MidOc : an ordering for gradual geometrical approximation}
+	 	\subsubsection{Applications}
+	 	We see 3 types of application for this ordering. First the system can be used for graphical LOD, as a service for point cloud visualisation. Second the ordering allows to correct density to be much more constant. Complex processing methods may benefits from an almost constant density, or for the absence of strong density variation. Third the ordering can be used for point cloud generalisation, as a service for processing methods that may only be able to deal with a fraction of the points.  
+	 	
+	 	We stress that the LOD are in fact almost continuous (as in the third illustrations of \ref{fig:banner_image}).
+	 	\myimage{./illustrations/Objects/Objects_assembled.jpg}{All successive levels for common objects (car, window, 2 wheelers, light, tree, people, pole, ground), color is intensity for other points.}{fig:lod-common-objects}
+	 		\subsubsection{Efficiency and performance}
+	 		\label{subsubsec:bit_coordinates}
+	 		Octree construction may be avoided by simply reading coordinates bitwise in a correctly centred/scaled point cloud.
+	 		We centre a point cloud so that the lowest point of all dimension is $(0,0,0)$, and scale it so that the biggest dimension is in $[0,1[$.
+	 		The point cloud is then quantized into $[0..2**L-1]$ for each coordinate.
+	 		The coordinates are now integers, and for each point, reading its coordinates bitwise left to right gives the position of the point in the octree for level of the bit read.
+	 		This means performing that this centring/scaling/quantization directly gives the octree. Moreover, further operations can be performed using bit arithmetic, which is extremely fast.
+	 		
+	 		\paragraph{Example} 
+	 		\myimage{./illustrations/LOD/principle_of_binary_coordinate.png}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{fig:binary_coordinates_example}
+	 		
+	 		On this illustration the point $P$ has coordinates $(5,2)$ in a $[0,2^3-1]^2$ system. Reading the coordinates as binary gives $(b'101',b'010')$.
+	 		Thus we now that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
+	 		For the next level, we divide the previous cell in 2, and read the next binary coordinate. $P$ will be in the left (x=$b'x0x'$) up (y=$b'y1y'$) cell. There is no computing required, only bit mask and data reading.
+	 		\subsubsection{Advantages}	
+	 		
+	 		\todoall{si barycentre proche du centre du l'octree (ce qui arrive en moyenne), le point choisi est celui qui minimise lerreur parmi les points du nuage de points.}
+	 		\paragraph{Common, Simple and efficient}
+	 		This method feels classical and is based on Octree. This makes it simple to implement, and possibly extremely memory and CPU efficient.
+	 		
+	 		The complexity is $O(n_points*Levels)$ or less. It is very simple to implement.				
+	 		Octree construction has been commonly done on GPU for more than a decade.
+	 		
+	 		\paragraph{Fixed density}
+	 		This method can be used to guarantee an almost constant density for a given levels, even when the acquisition process produced varying-density point cloud.
+	 		Thus using the output of this method is a safeguard for most of the complex point cloud processing methods that may be badly affected by extrem variation in density ( real world case illustrated in \href{fig:density-variation}{this illustration}).
+	 		\paragraph{Generic}
+	 		Few hypothesis are made on the points properties. In particular, this method works well with 2.5D point cloud (aerial single echo Lidar) and full 3D point cloud (urban 3D cloud with multi echo).
+	 		\paragraph{Construction Descriptors}
+	 		Lastly, the information given by this ordering can be used as a  geometrical descriptor of the point cloud.
+	 		The number of points per level for each level gives a crude dimensionality descriptor of the geometrical nature (at the patch scale) for the object contained by the point cloud.
 		 \subsubsection{Visual evaluation}
 			 The illustration \ref{fig:visual_LOD_left_right} gives visual example of LOD result and how it could be used to vary density depending on the distance to camera.
 			 

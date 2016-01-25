@@ -146,95 +146,46 @@
 		and moreover may influence methods that relies on low-discrepancy.
 		More precisely, if only a part of the points in a level are going to be used,
 		it may be essential that they cover well the spatial layout of the totality of points.
+		
 		Lets take the example where the goal is to find the plan that best fits a set of points
 		and the method to do so in online (for instance it could be based on online robust PCA like in (\cite{Feng2013})).
 		The plan fitting method reads one by one the points of a designated level $L_i$, and compute successively better plan estimation.
+		
 		The Figure \ref{fig:intralevel_ordering} presents some possible ordering. 
 		If the plan detection method was applied on the Y ordering, it would necessitate a great number of points to compute a stable plan. For instance the first 16 points (1 column) would not permit to compute a plan.
 		Similarly, if the point were ordered randomly, estimating a plan would still require lots of points, because uniform randomly chosen points are not well spread out (on the figure, the first 25 points are over represented in the upper left part).
+		
 		On the opposite, using a low discrepancy ordering like the Halton sequence makes the points well spread, while being quasi-random.
 		Inverted space filling curves like the Morton or Hilbert curves also cover well space, but are much more regulars.
 		
 		The Halton sequence ordering is obtained by generating a Halton sequence (nD points) and successively picking points closest to the Halton generated points.
 		The revert Morton ordering and revert Hilbert ordering are the distance along Morton or Hilbert curve expressed in bit and read backward.
 		
-		
-		\subsubsection{Applications}
-			We see 3 type of application for this ordering :
-			\begin{itemize}
-				\item graphical LOD : service for point cloud visualisation.
-				\item density correction : service for complex processing that may fail to deal with important density variation
-				\item point cloud generalisation, service for processing that may use only a fraction of points.
-			\end{itemize}	
-			
-			We stress that the LOD are in fact almost continous (as in the third illustrations of \ref{fig:banner_image}).
-			\myimage{./illustrations/Objects/Objects_assembled.jpg}{All successive levels for common objects (car, window, 2 wheelers, light, tree, people, pole, ground), color is intensity for other points.}{fig:lod-common-objects}
+	
 					
 					
 		\subsubsection{Implementation}
+			MidOc ordering can be computed at the same time that the octree is built. Because Octree building has been widely researched, we test only two basic solutions.
 			
-			This method has the same complexity as an octree construction. Similar strategies can be followed, pending on available resources.
+			The first kind of implementation uses SQL queries. For each level, we compute the centres of the occuped cells using bit shifts and the closest point to these. Picked points are removed, and the next level is dealt with. It relies on the fact that knowing each point octree cell occupancy does not require to compute the octree (see Figure \ref{fig:binary_coordinates_example}).
 			
-			 
-			The most straightforward implementation is streamed :
-			The closest point to the center is stored in each octree cell.
-			At the beginning the octree is empty. When receiving a point, traverse the octree update/creating cells and updating the closest point for each cell traversed.
-			When the tree is computed, traverse it breadth-first to collect chosen points.
-			The worst complexity is O(N*T), the entire octree must be stored in memory.
-			
-			The simplest implementation use a recursive strategy. it only necessitate a method that given a cell and a list of points chose the point closest to the center of the cell, then split the cell and the list of points for the next level, and recursively calls itself on this subcells with the sublists.
-			
-			We propose this kind of implementation in Python with extensive use of bit-level operations (cf \ref{subsubsec:bit_coordinates}) as proof of concept.
-			The octree is not stored in memory, but it may prove difficult to parallelize (which is done at the data level anyway for our experiments). 
-			
-			
-			
-		\subsubsection{Efficiency and performance}
-			\label{subsubsec:bit_coordinates}
-			Octree construction may be avoided by simply reading coordinates bitwise in a correctly centred/scaled point cloud.
-			We centre a point cloud so that the lowest point of all dimension is $(0,0,0)$, and scale it so that the biggest dimension is in $[0,1[$.
-			The point cloud is then quantized into $[0..2**L-1]$ for each coordinate.
-			The coordinates are now integers, and for each point, reading its coordinates bitwise left to right gives the position of the point in the octree for level of the bit read.
-			This means performing that this centring/scaling/quantization directly gives the octree. Moreover, further operations can be performed using bit arithmetic, which is extremely fast.
-			
-			\paragraph{Example} 
-				 \myimage{./illustrations/LOD/principle_of_binary_coordinate.png}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{fig:binary_coordinates_example}
-				 
-				 On this illustration the point $P$ has coordinates $(5,2)$ in a $[0,2^3-1]^2$ system. Reading the coordinates as binary gives $(b'101',b'010')$.
-				 Thus we now that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
-				 For the next level, we divide the previous cell in 2, and read the next binary coordinate. $P$ will be in the left (x=$b'x0x'$) up (y=$b'y1y'$) cell. There is no computing required, only bit mask and data reading.
-			
-		\subsubsection{Advantages}	
-		
-			\todoall{si barycentre proche du centre du l'octree (ce qui arrive en moyenne), le point choisi est celui qui minimise lerreur parmi les points du nuage de points.}
-			\paragraph{Common, Simple and efficient}
-				This method feels classical and is based on Octree. This makes it simple to implement, and possibly extremely memory and CPU efficient.
-
-				The complexity is $O(n_points*Levels)$ or less. It is very simple to implement.				
-				Octree construction has been commonly done on GPU for more than a decade.
-				
-			\paragraph{Fixed density}
-				This method can be used to guarantee an almost constant density for a given levels, even when the acquisition process produced varying-density point cloud.
-				Thus using the output of this method is a safeguard for most of the complex point cloud processing methods that may be badly affected by extrem variation in density ( real world case illustrated in \href{fig:density-variation}{this illustration}).
-			\paragraph{Generic}
-				Few hypothesis are made on the points properties. In particular, this method works well with 2.5D point cloud (aerial single echo Lidar) and full 3D point cloud (urban 3D cloud with multi echo).
-			\paragraph{Construction Descriptors}
-				Lastly, the information given by this ordering can be used as a  geometrical descriptor of the point cloud.
-				The number of points per level for each level gives a crude dimensionality descriptor of the geometrical nature (at the patch scale) for the object contained by the point cloud.
+			The second implementation uses python with a recursive strategy. it only necessitates a function that given a cell and a list of points chose the point closest to the center of the cell, then split the cell and the list of points for the next level, and recursively calls itself on this subcells with the sublists.
+			A more efficient and simpler implementation is possible by first ordering the points following the Morton curve.
+			  
 				
 	\subsection{Using the ordering by-product as a crude dimensionality descriptor}
 	
 	
 		\label{method.dimdescriptor}
 		\subsubsection{Principle}
-			During the ordering process the number of chosen point per each level can be stored.
-			This number of chosen points per level gives an indication on the geometric nature of the object in the point cloud. 
-			We demonstrate the use of this crude descriptor along with other simple feature with a Random Forest classifier on a real world dataset publicly available. 
-			This patch classification can be used in other ways than pure classification.
-		
-		\subsubsection{Conceptual example}
+			When building the ordering process, the number of chosen points per level can be stored. 
+			Each ordered patch is then associated with a vector of number of points per level $(N_{L_{1}},..,N_{L_{\text{max}}})$
+			For each level, this number gives an idea of how well the point cloud fills the space for this level, that is how much how the voxels of the level are occupied, and thus gives a crude information about the dimensionality of the sensed point cloud.
 			
-			In the \href{fig:lod-common-objects}{figure \ref{fig:lod-common-objects}}, we manually segmented typical parts of a street in the Paris dataset: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
+			\myimage{"./illustrations/dim_descriptor/dim_descriptor"}{Crude dimensionality descriptor by voxel occupancy.}{fig:dim_descriptor}
+			
+			
+			The Figure \ref{fig:lod-common-objects} gives an real example. Typical parts of a street in the Paris dataset were segmented: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
 			\\
 			Due to the geometry of acquisition and sampling, the public light is almost a 3D line, resulting in the occupation of very few octree cells.
 			A typical number of points chosen per level  for the public light would then be $(1,2,4,8)$, which looks like a $2^L$ function.
@@ -244,7 +195,7 @@
 	
 	 
 			
-		\subsubsection{Patch classifier aspplications}
+		\subsubsection{Patch classifier applications}
 		
 			The base method is to use Random Forest to classify patches (and not points directly).
 			
