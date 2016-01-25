@@ -192,113 +192,124 @@
 			A piece of ground is often extremely flat and very similar to a plan, which means that the points chosen per level could be $(1,4,16,64)$, a $4^L$ function.
 			Lastly a piece of tree foliage is going to be very volumetric in nature, due to the fact that a leaf is about the same size as point spacing and is partly transparent to laser (leading to several echo).
 			Then a foliage patch would typically be $(1,8,64,512)$ (if enough points), so a $8^L$ function.
-	
-	 
 			
-		\subsubsection{Patch classifier applications}
-		
-			The base method is to use Random Forest to classify patches (and not points directly).
-			
-			Because patches may contains points belonging to several classes, transferring the patch classes to points naturally increases the errors.
-			
-			We can forsee three type of application for patch classification.
-			
-			\paragraph{Speeding a complex point classifier}
-				The first application could be to speed up and/or improve a complex per point classifier.
-				For a speed up, the patch classifier could perform a first basic classification extremely fast, thus eliminating a large number of points, before the complex classifier is used. 
-				If necessary, it is possible to artificially increase recall at the cost of a diminution of precision, like in \ref{fig:recall-increase}.
-				 
-				
-			\paragraph{Improving a complex point classifier}
-				Patch classifier can also be used to improve result of a complex classifier by performing a first rough analysis which may determinate which complex classifier to use amongst several, like Cascaded classifier.
-				For instance a patch classified as urban object would lead to chose a classifier specialized in urban object, and not the general classifier. This is especially precious for classes that are statistically very minoritary.
-				If necessary it is possible to artificially increase precision at the cost of recall.
-				
-				
-				
-			\paragraph{Filtering}
-				Another application is filtering for applications that only require one class. When the learning is done, classifying is extremely fast.
-				
-				Many applications only need one class, and do not require all the points in it, but only a subset with good confidence.
-				For this it is possible to artificially boost the precision by accepting only high confidence prediction.
-				For instance computing a Digital Terrain Model (DTM) only requires ground points. Morevover, the ground will have many parts missing due to objects, so using only a part of all the points will suffice anyway. The patch classifier allow to find the ground patch extremely fast.
-				Another example is registration. A registration process typically require reliable points to perform mapping and registration. In this case there is no need to use all points, and the patch classification can provide patches from ground and facade with high accuracy (for point cloud to point cloud or point cloud to 3D model registration) , or patches of objects and trees (for points cloud to landmark registration).
-				In other applications, finding only a part of the points may be sufficient, for instance when computing a building map from façade patches.
-				  
-			
-		\subsubsection{Descriptors}  
-			\paragraph{Crude dimensionality descriptor}
-				Again we work at the patch level ($1^3$ or $50^3$ \cubic \meter).
-				We order all patches following the MidOc ordering. For each ordered patch, we associate the number of points per level that where chosen.
-				A Random Forest classifier is trained using the number of chosen points per level.
-				We use the number of points for the level $[1..4]$ included. For each level, the number of points is normalized by the maximum number of points possible ($8^i$), so every feature is in $[0,1]$.
-			
-			\paragraph{Other simple features}
-				We also use other very simple features that require almost no computing. Feature usage is then analysed afterwards.
-				For the sake of simplicity and efficiency, all the feature use basic statistics per patch that need to be precomputed anyway by the storage compression mechanism. This free statistics are min, max, and average of any attribute.
-				\\
-				Contextual features are avoided. They are more in the spirit of complex classification, would require computing, and could introduce a bias (in our favor) in the result.
-				However using the context after the classification is a lever to significantly improve recall.
-		
-		\subsubsection{Analyzing data set classes}
-			\paragraph{Analysing class hierarchy} 
-				The Paris data set classes are organized in a hierarchy (100 classes). 
-				Because of the hierarchy and the unbalancing of classes, we first determinate or similar the classes are for the simple descriptors. This information is extracted from the confusion matrix, which is used as an affinity matrix. The matrix is clustered by spectral clustering and the result are interpreted as a graph of classes.
-				From this we choose the classes to use.
-				
-			\paragraph{Balancing the data set} 
-				We tried two classical strategies to balance the data set regarding the number of observation per class.
-				The first is undersampling : we randomly undersample the observations to get roughly the same number of observation in every class.
-				
-				The second strategy is to compute a statistical weight for every observation based on the class prevalance. 
-				This weight is then used in the learning process.
-				
-		
-		\subsubsection{Patch classifier}
- 
-				
-				To ensure significant results we follow a K-fold cross-validation method. 
-				We randomly split the observations into K parts, then for each part, we use the K-1 others to learn and predict on the part.
-				All the evaluation are then performed on the total of predicted observations.
-				
-				
-				Contrary to classical classification method, we are not only interested in precision and recall per class, but also by the evolution of precision when prediction confidence varies.
-				
-				In fact, for a filtering application, we can leverage the confidence information provided by the Random Forest method to artificially boost precision (at the cost of recall diminution). We can do this by limiting the minimal confidence allowed for every prediction.
-				Similarly, it is possible for some classes to increase recall at the cost of precision by using the result of a first patch classification and then incorporate in the result the other neighbour patches. 
-			 	
-			 	We stress that if the goal is to detect objects (and not classify each point), this strategy can be extremely efficient.
-			 	For instance if we are looking for objects that are big enough to be in several patches (e.g. a car).
-			 	In this case we can perform the classification (which is very fast and efficient), then keep only highly confident predictions, and then use the position of predictions to perform a local search for car limits.
-			 	The classical alternative solution would be to perform a per point classification on each point, which would be extremely slow.
-			 	
-			 	
-		\subsubsection{Advantages}
 			\paragraph{Dimensionality descriptor}
 			\begin{itemize}			
 				\item simple : 
-					Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
-					Using the result of the MidOc ordering has the advantage of being free and extremely simple. 
+				Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
+				Using the result of the MidOc ordering has the advantage of being free and extremely simple. 
 				\item Efficient :
-					Moreover, because $x_0 \rightarrow (2^0)^x$,
-					 $x_1 \rightarrow (2^1)^x$, $x_2 \rightarrow (2^2)^x$ diverge very fast, we only need to use few levels to have a quite good descriptor. For instance, using $L=2$, we have $D=4$, $16$ or $64$ , which are very distinguishable values, and don't require a density above $70$ points \per patch. 
+				Moreover, because $x_0 \rightarrow (2^0)^x$,
+				$x_1 \rightarrow (2^1)^x$, $x_2 \rightarrow (2^2)^x$ diverge very fast, we only need to use few levels to have a quite good descriptor. For instance, using $L=2$, we have $D=4$, $16$ or $64$ , which are very distinguishable values, and don't require a density above $70$ points \per patch. 
 				\item Density and scale independent :
-					As long as the patch contains a minimal number of points, the descriptors is density and scale invariant.
+				As long as the patch contains a minimal number of points, the descriptors is density and scale invariant.
 				\item Mixed result : 
-					Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
+				Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
 			\end{itemize}	
-			
-			\paragraph{Patch classification}
-			\begin{itemize}
-				\item simple and fast
-					When the Random Forest classifier is trained, prediction is extremely fast.
-				\item good result
-					Even if the classifier works on patch that may contain points from several classes, the global results for well represented classes are not far from state of the art.
-				\item many applications
-					teh classification is not necessarly interesting per see, but also for fast filtering or other applications.
-			\end{itemize}
-			
+ 
+			\begin{itemize}			
+				\item simple : 
+				Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
+				Using the result of the MidOc ordering has the advantage of being free and extremely simple. 
+				\item Efficient :
+				Moreover, because $x_0 \rightarrow (2^0)^x$,
+				$x_1 \rightarrow (2^1)^x$, $x_2 \rightarrow (2^2)^x$ diverge very fast, we only need to use few levels to have a quite good descriptor. For instance, using $L=2$, we have $D=4$, $16$ or $64$ , which are very distinguishable values, and don't require a density above $70$ points \per patch. 
+				\item Density and scale independent :
+				As long as the patch contains a minimal number of points, the descriptors is density and scale invariant.
+				\item Mixed result : 
+				Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
+			\end{itemize}	
+			 
+		
 		
 	\subsection{Classification with the PCS}
 		\label{method.classif}
+			
+		The base method is to use Random Forest to classify patches (and not points directly).
 		
+		Because patches may contains points belonging to several classes, transferring the patch classes to points naturally increases the errors.
+		
+		We can forsee three type of application for patch classification.
+		
+		\paragraph{Speeding a complex point classifier}
+		The first application could be to speed up and/or improve a complex per point classifier.
+		For a speed up, the patch classifier could perform a first basic classification extremely fast, thus eliminating a large number of points, before the complex classifier is used. 
+		If necessary, it is possible to artificially increase recall at the cost of a diminution of precision, like in \ref{fig:recall-increase}.
+		
+		
+		\paragraph{Improving a complex point classifier}
+		Patch classifier can also be used to improve result of a complex classifier by performing a first rough analysis which may determinate which complex classifier to use amongst several, like Cascaded classifier.
+		For instance a patch classified as urban object would lead to chose a classifier specialized in urban object, and not the general classifier. This is especially precious for classes that are statistically very minoritary.
+		If necessary it is possible to artificially increase precision at the cost of recall.
+		
+		
+		
+		\paragraph{Filtering}
+		Another application is filtering for applications that only require one class. When the learning is done, classifying is extremely fast.
+		
+		Many applications only need one class, and do not require all the points in it, but only a subset with good confidence.
+		For this it is possible to artificially boost the precision by accepting only high confidence prediction.
+		For instance computing a Digital Terrain Model (DTM) only requires ground points. Morevover, the ground will have many parts missing due to objects, so using only a part of all the points will suffice anyway. The patch classifier allow to find the ground patch extremely fast.
+		Another example is registration. A registration process typically require reliable points to perform mapping and registration. In this case there is no need to use all points, and the patch classification can provide patches from ground and facade with high accuracy (for point cloud to point cloud or point cloud to 3D model registration) , or patches of objects and trees (for points cloud to landmark registration).
+		In other applications, finding only a part of the points may be sufficient, for instance when computing a building map from façade patches.
+		
+		
+		\subsubsection{Descriptors}  
+		\paragraph{Crude dimensionality descriptor}
+		Again we work at the patch level ($1^3$ or $50^3$ \cubic \meter).
+		We order all patches following the MidOc ordering. For each ordered patch, we associate the number of points per level that where chosen.
+		A Random Forest classifier is trained using the number of chosen points per level.
+		We use the number of points for the level $[1..4]$ included. For each level, the number of points is normalized by the maximum number of points possible ($8^i$), so every feature is in $[0,1]$.
+		
+		\paragraph{Other simple features}
+		We also use other very simple features that require almost no computing. Feature usage is then analysed afterwards.
+		For the sake of simplicity and efficiency, all the feature use basic statistics per patch that need to be precomputed anyway by the storage compression mechanism. This free statistics are min, max, and average of any attribute.
+		\\
+		Contextual features are avoided. They are more in the spirit of complex classification, would require computing, and could introduce a bias (in our favor) in the result.
+		However using the context after the classification is a lever to significantly improve recall.
+		
+		\subsubsection{Analyzing data set classes}
+		\paragraph{Analysing class hierarchy} 
+		The Paris data set classes are organized in a hierarchy (100 classes). 
+		Because of the hierarchy and the unbalancing of classes, we first determinate or similar the classes are for the simple descriptors. This information is extracted from the confusion matrix, which is used as an affinity matrix. The matrix is clustered by spectral clustering and the result are interpreted as a graph of classes.
+		From this we choose the classes to use.
+		
+		\paragraph{Balancing the data set} 
+		We tried two classical strategies to balance the data set regarding the number of observation per class.
+		The first is undersampling : we randomly undersample the observations to get roughly the same number of observation in every class.
+		
+		The second strategy is to compute a statistical weight for every observation based on the class prevalance. 
+		This weight is then used in the learning process.
+		
+		
+		\subsubsection{Patch classifier}
+		
+		
+		To ensure significant results we follow a K-fold cross-validation method. 
+		We randomly split the observations into K parts, then for each part, we use the K-1 others to learn and predict on the part.
+		All the evaluation are then performed on the total of predicted observations.
+		
+		
+		Contrary to classical classification method, we are not only interested in precision and recall per class, but also by the evolution of precision when prediction confidence varies.
+		
+		In fact, for a filtering application, we can leverage the confidence information provided by the Random Forest method to artificially boost precision (at the cost of recall diminution). We can do this by limiting the minimal confidence allowed for every prediction.
+		Similarly, it is possible for some classes to increase recall at the cost of precision by using the result of a first patch classification and then incorporate in the result the other neighbour patches. 
+		
+		We stress that if the goal is to detect objects (and not classify each point), this strategy can be extremely efficient.
+		For instance if we are looking for objects that are big enough to be in several patches (e.g. a car).
+		In this case we can perform the classification (which is very fast and efficient), then keep only highly confident predictions, and then use the position of predictions to perform a local search for car limits.
+		The classical alternative solution would be to perform a per point classification on each point, which would be extremely slow.
+		
+		
+		\subsubsection{Advantages}
+		
+		
+		\paragraph{Patch classification}
+		\begin{itemize}
+			\item simple and fast
+			When the Random Forest classifier is trained, prediction is extremely fast.
+			\item good result
+			Even if the classifier works on patch that may contain points from several classes, the global results for well represented classes are not far from state of the art.
+			\item many applications
+			teh classification is not necessarly interesting per see, but also for fast filtering or other applications.
+		\end{itemize}
