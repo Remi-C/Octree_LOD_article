@@ -7,144 +7,131 @@
 
  \section{ Result }
 	 \label{sec:result}
- 	\subsection{Introduction to all experiments}
- 		We design and execute several experiments in order to validate all points that have been introduced in the "method" part.
+ 	\subsection{Introduction to results}
+ 		We design and execute several experiments in order to validate all points that have been introduced in the Section \ref{sec:method}.
  		First we prove that is it effectively possible to leverage points order, even using canonical open sources software out of the box.
  		Second we perform MidOc ordering on very large point cloud and analyse the efficiency, quality and applications of the results.
- 		Third we use the number of points chosen in the MidOc ordering as a descriptors for a random forest classifier on two large data sets.
- 		We analyse the potential of this free descriptors, and what it brings when used in conjunction to other simple descriptors.
+ 		Third we use the number of points chosen in the MidOc ordering as a descriptors for a random forest classifier on two large data sets, proving their usefulness.
+ 		Last we analyse the potential of this free descriptors, and what it brings when used in conjunction to other simple descriptors.
  		
- 		\paragraph{Software stack}
-	 		The base DBMS is \cite{PostgreSQL2014}. The spatial layer \cite{PostGIS2014} is added to benefits from generic geometric types and multidimensional indexes. The specific point cloud storage and function come from \cite{pgPointCloud2014}. 
-	 		The MidOc is either plpgsql or made in python with \cite{SciPy2014}. 
-	 		The classification is done with \cite{scikit-image}, and the network clustering with \cite{Networkx2014}.
-	\subsection{Point Cloud server introduction}
-		\subsubsection{Principle}
-			\paragraph{Server}
-				All the experiments are performed using a Point Cloud Server (cf \cite{Cura2014}).
-				The key idea are that point clouds are stored inside a DBMS (postgres), as patch. Patch are groups of points along with some basic statistics about points in the group. Patch are compressed using various strategies.
-				This organisation is based on the observation that in typical point cloud processing workflow, a point is never needed alone, but almost always with its surrounding points.
-			
-			\paragraph{Fast filtering}
-				Each patch of points is then indexed in an R tree for most interesting attributes (obviously X,Y,Z but also time of acquisition, meta data, number of points, distance to source, etc.)
-				
-				Having such a meta-type with powerful indexes allows use to find points based on various criteria extremely fast. (order of magnitude : ms). 
-				As an example we can find all points in a data set of 2 Billion points in a matter of milliseconds 
-				 - between -1 and 3 meters high in reference to vehicle wheels
-				 - in a given 2D area defined by any polygon
-				 - close to a street called Rue Madame (according to IGN BDTopo)
-				 - between 3 and 5 meters to the sensor position 
-				 - not in buildings according to Open Data Paris building layer 
-				 - acquired in the second passage of the vehicle a this place
-				 - acquired between 8h and 8h10
-		 
-		    \paragraph{Parallelism friendly}
-				Cutting a point cloud into patches provides also a very easy parallel processing possibility by data partition, which we extensively use in our experiments.
-		
-			\paragraph{Point cloud splitting}
-				For our experiments we cut terrestrial Lidar point cloud into $1$ \cubic \meter cubes oriented on (North ,Est,Z) axis.
-				We cut aerial lidar point cloud into $50^3$ \cubic \meter cubes.
-				The choice of size is a compromise between speed, index size, patch size, typical feature size, etc.
-				In fact the patch can be cut arbitrary, we chose this splitting for simplicity.
-		
-	\subsection{Data set used}
-		We use two data sets. There were chosen as different as possible to further evaluate how proposed methods can generalise on different data.
-		
+		%\paragraph{Software stack}
+ 		The base DBMS is \cite{PostgreSQL2014}. The spatial layer \cite{PostGIS2014} is added to benefits from generic geometric types and multidimensional indexes. The specific point cloud storage and function come from \cite{pgPointCloud2014}. 
+ 		The MidOc is either plpgsql or made in python with \cite{SciPy2014}. 
+ 		The classification is done with \cite{scikit-image}, and the network clustering with \cite{Networkx2014}.
+ 		Timings are only orders of magnitude due to the influence of database caching.
+ 	
+	%\subsection{Data set used}
 		\myimage{./illustrations/histogram_of_density/paris_vosges_density_histogramm.png}{ Histogram of number of points per patch, with a logarithmic scale for X and Y axis}{fig:hist-density-dataset}
-		
-		
-		\subsubsection{IQmulus data set}
-			First \cite{IQmulus2014}, an open source urban data set with varying density, singularities, and very challenging point cloud geometry.
-			Data set is about 600 Millions points , over 12 kms of road. Points are typically spaced by 5cm to 0.2 cm. It is a multi echo laser (Riegl).
-			We have access to a training set where every point is labeled in a hierarchy of 100 classes. The training set is only 12 millions points. Only 22 classes are represented.
-			We will refer to this data set as Paris data set.
+	
+	
+ 		We use two data sets. There were chosen as different as possible to further evaluate how proposed methods can generalise on different data (See Figure fig:hist-density-dataset for histogram of patch density ). 
+ 		%\subsubsection{IQmulus data set}
+ 		The first data set is \cite{IQmulus2014} (Paris data set), an open source urban data set with varying density, singularities, and very challenging point cloud geometry. 
+ 		Every point is labelled with a hierarchy of 100 classes.
+ 		The training set is only 12 millions points.
+ 		Only 22 classes are represented. We group points in $1 \cubic \metre$ cubes.
+ 		
+ 		%\subsubsection{Vosges data set}
+ 		We also use the Vosges data set, which is a very wide spread, aerial Lidar, 5.5 Billions point cloud. 
+ 		Density is much more constant at 10k pts/patch .
+ 		A vector ground truth about surface occupation nature (type of forest) is produced by the French Forest Agency.
+ 		We group points in 50 $\times 50 \meter$ squares.
+ 		
+
+	\subsection{Using the Point Cloud Server for experiments}
+		%\subsubsection{Principle}
+		%\paragraph{Server}
+		All the experiments are performed using a Point Cloud Server (cf \cite{Cura2014}).
+		The key idea are that point clouds are stored inside a DBMS (postgres), as patch. Patch are compressed groups of points along with some basic statistics about points in the group.
+		We hypothesize that in typical point cloud processing workflow, a point is never needed alone, but almost always with its surrounding points.
+	
+		%\paragraph{Fast filtering}
+		Each patch of points is then indexed in an R tree for most interesting attributes (obviously X,Y,Z but also time of acquisition, meta data, number of points, distance to source, etc.)
 			
-		\subsubsection{Vosges data set}
-			We also use the Vosges data set, which is a very wide spread aerial data set of 6 billions points. 
-			
-			Density is much more constant to 10k pts/patch .
-			We have access to a vector ground truth about surface occupation nature (type of forest), produced by the French Forest Agency.
-			We will refer to this data set as the Vosges data set.
-		
+		Having such a meta-type with powerful indexes allows use to find points based on various criteria extremely fast. (order of magnitude : ms). 
+		As an example we can find all points in a data set of 2 Billion points in a matter of milliseconds 
+		 - between -1 and 3 meters high in reference to vehicle wheels
+		 - in a given 2D area defined by any polygon 
+		 - acquired between 8h and 8h10 - etc.
+		 
+		%\paragraph{Parallelism friendly}
+		The PCS offers an easy mean to perform data-partition based parallelism. We extensively use it in our experiments. 
+
+
 	\subsection{Exploiting the order of points}
-		\subsubsection{Experiment summary}
-			\label{result.os_softwares}
-			In this first experiment we check that point cloud ordering is correctly preserved by common open source point cloud processing software.
-			For this, we use a real point cloud, which we order by MidOc ordering. 
-			We export it as a text file as the reference file.
-			Then for each processing software, we read the reference file and convert it into another format, then check that the conversion didn't change the order. 
-			The tree common open source software tested are CloudCompare, LasTools and Meshlab.
-			This test point cloud is available in supplementary materials.
-		\subsubsection{Results}  
-			All software passes test.
-			We stress that even if software change order, it is still very easy to add the order as an attribute, thus making it fully portable.
+		%\subsubsection{Experiment summary}
+		\label{result.os_softwares}
+		We proposed to implicitly store LOD in the order of the points (Section \ref{method.order}).
+		In this first experiment we check that point cloud ordering is correctly preserved by common open source point cloud processing software.
+		For this, we use a real point cloud, which we order by MidOc ordering. 
+		We export it as a text file as the reference file.
+		For each software, we read the reference file and convert it into another format, then check that the conversion did not change the order of points. 
+		The tree common open source software tested are CloudCompare\footnote{\url{www.danielgm.net/cc}}
+		, LasTools\footnote{\url{www.cs.unc.edu/~isenburg/lastools}} and Meshlab\footnote{\url{http://meshlab.sourceforge.net/}}.
+		All pass the test.
 			
 	\subsection{MidOc: an ordering for gradual geometrical approximation}
-		\subsubsection{Experiment summary}
-			In this experiment we first test ordering on typical street objects,then on terrestrial dataset to visually appreciate the fitness to use it for geometrical LOD.
-			Then we compute MidOc for both our dataset and evaluate the trade-off between point cloud size and point cloud LOD.
-			We briefly consider computing bottleneck.
-			
-			We demonstrate an immediate application of LOD for fast abnormal density detection and correction.
-			Lastly as a proof of concept we stream 3D point cloud with various LOD to a browser.
+		%\subsubsection{Experiment summary}
+		\myimageFullPageWidth{./illustrations/LOD/visual_result_left_right}{Schematic illustration of different LOD. Left to right, all points, then LOD 4 to 0. Visualized in cloud compare with ambient occlusion. Point size varies for better visual result.}{fig:visual_LOD_left_right}
 		
-		\subsubsection{Visual evaluation}
-			\myimageFullPageWidth{./illustrations/LOD/visual_result_left_right.png}{Schematic illustration of different LOD. Left to right, all points, then LOD 4 to 0. Visualized in cloud compare with ambient occlusion. Point size varies for better visual result.}{fig:visual_LOD_left_right}
-			
-			\paragraph{Visual evaluation on typical objects (ground, facade, car, pole, vegetation)}
-				The figure \ref{fig:lod-common-objects} illustrates LOD on common street objects, of various dimensionality.
 		
-		\subsubsection{Size versus LOD trade-off}
-			We compute the size and canonical transfer time associated for a representative street point cloud.
-			For this order of magnitude, the size is estimated for 5*4 Byte (5 floats) per point, and the internet transfer rate is estimated at 1 \mega $byte$\per \second.
-			
-			\begin{table}[ht]
-				\centering
-				\caption{Number of points per LOD, plus estimated transfer time with modern internet connection.}
-				\label{tab:lod-size-time}
-				\scriptsize 
-				\begin{tabular}{cccccc}
-					\bf{Level} & \shortstack{\bf{Typical} \\ \bf{spacing (\centi \meter)}} & \shortstack{ \bf{Points} \\ \bf{number (k)}} & \shortstack{\bf{Percent of} \\ \bf{total size}} & \shortstack{\bf{Estimated} \\ \bf{time (\second)}}   \\
-					\hline All & 0.2 to 5  & 1600 & 100 & 60 \\ 
-					\hline 0 & 100 & 3 & 0.2 & 0.1 \\ 
-					\hline 1 & 50 & 11.6 & 0.7 & 0.4 \\ 
-					\hline 2 & 25 & 41 & 2.6 & 1.5 \\ 
-					\hline 3 & 12 & 134 & 8.4 & 5 \\ 
-					\hline 4 & 6 & 372 & 23 & 14 \\    
-				\end{tabular} 
-			\end{table}
+		We first test the visual fitness of MidOc ordering.
+		Then we compute MidOc for both our dataset and evaluate the trade-off between point cloud size and point cloud LOD. 
+		As a proof of concept we stream 3D point cloud with various LOD to a browser.
+		
+		%\subsubsection{Visual evaluation}
+		The figure \ref{fig:visual_LOD_left_right} illustrates LOD on a typical street of Paris dataset
+		The figure \ref{fig:lod-common-objects} shows LOD on common street objects of various dimensionality.
+			  
+		%\subsubsection{Size versus LOD trade-off}
+		We compute the size and canonical transfer time associated for a representative street point cloud.
+		For this order of magnitude, the size is estimated at 5*4 Byte (5 floats) per point, and the (internet) transfer rate at 1 \mega $byte$\per \second.
+		
+		\begin{table}[ht]
+			\centering
+			\caption{Number of points per LOD for the point cloud in the Figure \ref{fig:visual_LOD_left_right}
+				, plus estimated transfer time at 1 \mega $byte$\per \second.}
+			\label{tab:lod-size-time}
+			\scriptsize 
+			\begin{tabular}{cccccc}
+				\bf{Level} & \shortstack{\bf{Typical} \\ \bf{spacing (\centi \meter)}} & \shortstack{ \bf{Points} \\ \bf{number (k)}} & \shortstack{\bf{Percent of} \\ \bf{total size}} & \shortstack{\bf{Estimated} \\ \bf{time (\second)}}   \\
+				\hline All & 0.2 to 5  & 1600 & 100 & 60 \\ 
+				\hline 0 & 100 & 3 & 0.2 & 0.1 \\ 
+				\hline 1 & 50 & 11.6 & 0.7 & 0.4 \\ 
+				\hline 2 & 25 & 41 & 2.6 & 1.5 \\ 
+				\hline 3 & 12 & 134 & 8.4 & 5 \\ 
+				\hline 4 & 6 & 372 & 23 & 14 \\    
+			\end{tabular} 
+		\end{table}
 			 
-		\subsubsection{Large scale computing}
+		%\subsubsection{Large scale computing}
 		
-			\paragraph{MidOc implementation} 
-				We use 3 implementations of MidOc, two being pure plpgsql (postgreSQL script langage), and one Python.
-			\paragraph{Computing on very large dataset}
-				We successively order all the Paris and Vosges data sets with MidOc, using 20 parallel workers, with a plpgsql implementation.
-				The ordering is successful on all patches, even in very challenging areas where there are big singularities in density, and many outliers.
-				The total speed is about 100 millions points/hour, which we consider at least 10 times too slow.
-				We briefly analyse performances, and conclude that data IO limits the number of efficient workers to 10, and that most of the time is actually not spend on computing, but on getting the points and writing them back.
-				
-		\subsubsection{Fast abnormal density detection and correction}
-			
-			\myimage{./illustrations/density_detection_and_correction.png}{Abnormal density detection and correction. Top points per patch (left) or density (right), green-yellow-red. Bottom reflectance in grey. }{fig:density-correction}
-			
-			\paragraph{Density abnormality (peak)}
-				Important variation of density can be a serious issue for some processing methods, or simply performances (especially in parallel environment). 
-				The figure \ref{fig:density-correction} shows a place where the density is 5 times over the normal value for this data set.
-				In this context of terrestrial Lidar, this density peak is simply due to the fact that the acquisition vehicle stopped at this place, while continuing to sense data.
-			\paragraph{Fast detection}
-				We analyse the data set to find places of abnormally high density.
-				It can be performed extremely fast at the patch level. (0.1 s for Vosges dataset, same for a 2 Billion points urban dataset ). 
-				The Top left image shows the number of points per \cubic \meter directly read from database, increasing from blue to yellow to red)
-				In comparison, computing the density per point with neighbourhood is extremely slow (only for this 1.5 Million extract, 1 minute with CloudCompare,4x2.5GHz, 10cm rad) (top right illustration), and after the density is computed for each points, all the point cloud still need to be filtered to find abnormal density spot.
-			
-			\paragraph{Simple correction}
-				If the patch are ordered following MidOc, unneeded points are removed by simply putting a threshold on points per patch (bottom left, 1 to 5k points \per \cubic \meter , bottom right , 5k to 24 k pts \per \cubic \meter). It considerably reduces the number of points (-33\%).
-			
-				
-		\subsubsection{LOD stream}
-			As a proof of concept we stream points from the data base to a browser\cite{IGN2014a}.
-			For this experiment we only stream a given number of points per patch, which allows to accelerate greatly data loading. 
+		%\paragraph{MidOc implementation} 
+		We use 3 implementations of MidOc, two being pure plpgsql (postgreSQL script langage), and one Python (See Section \ref{method.midoc.implementation}).
+		%\paragraph{Computing on very large dataset}
+		We successively order all the Paris and Vosges data sets with MidOc, using 20 parallel workers, with a plpgsql implementation.
+		The ordering is successful on all patches, even in very challenging areas where there are big singularities in density, and many outliers.
+		The total speed is about 100 millions points/hour.
+		We consider it to be at least 10 times too slow for practical use.
+		We briefly analyse performances, and conclude that only 10 workers are efficient, and that most of the time is spent on getting the points and writing them back.
+		
+		 
+		%\subsubsection{LOD stream}
+		As a proof of concept we stream points from the data base to a browser \cite{IGN2014a}. Because patch may contain a large number of points and because the browser WebGL technology is limited in how much points it can display,
+		we limit the number of points per patch sent to the browser. Patch are ordered with MidOc, so the visual artifact is greatly reduced, and the data loads more quickly. 
+
+
+	\subsection{Excessive Density detection and correction}
+	
+		\myimage{./illustrations/density/density_detection_and_correction}{Abnormal density detection and correction. Top points per patch (left) or density (right), green-yellow-red. Bottom reflectance in grey. }{fig:density-correction}
+		
+		%\paragraph{Density abnormality (peak)}
+		We detect the abnormal density (explained in Section \ref{method.density}) in the Paris data set in $\sim 100 \milli \second$ 
+		(See Figure \ref{fig:density-correction}). 
+		In comparison, computing the density per point with neighbourhood is extremely slow (only for this 1.5 Million extract, 1 minute with CloudCompare,4x2.5GHz, 10cm rad) (top right illustration), and after the density is computed for each points, all the point cloud still need to be filtered to find abnormal density spot.
+		
+		%\paragraph{Simple correction}
+		If the patch are ordered following MidOc, unneeded points are removed by simply putting a threshold on points per patch (bottom left, 1 to 5k points \per \cubic \meter , bottom right , 5k to 24 k pts \per \cubic \meter). It considerably reduces the number of points (-33\%).
 			
 	\subsection{Dimensionality descriptor and patch classification}
 			To ensure significant results we follow a K-fold cross-validation method. 
@@ -157,13 +144,13 @@
 			An analysis of confusion matrix shows which meta classes are separatable or not.
 			
 			Extra descriptors are then needed :  (P : for Paris , V : for Vosges: 
-			  - $points\_per\_level$ ($ppl$), level 1 to 4 (P+V)
-			  - average of intensity (P+V)
-			  - average of $number\_of\_echo$ (P+V)
-			  - average of height regarding laser origin(P)
-			  - average Z (V)
-			  - patch height (P)
-			  - area of $patch\_bounding\_box$ (P) : 
+		- $points\_per\_level$ ($ppl$), level 1 to 4 (P+V)
+		- average of intensity (P+V)
+		- average of $number\_of\_echo$ (P+V)
+		- average of height regarding laser origin(P)
+		- average Z (V)
+		- patch height (P)
+		- area of $patch\_bounding\_box$ (P) : 
 		
 		\subsubsection{Separator power of ppl descriptor for Paris data set}
 			
@@ -172,7 +159,7 @@
 			Using only the $ppl$ descriptor, a classification is performed on paris data set, then a confusion matrix is computed.
 			A spectral clustering of this matrix interpreted as a distance matrix between classes is performed. This clustering is used to place classes on the illustration.
 			We manually ad 1D,2D and 3D arrows. 
-		 
+		
 		\subsubsection{Analyzing data set classes}
 			\paragraph{Balancing the data set}  
 				Undersampling and weighting are used on the paris dataset. First Undersampling to reduce the over dominant building classe to a 100 factor of the smallest class support. Then weighting is used to compensate for differences in support.
@@ -183,7 +170,7 @@
 				
 				
 			\paragraph{Analysing class hierarchy} 
-				 
+		 
 				Choosing which level of the class hierarchy uses depends on data set and applications.
 				In a canonical classification perspective, we have to strongly reduce the number of classes if we want to have significant results.
 				However reducing the number of class (i.e use a higher level in the classes hierarchy) also means that classes are more heterogeneous.
@@ -201,7 +188,7 @@
 		
 		\subsubsection{Patch classifier}
 			\paragraph{Vosges data set}
-			 
+		
 				We perform a analysis of error on Vosges dataset and we remark that the error seems to be significantly correlated to distance ot borders.
 				
 				\myimage{./illustrations/classif/result_vosges/result_vosges_2.png}{Feature usage (first table).  Precision(prec.), recall (rec.), support (supp.), and average percent of points of the class in the patches, for comparison with point based method (mix.).}{fig:result-vosges}
@@ -212,7 +199,7 @@
 			\paragraph{Paris data set}
 			
 				\myimageFullPageWidth{./illustrations/classif/result_paris/result_per_class_multilevel_paris_2.pdf}{Results for Paris data set: at various level of class hierarchy. Precision(prec.), recall (rec.), support (sup.) and average percent of points of the class in the patches of the class, for comparison with point based method (mix.). Classes of the same type are in the same continuous tone. Feature usage is evaluated for each level in the class hierarchy.}{fig:result-paris}
-				 
+		 
 				The learning time is less than a minute, the predicting time is less than a second. 
 			
 		\subsubsection{Patch classifier applications} 
