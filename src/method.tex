@@ -107,40 +107,53 @@
 		Although many ordering could be used (for example, a simple uniform-random ordering),
 		a suitable one would have low-discrepancy (that is be well homogeneous in space), not be sensitive to density variations, be regular, be fast to compute and be deterministic.
 		
-		We make two hypothesis that are mostly verified on Lidar point cloud. The first hypothesis (disposable density)
-		is that the density does not gives information about the nature of the object being sensed. 
+		We make two hypothesis that are mostly verified on Lidar point cloud.
+		The first hypothesis (disposable density) is that the density does not gives information about the nature of the object being sensed. 
 		that is, depending on the sensing situation, some parts of the cloud are more or less dense, but this has nothing to do with the nature of the object sensed, thus can be discarded.
-		The second hypothesis (low noise) is that the geometrical noise is low. We need this hypothesis because we can not rely on the variation of density to lessen the influence of outliers.
+		The second hypothesis (low noise) is that the geometrical noise is low.
+		We need this hypothesis because we can not rely on the variation of density to lessen the influence of outliers.
 		
 		A common method in LOD is to recursively divide a point cloud into groups and use the barycentre of the group as the point representing this group. The ground of this method is that the barycentre minimise the sum of squarred distance to the points, and as such is the optimal point if the point probability are normal distributions.
 		
-		However such method is extremely sensible to density variation, and creates new points. 
+		However such method is extremely sensible to density variation, and artificially creates new points. 
 		
 		\subsubsection{Introducing the MidOc ordering}
 		
 		\myimage{./illustrations/octree_ordering/octree_ordering_legend}{MidOc explained in 2D. Given a point cloud (Blue) and quad tree cells (dashed grey), the chosen point (green ellipse) is the one closest to the centre (black point) of the cell.}{fig:midoc-principle}
 		
-		We propose to a re-use of well known and well proven existing methods that is the octree subsampling (for instance, the octree subsampling is used in \cite{Girardeau-Montaut2014}.
+		We propose to re-use of well known and well proven existing methods that is the octree subsampling (for instance, the octree subsampling is used in \cite{Girardeau-Montaut2014}.
 		An octree is built over a point cloud, then for each cell of the octree the LOD point is the barycentre of the points in the cell.  With this, browsing the octree breadth-first provides the points of the different levels.
 		
 		We adapt this to cope with density variation, and to avoid creating new point by aggregating.   
 		We name this ordering MidOc (middle of octree subsampling) for clarity of this article, nonetheless we are probably not the first to use it.
 		
-		The principle is very simple, and necessitate an octree over the point cloud.
+		The principle is very simple, and necessitate an octree over the point cloud (octree can be implicit though).
 		We illustrate it on Figure \ref{fig:midoc-principle} (in 2D for graphical comfort).
 		We walk the octree breadth-first.
 		For each non-empty cell, the point closest to the cell centre is chosen and assigned the cell level,
-		and removed from the point possible to pick.
-		The process can be reached before having chosen all possible points,
+		and removed from the available point to pick.
+		The process can be stopped before having chosen all possible points,
 		in which case the remaining points are added to the list, with the level $L_\infty$.
 		
 		The result is a set of points with level $(P,L_i)$.
-		Inside one level $L_i$, points can be ordered following various strategies (see Section \ref{method.intralevel}). 
-		  
+		Inside one level $L_i$, points can be ordered following various strategies (see Section \ref{method.intralevel}).
+		
+		Because each point is assigned a level, we can store the total number of points per level (which produce a dimensionality descriptor, see Section \ref{method.dimdescriptor}).
+		
+		\subsubsection{Implementation}
+		MidOc ordering is similar to octree building. Because Octree building has been widely researched, we test only two basic solutions.
+		
+		The first kind of implementation uses SQL queries. For each level, we compute the centres of the occupied cells using bit shifts and the closest point to these. Picked points are removed, and the process is repeated on the next level.
+		It relies on the fact that knowing each point octree cell occupancy does not require to compute the octree (see Figure \ref{fig:binary_coordinates_example}).
+		
+		The second implementation uses python with a recursive strategy. it only necessitates a function that given a cell and a list of points chose the point closest to the centre of the cell, then split the cell and the list of points for the next level, and recursively calls itself on this subcells with the sublists.
+		
+		A more efficient and simpler implementation is possible by first ordering the points following the Morton curve, as  in \cite{Feng2014} (Section 2.5.1, page 37). 
+		
 		\subsubsection{Intra-level ordering}
 		\label{method.intralevel}
 		
-		\myimage{./illustrations/intralevel_ordering/intralevel_ordering_combined}{Several possible orders with coverage from bad to good.}{fig:intralevel_ordering}
+		\myimage{./illustrations/intralevel_ordering/intralevel_ordering_combined}{Several possible orders with various coverage from bad to good. Revert Morton and Revert Hilbert have offset for illustration.}{fig:intralevel_ordering}
 		
 		The intra-level ordering will have an impact if the LOD is used in a continuous way,
 		and moreover may influence methods that relies on low-discrepancy.
@@ -156,75 +169,59 @@
 		Similarly, if the point were ordered randomly, estimating a plan would still require lots of points, because uniform randomly chosen points are not well spread out (on the figure, the first 25 points are over represented in the upper left part).
 		
 		On the opposite, using a low discrepancy ordering like the Halton sequence makes the points well spread, while being quasi-random.
-		Inverted space filling curves like the Morton or Hilbert curves also cover well space, but are much more regulars.
+		Inverted space filling curves like the Morton or Hilbert curves also cover well space, at the price of being much more regulars.
 		
 		The Halton sequence ordering is obtained by generating a Halton sequence (nD points) and successively picking points closest to the Halton generated points.
-		The revert Morton ordering and revert Hilbert ordering are the distance along Morton or Hilbert curve expressed in bit and read backward.
-		
-	
-					
-					
-		\subsubsection{Implementation}
-			MidOc ordering can be computed at the same time that the octree is built. Because Octree building has been widely researched, we test only two basic solutions.
-			
-			The first kind of implementation uses SQL queries. For each level, we compute the centres of the occuped cells using bit shifts and the closest point to these. Picked points are removed, and the next level is dealt with. It relies on the fact that knowing each point octree cell occupancy does not require to compute the octree (see Figure \ref{fig:binary_coordinates_example}).
-			
-			The second implementation uses python with a recursive strategy. it only necessitates a function that given a cell and a list of points chose the point closest to the center of the cell, then split the cell and the list of points for the next level, and recursively calls itself on this subcells with the sublists.
-			A more efficient and simpler implementation is possible by first ordering the points following the Morton curve.
-			  
+		The revert Morton ordering and revert Hilbert ordering are the distance along Morton or Hilbert curve expressed in bit and read backward (and possibly offset).
+		 
 				
-	\subsection{Using the ordering by-product as a crude dimensionality descriptor}
-	
-	
+	\subsection{Crude dimensionality descriptor (MidOc by-product)} 
 		\label{method.dimdescriptor}
 		\subsubsection{Principle}
-			When building the ordering process, the number of chosen points per level can be stored. 
-			Each ordered patch is then associated with a vector of number of points per level $(N_{L_{1}},..,N_{L_{\text{max}}})$
-			For each level, this number gives an idea of how well the point cloud fills the space for this level, that is how much how the voxels of the level are occupied, and thus gives a crude information about the dimensionality of the sensed point cloud.
-			
-			\myimage{"./illustrations/dim_descriptor/dim_descriptor"}{Crude dimensionality descriptor by voxel occupancy.}{fig:dim_descriptor}
-			
-			
-			The Figure \ref{fig:lod-common-objects} gives an real example. Typical parts of a street in the Paris dataset were segmented: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
-			\\
-			Due to the geometry of acquisition and sampling, the public light is almost a 3D line, resulting in the occupation of very few octree cells.
-			A typical number of points chosen per level  for the public light would then be $(1,2,4,8)$, which looks like a $2^L$ function.
-			A piece of ground is often extremely flat and very similar to a plan, which means that the points chosen per level could be $(1,4,16,64)$, a $4^L$ function.
-			Lastly a piece of tree foliage is going to be very volumetric in nature, due to the fact that a leaf is about the same size as point spacing and is partly transparent to laser (leading to several echo).
-			Then a foliage patch would typically be $(1,8,64,512)$ (if enough points), so a $8^L$ function.
-			
-			\paragraph{Dimensionality descriptor}
-			\begin{itemize}			
-				\item simple : 
-				Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
-				Using the result of the MidOc ordering has the advantage of being free and extremely simple. 
-				\item Efficient :
-				Moreover, because $x_0 \rightarrow (2^0)^x$,
-				$x_1 \rightarrow (2^1)^x$, $x_2 \rightarrow (2^2)^x$ diverge very fast, we only need to use few levels to have a quite good descriptor. For instance, using $L=2$, we have $D=4$, $16$ or $64$ , which are very distinguishable values, and don't require a density above $70$ points \per patch. 
-				\item Density and scale independent :
-				As long as the patch contains a minimal number of points, the descriptors is density and scale invariant.
-				\item Mixed result : 
-				Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
-			\end{itemize}	
- 
-			\begin{itemize}			
-				\item simple : 
-				Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
-				Using the result of the MidOc ordering has the advantage of being free and extremely simple. 
-				\item Efficient :
-				Moreover, because $x_0 \rightarrow (2^0)^x$,
-				$x_1 \rightarrow (2^1)^x$, $x_2 \rightarrow (2^2)^x$ diverge very fast, we only need to use few levels to have a quite good descriptor. For instance, using $L=2$, we have $D=4$, $16$ or $64$ , which are very distinguishable values, and don't require a density above $70$ points \per patch. 
-				\item Density and scale independent :
-				As long as the patch contains a minimal number of points, the descriptors is density and scale invariant.
-				\item Mixed result : 
-				Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
-			\end{itemize}	
+		When building the MidOc ordering process, the number of chosen points per level can be stored.
+		Each ordered patch is then associated with a vector of number of points per level $D_c=(N_{L_{1}},..,N_{L_{\text{max}}})$.
+		The number of picked point is directly the voxel occupancy for this level of the octree.
+		In theory for a level $L$, a centred line would occupy $2^L$ cells, a centred plan $4^L$ cells, and a volume all of the cells ($8^L cells$).
+		Thus, by comparing $D_c$ to theoretical $L_i  \rightarrow (2^i)^L,i \in [1..3]$ functions we retrieve information about the dimensionality of the patch (See Figure \ref{fig:dim_descriptor}). 
+		\myimage{"./illustrations/dim_descriptor/dim_descriptor"}{Voxel occupancy is a crude dimensionality descriptor: 3D line, surface or volume occupy a different amount of voxels.}{fig:dim_descriptor}
+		
+		
+		The Figure \ref{fig:lod-common-objects} illustrate this. Typical parts of a street in the Paris dataset were segmented: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
+		\\
+		Due to the geometry of acquisition and sampling, the public light is almost a 3D line, resulting in the occupation of very few octree cells.
+		A typical number of points chosen per level for a public light patch would then be $(1,2,4,8)$, which looks like a $2^L$ function.
+		A piece of ground is often extremely flat and very similar to a planar surface,
+		which means that the points chosen per level could be $(1,4,16,64)$, a $4^L$ function.
+		Lastly a piece of tree foliage is going to be very volumetric in nature,
+		due to the fact that a leaf is about the same size as point spacing and is partly transparent to laser (leading to several echo).
+		Then a foliage patch would typically be $(1,8,64,512)$ (if enough points), so a $8^L$ function.
+		
+		\paragraph{Usage}
+
+		Real Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
+		Using the result of the MidOc ordering has the advantage of not necessitate extra computing and be extremely simple.
+		
+		Moreover, because $x_1 \rightarrow (2^1)^x$,
+		$x_2 \rightarrow (2^2)^x$, $x_3 \rightarrow (2^3)^x$ diverge very fast,
+		we only need to use few levels to have a quite good descriptor.
+		For instance, using $L=2$, we have $D=4$, $16$ or $64$ , which are very distinguishable values, and don't require a total density above $70$ points \per patch.  
+		As long as the patch contains a minimal number of points, the descriptors is density and scale invariant. 
+		Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
+		
+		Although it might be possible to go a step further and decompose a patch $D_c$ vector on the base of $x_i \rightarrow (2^i)^x, i \in [1..3]$, the direct and exact decomposition can't be used because the decomposition might depends on L. For instance a plane with a small line could appear as a plan for $L_1$ and $L_2$, and starts to appear differently over $L_3$ and higher level. In this case, an Expectation-Maximization scheme might be able to decompose robustly.
+
 			 
 		
 		
-	\subsection{Classification with the PCS}
+	\subsection{Classification with the Point Cloud Server}
 		\label{method.classif}
-			
+		
+		\todoall{expliquer le schema global de la classification: 
+				in base out of base
+				but : validation dim, pas forcement classif
+				descripteurs : ortos ou simple
+				a cause du jeux de données complique, clustering de classes
+				}
 		The base method is to use Random Forest to classify patches (and not points directly).
 		
 		Because patches may contains points belonging to several classes, transferring the patch classes to points naturally increases the errors.
@@ -282,8 +279,7 @@
 		This weight is then used in the learning process.
 		
 		
-		\subsubsection{Patch classifier}
-		
+		\subsubsection{Patch classifier} 
 		
 		To ensure significant results we follow a K-fold cross-validation method. 
 		We randomly split the observations into K parts, then for each part, we use the K-1 others to learn and predict on the part.
@@ -311,5 +307,5 @@
 			\item good result
 			Even if the classifier works on patch that may contain points from several classes, the global results for well represented classes are not far from state of the art.
 			\item many applications
-			teh classification is not necessarly interesting per see, but also for fast filtering or other applications.
+			the classification is not necessarly interesting per see, but also for fast filtering or other applications.
 		\end{itemize}

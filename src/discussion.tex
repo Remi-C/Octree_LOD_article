@@ -37,6 +37,7 @@
 			 For instance with a static Lidar device the neighbourhood information can be reconstructed from the order. We note that for the Paris data set the point are initially ordered by time of acquisition. Because the time of acquisition is also an attribute, this ordering can be reconstructed if necessary.
 			 
 	 \subsection{MidOc : an ordering for gradual geometrical approximation}
+	 	It may also be possible to use the revert Hilbert ordering to directly compute MidOc.
 	 	\subsubsection{Applications}
 	 	We see 3 types of application for this ordering. First the system can be used for graphical LOD, as a service for point cloud visualisation. Second the ordering allows to correct density to be much more constant. Complex processing methods may benefits from an almost constant density, or for the absence of strong density variation. Third the ordering can be used for point cloud generalisation, as a service for processing methods that may only be able to deal with a fraction of the points.  
 	 	
