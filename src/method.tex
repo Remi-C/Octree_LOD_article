@@ -141,6 +141,7 @@
 		Because each point is assigned a level, we can store the total number of points per level (which produce a dimensionality descriptor, see Section \ref{method.dimdescriptor}).
 		
 		\subsubsection{Implementation}
+		\label{method.midoc.implementation}
 		MidOc ordering is similar to octree building. Because Octree building has been widely researched, we test only two basic solutions.
 		
 		The first kind of implementation uses SQL queries. For each level, we compute the centres of the occupied cells using bit shifts and the closest point to these. Picked points are removed, and the process is repeated on the next level.
@@ -173,8 +174,8 @@
 		
 		The Halton sequence ordering is obtained by generating a Halton sequence (nD points) and successively picking points closest to the Halton generated points.
 		The revert Morton ordering and revert Hilbert ordering are the distance along Morton or Hilbert curve expressed in bit and read backward (and possibly offset).
-		 
-				
+		
+
 	\subsection{Crude dimensionality descriptor (MidOc by-product)} 
 		\label{method.dimdescriptor}
 		\subsubsection{Principle}
@@ -210,6 +211,28 @@
 		
 		Although it might be possible to go a step further and decompose a patch $D_c$ vector on the base of $x_i \rightarrow (2^i)^x, i \in [1..3]$, the direct and exact decomposition can't be used because the decomposition might depends on L. For instance a plane with a small line could appear as a plan for $L_1$ and $L_2$, and starts to appear differently over $L_3$ and higher level. In this case, an Expectation-Maximization scheme might be able to decompose robustly.
  
+	\subsection{Excessive Density detection and correction}
+		\label{method.density}
+		Lidar point cloud do not have a constant density, because the acquisition is performed at a constant sensing rate, but the sensing device may vary in speed.
+		
+		Important variation of density can be a serious issue for some processing methods. 
+		For instance if millions of points are concentrated in a small volume,
+		a processing method may exceed the maximum memory of the system.
+		Large density variation are also bad for performances in parallel environment.
+		Indeed, efficient parallel computing may require that all the worker have about the same amount of work.
+		One worker stumbling upon a very dense part of the point cloud would have much more points to process than the other workers.
+		The figure \ref{fig:density-correction} shows a place in the Paris dataset where the density is 5 times over the average value of this data set.
+		In this context of terrestrial Lidar, this density peak is simply due to the fact that the acquisition vehicle stopped at this place
+		, while continuing to sense data.
+		
+		The PCS coupled with LOD patches allows to quickly find abnormally high density.
+		The PCS filters in few milliseconds the patch containing lots of points. This suffice for most applications.
+		For a finer density estimation, we compute the approximate volume of the patch.
+		For a level $L$, the $D_c[L]$ number of points multiplied by the theoretical cell size for this level gives an approximate volume (or surface) of the patch.
+		The total number of points divided by this volume (surface) gives a finer volumetric (surface) density estimation.
+		
+		Then, correcting density consists of taking into account only the first $K$ points, where $K$ is computed to attain the approximate patch volume (surface).
+		
 		
 	\subsection{Classification with the Point Cloud Server}
 		\label{method.classif}
