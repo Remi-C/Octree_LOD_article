@@ -147,6 +147,9 @@
 			For this experiment we only stream a given number of points per patch, which allows to accelerate greatly data loading. 
 			
 	\subsection{Dimensionality descriptor and patch classification}
+			To ensure significant results we follow a K-fold cross-validation method. 
+			We randomly split the observations into K parts, then for each part, we use the K-1 others to learn and predict on the part.
+			All evaluations are then performed on the total of predicted observations.
 		\subsubsection{Experiment summary}
 			For each patch, we store the associated number of points chosen per level ($ppl$) while computing MidOc ordering.  
 			
