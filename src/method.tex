@@ -180,10 +180,10 @@
 		\label{method.dimdescriptor}
 		\subsubsection{Principle}
 		When building the MidOc ordering process, the number of chosen points per level can be stored.
-		Each ordered patch is then associated with a vector of number of points per level $D_c=(N_{L_{1}},..,N_{L_{\text{max}}})$.
+		Each ordered patch is then associated with a vector of number of points per level $ppl=(N_{L_{1}},..,N_{L_{\text{max}}})$.
 		The number of picked point is directly the voxel occupancy for this level of the octree.
 		In theory for a level $L$, a centred line would occupy $2^L$ cells, a centred plan $4^L$ cells, and a volume all of the cells ($8^L cells$).
-		Thus, by comparing $D_c$ to theoretical $L_i  \rightarrow (2^i)^L,i \in [1..3]$ functions we retrieve information about the dimensionality of the patch (See Figure \ref{fig:dim_descriptor}). 
+		Thus, by comparing $ppl$ to theoretical $L_i  \rightarrow (2^i)^L,i \in [1..3]$ functions we retrieve information about the dimensionality of the patch (See Figure \ref{fig:dim_descriptor}). 
 		\myimage{"./illustrations/dim_descriptor/dim_descriptor"}{Voxel occupancy is a crude dimensionality descriptor: 3D line, surface or volume occupy a different amount of voxels.}{fig:dim_descriptor}
 		
 		
@@ -209,7 +209,7 @@
 		As long as the patch contains a minimal number of points, the descriptors is density and scale invariant. 
 		Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
 		
-		Although it might be possible to go a step further and decompose a patch $D_c$ vector on the base of $x_i \rightarrow (2^i)^x, i \in [1..3]$, the direct and exact decomposition can't be used because the decomposition might depends on L. For instance a plane with a small line could appear as a plan for $L_1$ and $L_2$, and starts to appear differently over $L_3$ and higher level. In this case, an Expectation-Maximization scheme might be able to decompose robustly.
+		Although it might be possible to go a step further and decompose a patch $ppl$ vector on the base of $x_i \rightarrow (2^i)^x, i \in [1..3]$, the direct and exact decomposition can't be used because the decomposition might depends on L. For instance a plane with a small line could appear as a plan for $L_1$ and $L_2$, and starts to appear differently over $L_3$ and higher level. In this case, an Expectation-Maximization scheme might be able to decompose robustly.
  
 	\subsection{Excessive Density detection and correction}
 		\label{method.density}
@@ -228,7 +228,7 @@
 		The PCS coupled with LOD patches allows to quickly find abnormally high density.
 		The PCS filters in few milliseconds the patch containing lots of points. This suffice for most applications.
 		For a finer density estimation, we compute the approximate volume of the patch.
-		For a level $L$, the $D_c[L]$ number of points multiplied by the theoretical cell size for this level gives an approximate volume (or surface) of the patch.
+		For a level $L$, the $ppl[L]$ number of points multiplied by the theoretical cell size for this level gives an approximate volume (or surface) of the patch.
 		The total number of points divided by this volume (surface) gives a finer volumetric (surface) density estimation.
 		
 		Then, correcting density consists of taking into account only the first $K$ points, where $K$ is computed to attain the approximate patch volume (surface).
