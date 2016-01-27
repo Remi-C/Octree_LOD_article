@@ -34,7 +34,7 @@
  		%\subsubsection{Vosges data set}
  		We also use the Vosges data set, which is a very wide spread, aerial Lidar, 5.5 Billions point cloud. 
  		Density is much more constant at 10k pts/patch .
- 		A vector ground truth about surface occupation nature (type of forest) is produced by the French Forest Agency.
+ 		A vector ground truth about surface occupation nature (type of forest) is produced by the French Forest Agency. Again the classes are hierarchical, with 28 classes. 
  		We group points in 50 $\times 50 \meter$ squares.
  		
 
@@ -121,8 +121,7 @@
 		we limit the number of points per patch sent to the browser. Patch are ordered with MidOc, so the visual artifact is greatly reduced, and the data loads more quickly. 
 
 
-	\subsection{Excessive Density detection and correction}
-	
+	\subsection{Excessive Density detection and correction} 
 		\myimage{./illustrations/density/density_detection_and_correction}{Abnormal density detection and correction. Top points per patch (left) or density (right), green-yellow-red. Bottom reflectance in grey. }{fig:density-correction}
 		
 		%\paragraph{Density abnormality (peak)}
@@ -131,19 +130,41 @@
 		In comparison, computing the density per point with neighbourhood is extremely slow (only for this 1.5 Million extract, 1 minute with CloudCompare,4x2.5GHz, 10cm rad) (top right illustration), and after the density is computed for each points, all the point cloud still need to be filtered to find abnormal density spot.
 		
 		%\paragraph{Simple correction}
-		If the patch are ordered following MidOc, unneeded points are removed by simply putting a threshold on points per patch (bottom left, 1 to 5k points \per \cubic \meter , bottom right , 5k to 24 k pts \per \cubic \meter). It considerably reduces the number of points (-33\%).
-			
-	\subsection{Dimensionality descriptor and patch classification}
-			To ensure significant results we follow a K-fold cross-validation method. 
-			We randomly split the observations into K parts, then for each part, we use the K-1 others to learn and predict on the part.
-			All evaluations are then performed on the total of predicted observations.
-		\subsubsection{Experiment summary}
-			For each patch, we store the associated number of points chosen per level ($ppl$) while computing MidOc ordering.  
-			
-			This dimensionality descriptor alone cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionally very similar, yet semantically very different).
-			An analysis of confusion matrix shows which meta classes are separatable or not.
-			
-			Extra descriptors are then needed :  (P : for Paris , V : for Vosges: 
+		If the patch are ordered following MidOc, unneeded points are removed by simply putting a threshold on points per patch (bottom left, 1 to 5k points \per \cubic \meter , bottom right , 5k to 24 k pts \per \cubic \meter). It considerably reduces the number of points (-33\%). 
+	
+	\subsection{Dimensionality descriptor}
+		\label{result.dim_descriptor}
+		Is the dimensionality descriptor sufficient to classify data?
+		show illustration.
+		Separated in 1,2,3D , but still confusion
+		--> understandable.
+		
+		Is the dimensionality descriptor useful?
+		next : using more descriptors.
+		  - Results not bad
+		  - always exploit the dim descriptor.
+		  
+	\subsection{Patch Classification}
+		\label{result.classification}
+		%\subsubsection{Experiment summary}
+		
+		* introducing the attributes
+		* finding the correct number of class
+		* precision increase / recall increase.
+		
+		
+		To ensure significant results we follow a K-fold cross-validation method. 
+		We randomly split the observations into K parts, then for each part, we use the K-1 others to learn and predict on the part.
+		All evaluations are then performed on the total of predicted observations.
+	
+	
+	\subsubsection{Experiment summary}
+		For each patch, we store the associated number of points chosen per level ($ppl$) while computing MidOc ordering.  
+	
+		This dimensionality descriptor alone cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionally very similar, yet semantically very different).
+		An analysis of confusion matrix shows which meta classes are separatable or not.
+		
+		Extra descriptors are then needed :  (P : for Paris , V : for Vosges: 
 		- $points\_per\_level$ ($ppl$), level 1 to 4 (P+V)
 		- average of intensity (P+V)
 		- average of $number\_of\_echo$ (P+V)
@@ -213,6 +234,8 @@
 				It is possible to use this method only when precision is  a rising function of confidence given by random forest.
 				This is the case for 4+wheeler class.  
 				\myimage{./illustrations/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class = f(1-random forest confidence score). The horizontal line is the average confidence.}{fig:precision-vs-confidence} 
+				
+				
 			\paragraph{Filtering: artificial increase of recall}
 				The patch classifier is used on paris data set.
 				The goal is to find all ground patches very fast.
