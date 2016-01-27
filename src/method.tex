@@ -9,13 +9,13 @@
 	\label{sec:method}
 	
 	In this section, we first present the Point Cloud Server (section \ref{method.PCS})(PCS \cite{cura2015})
-	upon which this article is based. Then we introduce the LOD solution that we propose (\ref{method.intro})
+	upon which this article is based. Then we introduce the LOD solution that we propose 
 	, which consists of reordering groups of points from less to more details (\ref{method.order}), and then choose which LOD is needed.
 	Although any ordering can be used, we propose a simple geometric one (\ref{method:midoc}) which is fast and robust to density variation. 
 	Furthermore, constructing this ordering produces a rough dimensionality descriptor (\ref{method.dimdescriptor}). 
 	This descriptor can be used in the PCS to perform classification at the patch level (\ref{method.classif}). This classification can be directly transferred to points, or indirectly exploited in a pre-filtering step.
 	
-	\subsection{the Point Cloud Server}
+	\subsection{The Point Cloud Server}
 	\label{method.PCS}
 		\myimage{./illustrations/PCS/PCS}{Overall and storage organisations of the Point Cloud Server.}{fig:PCS}
 		
@@ -92,7 +92,7 @@
 				This simplicity also implies that adapting tools to use this ordering is very easy.
 	
 	
-	\subsection{ MidOc : an ordering for gradual geometrical approximation}
+	\subsection{MidOc : an ordering for gradual geometrical approximation}
 		\label{method:midoc}
 		\subsubsection{Requirements and hypothesis}
 		
@@ -196,7 +196,7 @@
 		due to the fact that a leaf is about the same size as point spacing and is partly transparent to laser (leading to several echo).
 		Then a foliage patch would typically be $(1,8,64,512)$ (if enough points), so a $8^L$ function.
 		
-		\paragraph{Usage}
+		\subsubsection{Usage}
 
 		Real Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
 		Using the result of the MidOc ordering has the advantage of not necessitate extra computing and be extremely simple.
@@ -209,45 +209,43 @@
 		Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
 		
 		Although it might be possible to go a step further and decompose a patch $D_c$ vector on the base of $x_i \rightarrow (2^i)^x, i \in [1..3]$, the direct and exact decomposition can't be used because the decomposition might depends on L. For instance a plane with a small line could appear as a plan for $L_1$ and $L_2$, and starts to appear differently over $L_3$ and higher level. In this case, an Expectation-Maximization scheme might be able to decompose robustly.
-
-			 
-		
+ 
 		
 	\subsection{Classification with the Point Cloud Server}
 		\label{method.classif}
+		\subsubsection{Principle}
 		
-		\todoall{expliquer le schema global de la classification: 
-				in base out of base
-				but : validation dim, pas forcement classif
-				descripteurs : ortos ou simple
-				a cause du jeux de données complique, clustering de classes
-				}
-		The base method is to use Random Forest to classify patches (and not points directly).
+		We propose to perform patch classification using the Point Cloud Server and the previously introduced crude dimensionality descriptor.
+		Following the position of the PCS towards abstraction, the classification is performed at the patch level and not at the point level. 
+		This induces a massive scaling and speeding effect, at the cost of introducing quantization error.
+		Indeed, compared to a point classification, a patch may contain points belonging to several classes (due to generalisation), yet it will only be classified in one class, thus the "quantization" error.
 		
-		Because patches may contains points belonging to several classes, transferring the patch classes to points naturally increases the errors.
-		
-		We can forsee three type of application for patch classification.
-		
-		\paragraph{Speeding a complex point classifier}
-		The first application could be to speed up and/or improve a complex per point classifier.
-		For a speed up, the patch classifier could perform a first basic classification extremely fast, thus eliminating a large number of points, before the complex classifier is used. 
-		If necessary, it is possible to artificially increase recall at the cost of a diminution of precision, like in \ref{fig:recall-increase}.
+		Because patch classification is so fast and scales so well,
+		the end goal can be however slightly different than for usual point classification.
 		
 		
-		\paragraph{Improving a complex point classifier}
-		Patch classifier can also be used to improve result of a complex classifier by performing a first rough analysis which may determinate which complex classifier to use amongst several, like Cascaded classifier.
-		For instance a patch classified as urban object would lead to chose a classifier specialized in urban object, and not the general classifier. This is especially precious for classes that are statistically very minoritary.
-		If necessary it is possible to artificially increase precision at the cost of recall.
-		
-		
-		
-		\paragraph{Filtering}
-		Another application is filtering for applications that only require one class. When the learning is done, classifying is extremely fast.
-		
+		Patch classification can be used as a fast preprocess to another slower point classification,
+		be it to speed it (an artificial recall increase for patch classification may be needed, see Figure \ref{fig:recall-increase}), or to better a point classification.
+		The patch classification can provide a rough classification.
+		Based on that the most adapted point classifier is chosen 
+		(similarly to Cascaded classifiers),
+		thus improving the result of the final point classification.
+		For instance a patch classified as urban object would lead to chose a classifier specialized in urban object, and not the general classifier.
+		This is especially precious for classes that are statistically under-represented.
+		 
+		Patch classification may also be used as a filtering preprocess for applications that only require one class. 
 		Many applications only need one class, and do not require all the points in it, but only a subset with good confidence.
-		For this it is possible to artificially boost the precision by accepting only high confidence prediction.
-		For instance computing a Digital Terrain Model (DTM) only requires ground points. Morevover, the ground will have many parts missing due to objects, so using only a part of all the points will suffice anyway. The patch classifier allow to find the ground patch extremely fast.
-		Another example is registration. A registration process typically require reliable points to perform mapping and registration. In this case there is no need to use all points, and the patch classification can provide patches from ground and facade with high accuracy (for point cloud to point cloud or point cloud to 3D model registration) , or patches of objects and trees (for points cloud to landmark registration).
+		For this it is possible to artificially boost the precision (by accepting only high confidence prediction).
+		For instance computing a Digital Terrain Model (DTM) only requires ground points.
+		Moreover, the ground will have many parts missing due to objects,
+		so using only a part of all the points will suffice anyway. 
+		The patch classifier allow to find most of the ground patch extremely fast.
+		Another example is registration.
+		A registration process typically require reliable points to perform mapping and registration.
+		In this case there is no need to use all points,
+		and the patch classification can provide patches from ground and façade with high accuracy
+		(for point cloud to point cloud or point cloud to 3D model registration),
+		or patches of objects and trees (for points cloud to landmark registration).
 		In other applications, finding only a part of the points may be sufficient, for instance when computing a building map from façade patches.
 		
 		
