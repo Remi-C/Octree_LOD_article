@@ -22,14 +22,14 @@
  	
 	%\subsection{Data set used}
 		\myimage{./illustrations/histogram_of_density/paris_vosges_density_histogramm.png}{ Histogram of number of points per patch, with a logarithmic scale for X and Y axis}{fig:hist-density-dataset}
-	
-	
+	 
  		We use two data sets. There were chosen as different as possible to further evaluate how proposed methods can generalise on different data (See Figure fig:hist-density-dataset for histogram of patch density ). 
  		%\subsubsection{IQmulus data set}
  		The first data set is \cite{IQmulus2014} (Paris data set), an open source urban data set with varying density, singularities, and very challenging point cloud geometry. 
  		Every point is labelled with a hierarchy of 100 classes.
  		The training set is only 12 millions points.
  		Only 22 classes are represented. We group points in $1 \cubic \metre$ cubes.
+ 		The histogram of density seems to follow an exponential law (See figure \ref{fig:hist-density-dataset}), the effect being that many patches with few points exist. 
  		
  		%\subsubsection{Vosges data set}
  		We also use the Vosges data set, which is a very wide spread, aerial Lidar, 5.5 Billions point cloud. 
@@ -77,7 +77,7 @@
 		
 		We first test the visual fitness of MidOc ordering.
 		Then we compute MidOc for both our dataset and evaluate the trade-off between point cloud size and point cloud LOD. 
-		As a proof of concept we stream 3D point cloud with various LOD to a browser.
+		As a proof of concept we stream a 3D point cloud with LOD to a browser.
 		
 		%\subsubsection{Visual evaluation}
 		The figure \ref{fig:visual_LOD_left_right} illustrates LOD on a typical street of Paris dataset
@@ -118,7 +118,7 @@
 		 
 		%\subsubsection{LOD stream}
 		As a proof of concept we stream points from the data base to a browser \cite{IGN2014a}. Because patch may contain a large number of points and because the browser WebGL technology is limited in how much points it can display,
-		we limit the number of points per patch sent to the browser. Patch are ordered with MidOc, so the visual artifact is greatly reduced, and the data loads more quickly. 
+		we limit the number of points per patch sent to the browser. Patch are ordered with MidOc, so the visual artifact is greatly reduced, and the data loads more quickly, as expected. 
 
 
 	\subsection{Excessive Density detection and correction} 
@@ -145,7 +145,7 @@
 		We use the spectral layout (see Section \ref{method.classification.spectral_layout}) to automatically produce the graph in Figure \ref{fig:ppl-separator-power}. 
 		We manually ad 1D,2D and 3D arrows.
 		On this graph, classes that are most similar according to the classification with $ppl$ are close. The graph clearly present an organisation following 3 axis. Those axis coincide with the dimensionality of the classes. For instance the "tree" classe as a strong 3D dimensionality. The "Punctual object" class, defined by "Objects which representation on a map should be a point", is strongly 1D (lines), with object like bollard and public light. The "Road" class is strongly 2D, the road being locally roughly a plan. The center of the graph is occupied by classes that may have mixed dimensionality, for instance "4+ wheeler" (i.e. car) may be a plan or more volumetric, because of the $1 \cubic \metre$ sampling.
-		"Building" and "sidewalk" are not as clearly 2D as  the "road" class. Indeed, the patch of "sidewalk" class are strongly mixed (containing 22\mypercent of non-sidewalk points, See figure fig:result-paris). The building class is also not pure 2D because building facade in Paris contains many objects, like balcony and vegetation (See Figure \ref{fig:visual_LOD_left_right}, in the Level 3 for instance).
+		"Building" and "sidewalk" are not as clearly 2D as  the "road" class. Indeed, the patch of "sidewalk" class are strongly mixed (containing 22\mypercent of non-sidewalk points, See figure fig:result-paris). The building class is also not pure 2D because building facade in Paris contains balcony, building decoration and floors, whcih introduce lots of object-like patches, which explain that building is closer to the object cluster. (See Figure \ref{fig:visual_LOD_left_right}, in the Level 3 for instance).
 		The dimensionality descriptor clearly separate classes following there dimensionality, but can't separate classes with mixed dimensionality.
 		
 		
@@ -181,6 +181,8 @@
 		
 		
 		\subsubsection{Analysing class hierarchy} 
+		\myimage{./illustrations/classif/class_clustering/class_clustering_macro_all}{Result of automatic spectral clustering over confusion matrix for patch classification of Paris data set with all simple features. Edges width and colour are proportional to confusion. We manually draw clusters for easier understanding.}{fig:class-clustering-all-features}
+		
 		Choosing which level of the class hierarchy to use depends on data set and applications.
 		In a canonical classification perspective, we have to strongly reduce the number of classes if we want to have significant results.
 		However reducing the number of class (i.e use a higher level in the classes hierarchy) also means that classes are more heterogeneous.
@@ -193,8 +195,6 @@
 		Introducing other features clearly helps to separate more classes.
 		The graph also shows the limit of the classification, because some class cannot be properly defined without context (e.g. the side-walk, which is by definition the space between building and road, hence is defined contextually). 
 		
-		\myimage{./illustrations/classif/class_clustering/class_clustering_macro_all}{Result of automatic spectral clustering over confusion matrix for patch classification of Paris data set with all simple features. Edges width and colour are proportional to confusion. We manually draw clusters for easier understanding.}{fig:class-clustering-all-features}
-				
 		\subsubsection{Classification results}
 		\myimage{./illustrations/classif/result_vosges/result_vosges_2.png}{Feature usage (first table).  Precision(prec.), recall (rec.), support (supp.), and average percent of points of the class in the patches, for comparison with point based method (mix.).}{fig:result-vosges}
 		We perform a analysis of error on Vosges dataset and we remark that the error seems to be significantly correlated to distance to borders.

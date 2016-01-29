@@ -36,26 +36,8 @@
 		We stress that our method used on any point cloud will provide LOD,
 		but that using it with the PCS is much more interesting,
 		and adds key feature such as spatial indexing, fast filtering, etc. 
-	 
-%	\subsection{Introduction}
-%	\label{method.intro}
-%	
-%		creating a lod -> order points
-%		by product as dimensionnality descriptor
-%		classification
-%		leveraging classification for pre-filtering
-%	 
-%	 	In this section we introduce a simple method which proposes free geometrical LOD features, at the price of a small preprocessing time.
-%	 	The method relies on ordering the points so that reading the points following this order is going to gradually increase the details of the point cloud.
-%	 	Many ordering could be used, we propose one 
-%	 	We use a by-product of this method to perform efficient training and filtering with Random Forest. 
-%	 	A patch is technically a subset of a point cloud, so also a point cloud. For generality we will use the term point cloud to describe both patch or a global point cloud for the rest of this article, as our method can be used indifferently on patches and on the global point cloud.
-%	 	\\
-%	 	Lastly, computing this LOD gives interesting by-product that can be used as a crude local dimensionality descriptor. We use that to perform extremely fast rough-filtering of massive point cloud. 
-%	 	
-%	 	
-%	 	This method has been designed to work with Lidar data sets, but may be used on noisy Structure from Motion (SfM) point clouds after filtering.  
-%	 	 
+ 
+ 	 
 	 	 
 	\subsection{Exploiting the order of points}
 		\label{method.order}
@@ -64,8 +46,7 @@
 			\myimage{./illustrations/LOD/short_illustration_concept_lod/concept_Level_Of_Detail.png}{3 geometrical Level Of Detail (LOD) for the same point cloud. Starting from very low detail by reading the first point of the patch, reading further points increases the details.}{fig:lod-principle}
 			
 			We propose to exploit the ordering of points to indirectly store LOD information.
-			Indeed, whatever the format, be it file or database based, points ends up as a list, which is ordered.
-			
+			Indeed, whatever the format, be it file or database based, points ends up as a list, which is ordered. 
 			The idea is then to exploit the order of this list, 
 			that when reading the points from the beginning to the end, we get gradually a more accurate geometrical approximation of the point cloud (see figure \ref{fig:lod-principle}). 
 			 
@@ -75,21 +56,21 @@
 		%\subsubsection{Advantages}
 			Leveraging the point ordering as LOD gives 3 main advantages.
 			%\paragraph{No on-line processing time}
-				Except a pre-processing step to write the point cloud following a given ordering, each time the user wants to get a Level Of Detail version of the point cloud, there is no computing at all (only data reading).
-				This may not make a big difference for non-frequent reading, but in a context where the same point cloud is going to get used several times at several levels and by several users simultaneously (for instance Point Cloud as a Service), no processing time makes a big difference.
-				%(See figure \ref{fig:all_lod_illustration} for an example with LOD visualisation.) 		
-			
+			Except a pre-processing step to write the point cloud following a given ordering, each time the user wants to get a Level Of Detail version of the point cloud, there is no computing at all (only data reading).
+			This may not make a big difference for non-frequent reading, but in a context where the same point cloud is going to get used several times at several levels and by several users simultaneously (for instance Point Cloud as a Service), no processing time makes a big difference.
+			%(See figure \ref{fig:all_lod_illustration} for an example with LOD visualisation.) 		
+		
 			%\paragraph{No data duplication}
-				Another big advantage is that exploiting point ordering does not necessitate additional storage.
-				This is an advantage on low level. It saves disk space (no data duplication, no index file). Because the LOD information is embedded right within the point cloud, it is perfectly concurrent-proof, i.e. the point cloud and the LOD can not become out of sync.
-				(Even in heavy concurrent read/Write, a user would always get a coherent LOD).
-				Lastly because the LOD only relies on ordering the original points, and does not introduces any other points or data, it avoids all precision-related issues that may come from aggregating.
+			Another big advantage is that exploiting point ordering does not necessitate additional storage.
+			This is an advantage on low level. It saves disk space (no data duplication, no index file). Because the LOD information is embedded right within the point cloud, it is perfectly concurrent-proof, i.e. the point cloud and the LOD can not become out of sync.
+			(Even in heavy concurrent read/Write, a user would always get a coherent LOD).
+			Lastly because the LOD only relies on ordering the original points, and does not introduces any other points or data, it avoids all precision-related issues that may come from aggregating.
 			
 			%\paragraph{Portable}
-				The last advantage comes from the simplicity of using the ordering. 
-				Because it is already something that all point cloud tools can deal with (a list of points!), it is portable. Most softwares do not change the points order inside a cloud (See Section \ref{result.os_softwares}).
-				Even if a tool were to change the order, it is easy to add the ordering number as an attribute, which increases slightly the storage requirement, but is totally portable and can be used with all existing tools.
-				This simplicity also implies that adapting tools to use this ordering is very easy.
+			The last advantage comes from the simplicity of using the ordering. 
+			Because it is already something that all point cloud tools can deal with (a list of points!), it is portable. Most softwares do not change the points order inside a cloud (See Section \ref{result.os_softwares}).
+			Even if a tool were to change the order, it is easy to add the ordering number as an attribute, which increases slightly the storage requirement, but is totally portable and can be used with all existing tools.
+			This simplicity also implies that adapting tools to use this ordering is very easy.
 	
 	
 	\subsection{MidOc : an ordering for gradual geometrical approximation}
