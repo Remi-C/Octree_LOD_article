@@ -134,117 +134,105 @@
 	
 	\subsection{Dimensionality descriptor}
 		\label{result.dim_descriptor}
-		Is the dimensionality descriptor sufficient to classify data?
-		show illustration.
-		Separated in 1,2,3D , but still confusion
-		--> understandable.
+		We test the dimensionality descriptor ($ppl$)by analysing how well it
+		can be used to separate classes, and how much it is used when 
+		several other features are available.
 		
-		Is the dimensionality descriptor useful?
-		next : using more descriptors.
-		  - Results not bad
-		  - always exploit the dim descriptor.
+		%\subsubsection{Separator power of ppl descriptor for Paris data set}
+		\myimage{./illustrations/classif/class_clustering/only_lod_feature_2.png}{Spectral clustering of confusion matrix of Paris data set classification using only $ppl$ descriptor. Edge width and colour are proportional to affinity. Node position is determined fully automatically. Red-ish arrows are manually placed to help understand}{fig:ppl-separator-power}
+		
+		Using only the $ppl$ descriptor, a classification is performed on paris data set, then a confusion matrix is computed.
+		We use the spectral layout (see Section \ref{method.classification.spectral_layout}) to automatically produce the graph in Figure \ref{fig:ppl-separator-power}. 
+		We manually ad 1D,2D and 3D arrows.
+		On this graph, classes that are most similar according to the classification with $ppl$ are close. The graph clearly present an organisation following 3 axis. Those axis coincide with the dimensionality of the classes. For instance the "tree" classe as a strong 3D dimensionality. The "Punctual object" class, defined by "Objects which representation on a map should be a point", is strongly 1D (lines), with object like bollard and public light. The "Road" class is strongly 2D, the road being locally roughly a plan. The center of the graph is occupied by classes that may have mixed dimensionality, for instance "4+ wheeler" (i.e. car) may be a plan or more volumetric, because of the $1 \cubic \metre$ sampling.
+		"Building" and "sidewalk" are not as clearly 2D as  the "road" class. Indeed, the patch of "sidewalk" class are strongly mixed (containing 22\mypercent of non-sidewalk points, See figure fig:result-paris). The building class is also not pure 2D because building facade in Paris contains many objects, like balcony and vegetation (See Figure \ref{fig:visual_LOD_left_right}, in the Level 3 for instance).
+		The dimensionality descriptor clearly separate classes following there dimensionality, but can't separate classes with mixed dimensionality.
+		
+		
+		To further evaluate the dimensionality descriptor, we introduce other classification features (see \ref{result.classification}), perform classification and compute each feature importance.
+		The overall precision and recall result of these classification is correct, and the $ppl$ descriptor is of significant use (See Figure \ref{fig:result-paris} and \ref{fig:result-vosges}), especially in the Vosges data set. The $ppl$ descriptor is less used in Paris data set, maybe because lots of classes can not really be defined geometrically, but more with the context.
 		  
 	\subsection{Patch Classification}
 		\label{result.classification}
 		%\subsubsection{Experiment summary}
-		
-		* introducing the attributes
-		* finding the correct number of class
-		* precision increase / recall increase.
-		
-		
-		To ensure significant results we follow a K-fold cross-validation method. 
-		We randomly split the observations into K parts, then for each part, we use the K-1 others to learn and predict on the part.
-		All evaluations are then performed on the total of predicted observations.
-	
-	
-	\subsubsection{Experiment summary}
-		For each patch, we store the associated number of points chosen per level ($ppl$) while computing MidOc ordering.  
-	
-		This dimensionality descriptor alone cannot be used to perform sophisticated classification, because many semantically different objects have similar dimension (for instance, a piece of wall and of ground are dimensionally very similar, yet semantically very different).
-		An analysis of confusion matrix shows which meta classes are separatable or not.
-		
-		Extra descriptors are then needed :  (P : for Paris , V : for Vosges: 
+		 
+		\subsubsection{Introducing other features}
+		The dimensionality descriptor alone cannot be used to perform sophisticated classification,
+		because many semantically different objects have similar dimension 
+		(for instance, a piece of wall and of ground are dimensionally very similar
+		, yet semantically very different).
+		We introduce additional simple features for classification (See Section \ref{method.classification.other_feature}). All use already stored patch statistics, and thus are extremely fast to compute.
+		(P : for Paris , V : for Vosges: 
+		- average of altitude regarding sensing device origin(P)
+		- area of $patch\_bounding\_box$ (P) : 
+		- patch height (P)
 		- $points\_per\_level$ ($ppl$), level 1 to 4 (P+V)
 		- average of intensity (P+V)
-		- average of $number\_of\_echo$ (P+V)
-		- average of height regarding laser origin(P)
+		- average of $number\_of\_echo$ (P+V) 
 		- average Z (V)
-		- patch height (P)
-		- area of $patch\_bounding\_box$ (P) : 
 		
-		\subsubsection{Separator power of ppl descriptor for Paris data set}
-			
-			\myimage{./illustrations/classif/class_clustering/only_lod_feature_2.png}{Spectral clustering of confusion matrix of Paris data set classification using only $ppl$ descriptor. Edge width and colour are proportional to affinity. Node position is determined fully automatically. Red-ish arrows are manually placed to help understand}{fig:ppl-separator-power}
-			
-			Using only the $ppl$ descriptor, a classification is performed on paris data set, then a confusion matrix is computed.
-			A spectral clustering of this matrix interpreted as a distance matrix between classes is performed. This clustering is used to place classes on the illustration.
-			We manually ad 1D,2D and 3D arrows. 
+		\subsubsection{Classification Setting} 
+		Undersampling and weighting are used on the paris dataset. First Undersampling to reduce the over dominant building classe to a 100 factor of the smallest class support. Then weighting is used to compensate for differences in support. 
+		For the Vosges data set only the weighting strategy is used. 
+		The weighting approach is favoured over undersampling because it lessen variability of results when classes are very heterogeneous.
 		
-		\subsubsection{Analyzing data set classes}
-			\paragraph{Balancing the data set}  
-				Undersampling and weighting are used on the paris dataset. First Undersampling to reduce the over dominant building classe to a 100 factor of the smallest class support. Then weighting is used to compensate for differences in support.
-				
-				For the Vosges data set only the weighting strategy is used.
-				
-				The weighting approach is favoured over undersampling because it lessen variability of results when classes are very heterogeneous.
-				
-				
-			\paragraph{Analysing class hierarchy} 
-		 
-				Choosing which level of the class hierarchy uses depends on data set and applications.
-				In a canonical classification perspective, we have to strongly reduce the number of classes if we want to have significant results.
-				However reducing the number of class (i.e use a higher level in the classes hierarchy) also means that classes are more heterogeneous.
-				
-				Both data set are extremely unbalanced (factor 100 or more). Thus our simple and direct Random Forest approach is ill suited for dealing with extremely small classes. (Cascading or one versus all framework would be needed).
-				
-				For Vosges data set a short analysis convince us to use 3 classes: Forest, Land, and other, on this three classes, the Land class is statistically overweighted by the 2 others.	
-				
-				For the Paris data set, we analyse the confusion matrix by spectral clustering.
-				
-				\myimage{./illustrations/classif/class_clustering/class_clustering_macro_all}{Result of automatic spectral clustering over confusion matrix for patch classification of Paris data set with all simple features. Edges width and colour are proportional to confusion. We manually draw clusters for easier understanding.}{fig:class-clustering-all-features}
-				
-				
-				This analysis is useful to show the limit of the classification, because some class cannot be properly defined without context (e.g. the side-walk, which is by definition the space between building and road, hence is defined contextually).
+		To ensure significant results we follow a K-fold cross-validation method. We again compute a confusion matrix (i.e. affinity between classes) on the Paris data set to choose which level of class hierarchy should be used.
+		fig:class-clustering-all-features
 		
-		\subsubsection{Patch classifier}
-			\paragraph{Vosges data set}
 		
-				We perform a analysis of error on Vosges dataset and we remark that the error seems to be significantly correlated to distance ot borders.
+		\subsubsection{Analysing class hierarchy} 
+		Choosing which level of the class hierarchy to use depends on data set and applications.
+		In a canonical classification perspective, we have to strongly reduce the number of classes if we want to have significant results.
+		However reducing the number of class (i.e use a higher level in the classes hierarchy) also means that classes are more heterogeneous.
+		  
+		Both data set are extremely unbalanced (factor 100 or more). Thus our simple and direct Random Forest approach is ill suited for dealing with extremely small classes. (Cascading or one versus all framework would be needed).
+		
+		For Vosges data set a short analysis convince us to use 3 classes: Forest, Land, and other, on this three classes, the Land class is statistically overweighted by the 2 others.
+		
+		For the Paris data set, we again use a spectral layout to represent the affinity graph (See Figure \ref{fig:class-clustering-all-features}).
+		Introducing other features clearly helps to separate more classes.
+		The graph also shows the limit of the classification, because some class cannot be properly defined without context (e.g. the side-walk, which is by definition the space between building and road, hence is defined contextually). 
+		
+		\myimage{./illustrations/classif/class_clustering/class_clustering_macro_all}{Result of automatic spectral clustering over confusion matrix for patch classification of Paris data set with all simple features. Edges width and colour are proportional to confusion. We manually draw clusters for easier understanding.}{fig:class-clustering-all-features}
 				
-				\myimage{./illustrations/classif/result_vosges/result_vosges_2.png}{Feature usage (first table).  Precision(prec.), recall (rec.), support (supp.), and average percent of points of the class in the patches, for comparison with point based method (mix.).}{fig:result-vosges}
+		\subsubsection{Classification results}
+		\myimage{./illustrations/classif/result_vosges/result_vosges_2.png}{Feature usage (first table).  Precision(prec.), recall (rec.), support (supp.), and average percent of points of the class in the patches, for comparison with point based method (mix.).}{fig:result-vosges}
+		We perform a analysis of error on Vosges dataset and we remark that the error seems to be significantly correlated to distance to borders.
+		The learning time is few minutes (monoprocess, python), the predicting time is few seconds (same).
+				 
+		\myimageFullPageWidth{./illustrations/classif/result_paris/result_per_class_multilevel_paris_2.pdf}{Results for Paris data set: at various level of class hierarchy. Precision(prec.), recall (rec.), support (sup.) and average percent of points of the class in the patches of the class, for comparison with point based method (mix.). Classes of the same type are in the same continuous tone. Feature usage is evaluated for each level in the class hierarchy.}{fig:result-paris} 
+		The learning time is less than a minute, the predicting time is less than a second. 
+		
+		For both dataset, patches main contain points from several classes. We measure how much of the patch points pertain to the dominant class. The result is given in the columns "mix". For instance the patch of the class "building" contains an average of 98.6 \mypercent points of the class "building", whereas the patch from the class "forest" contains 88.3\mypercent points of the class "forest".
+		Therefore, to provide a comparison with point based classification, we can compute the precision of the classification per point as $Precision_{point} = Precision_{patch} * Mix.$.
+		
+		\subsubsection{Precision or Recall increase} 
+		
+		%\paragraph{precision increase}
+		As explained in Section \ref{method.classification.using_confidence}, we can leverage the random forest confidence score to artificially increase the precision.
+		\myimage{./illustrations/precision_vs_recall/patch_classification_for_building.pdf}{Plotting of patches classified as building, using confidence to increase precision. Ground truth from IGN and Open Data Paris}{fig:precision-increase}.
+		
+		We focus on the building class.
+		As seen in the Figure \ref{fig:precision-increase}, initial classification results (blue) are mostly correct.
+		Yet, only keeping patches with high confidence may greatly increase precision (to $100$\mypercent).
+		Further filtering on confidence can not increase precision, but will reduce the variability of the found building patches. 
+		This result (red) provides a much better base for building reconstruction. 
 				
-				The learning time is few minutes (monoprocess, python), the predicting time is few seconds (same).
-				
-				
-			\paragraph{Paris data set}
-			
-				\myimageFullPageWidth{./illustrations/classif/result_paris/result_per_class_multilevel_paris_2.pdf}{Results for Paris data set: at various level of class hierarchy. Precision(prec.), recall (rec.), support (sup.) and average percent of points of the class in the patches of the class, for comparison with point based method (mix.). Classes of the same type are in the same continuous tone. Feature usage is evaluated for each level in the class hierarchy.}{fig:result-paris}
-		 
-				The learning time is less than a minute, the predicting time is less than a second. 
-			
-		\subsubsection{Patch classifier applications} 
-			
-			\paragraph{Artificial increase of precision}
-				We demonstrate the use of artificial increase of precision. Initial results (blue) are mostly correct, but by only keeping patches with high confidence, it is possible to increase precision to $100$\%. Above $100$\%, we reduce the variability of the found building patches. 
-				\myimage{./illustrations/precision_vs_recall/patch_classification_for_building.pdf}{Plotting of patches classified as building, using confidence to increase precision. Ground truth from IGN and Open Data Paris}{fig:precision-increase}.
-				
-				In this example the precision was already very good (most of the blue patches are in building), but increasing precision to reduce class heterogeneity provides a much better base for building reconstruction.
-				
-				It is possible to use this method only when precision is  a rising function of confidence given by random forest.
-				This is the case for 4+wheeler class.  
-				\myimage{./illustrations/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class = f(1-random forest confidence score). The horizontal line is the average confidence.}{fig:precision-vs-confidence} 
-				
-				
-			\paragraph{Filtering: artificial increase of recall}
-				The patch classifier is used on paris data set.
-				The goal is to find all ground patches very fast.
-				We focus on an area for illustration purpose. This area contains $3086$ patches, including $439$ ground patches.
-				Patch classification finds $421$ ground patch, 
-				with a recall of $92.7$\% .
-				Using the found patch, all the surrounding patches (X,Y : $2$ \meter, Z : $0.5$ \meter ) are added to the result (few seconds).
-				There are now $652$ patches in the result, and the recall is $100$\%.
-				This means that from a filtering point of view, a complex classifier that would try to find ground points can be used on $652/3086=21\%$ of the data set, at the price of few seconds of computing, without any loss of information.
-				
-				\myimage{./illustrations/precision_vs_recall/ground_recall_increase.png}{Map of patch clustering result for ground. The classical result finds few extra patches that are not ground (blue), and misses some ground patches (red). Recall is increased by adding to the ground class all patches that are less than 2 meters in X,Y and 0.5 meter in Z around the found patches. Extra patches are much more numerous, but all the ground patches are found.}{fig:recall-increase}
+		%\paragraph{Filtering: artificial increase of recall}
+		\myimage{./illustrations/precision_vs_recall/ground_recall_increase.png}{Map of patch clustering result for ground. The classical result finds few extra patches that are not ground (blue), and misses some ground patches (red). Recall is increased by adding to the ground class all patches that are less than 2 meters in X,Y and 0.5 meter in Z around the found patches. Extra patches are much more numerous, but all the ground patches are found.}{fig:recall-increase}
+
+		The patch classifier can also be used as a filtering preprocess.
+		In this case, the goal is not to have a great precision, but to be fast and with a good recall.
+		Such recall may be increased artificially for class of objects bigger than the sampling size ($1\cubic\metre$ for Paris).
+		
+		We take the example of ground classification (See Figure \ref{fig:recall-increase}). 
+		The goal is to find all ground patches very fast.
+		We focus on a small area for illustration purpose. This area contains $3086$ patches, including $439$ ground patches.
+		Patch classification finds $421$ ground patch, 
+		with a recall of $92.7$\%.
+		Using the found patch, all the surrounding patches (X,Y : $2$ \meter, Z : $0.5$ \meter ) are added to the result (few seconds).
+		There are now $652$ patches in the result, and the recall is $100$\%.
+		This means that from a filtering point of view, a complex classifier that would try to find ground points can be used on $652/3086=21\%$ of the data set, at the price of few seconds of computing, without any loss of information.
+		
+		
 					 	  

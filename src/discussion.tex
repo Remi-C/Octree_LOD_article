@@ -180,6 +180,8 @@
 				 The limitation of artificial precision increase is 
 				 that it is only possible when precision is roughly a rising function of random forest confidence, as seen on the illustration \ref{fig:precision-vs-confidence}.
 				 For this class, by accepting only prediction of random forest that have a confidence over $0.3$ the precision goes from $0.68$ to $0.86$, at the cost of ignoring half the predictions for this class.
+			 	This method necessitates that the precision is roughly a rising function of the confidence, as for the 4+wheeler class for instance (See Figure \ref{fig:precision-vs-confidence}).  
+			 	\myimage{./illustrations/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class = f(random forest confidence score).}{fig:precision-vs-confidence} 
 				 This strategy is not possible for incoherent class, like unclassified class.
 				 
 				 

@@ -279,6 +279,7 @@
 		We use the number of points for the level $[1..4]$. For each level $L$, the number of points is normalized by the maximum number of points possible ($8^L$), so that every feature is in $[0,1]$.
 		
 		%\paragraph{Other simple features}
+		\label{method.classification.other_feature}
 		We also use other simple features that require very limited computing (avoiding complex features like contextual features). 
 		Due to the PCS patch compression mechanism,
 		min, max, and average of any attributes of the points are directly available.
@@ -291,11 +292,13 @@
 		The rough patch classifier is not destined to deal with so many classes,
 		and so a way to determine what level of hierarchy will be used is needed.
 		We propose to perform this choice with the help of a graph of similarity between classes.
-	
+
+		\label{method.classification.spectral_layout}
 		We first determinate how similar the classes are for the simple descriptors, classifying with all the classes, and computing a class to class confusion matrix.
 		This confusion matrix can be interpreted as an affinity between class matrix, and thus as a graph.
 		We draw the graph using a spectral layout (\cite{Networkx2014}),
-		 which amounts to draw the graph following the first two eigen vector of the matrix.
+		 which amounts to draw the graph following the first two eigen vector of the matrix (Similar to Principal Component Analysis).
+		Those two vectors maximize the variance of the data (while being orthogonal), and thus best explain the data.
 		This graph visually helps to choose the appropriate number of classes to use.
 		A fully automatic method may be used via unsupervised clustering approach on the matrix 
 		(like The Affinity Propagation of \cite{Frey2007}).
@@ -308,7 +311,8 @@
 		The second strategy is to compute a statistical weight for every observation based on the class prevalence. 
 		This weight is then used in the learning process when building the Random Forest.
 		
-		\subsubsection{Using he confidence from the classifier}  
+		\subsubsection{Using the confidence from the classifier} 
+		\label{method.classification.using_confidence}
 		Contrary to classical classification method, we are not only interested in precision and recall per class, but also by the evolution of precision when prediction confidence varies.
 		
 		In fact, for a filtering application, we can leverage the confidence information provided by the Random Forest method to artificially boost precision (at the cost of recall diminution). We can do this by limiting the minimal confidence allowed for every prediction.
