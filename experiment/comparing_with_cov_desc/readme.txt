@@ -1,15 +1,24 @@
 ___________________________
 for the tree :
-
-points per level : [ 1  8 34 69 64 21]
-
-proba dim as described by cov struct tensor [[0.107, 0.23, 0.663]
-struct tensor to dim 2.556
-
-from lod:   
-estimated dim per level [3.0, 2.544, 2.036, 1.5, 0.878]
-estimated dim per dif of level [3.0, 2.087, 1.021, -0.109, -1.608]
-robust function to choose  2.008
+gid of the patch
+918571
+cov_descriptor
+[0.267, 0.078, 0.656]
+dim from cov descriptor
+2.389
+LOD
+points_per_level
+[ 1  8 36 74 83 28]
+theoretical_dim  : from ransac on coef
+1.803
+confidence on theoretical dim
+0.634306707718
+multiscale_dim : from lod
+[3.0, 2.585, 2.07, 1.594]
+multiscale dim : from variation of dim in lod
+[3.0, 2.17, 1.04, 0.166]
+multiscale_fused :a robust fusion of both mutliscale dim
+2.105
 
 
 ___________________________
@@ -107,3 +116,26 @@ multiscale dim : from variation of dim in lod
 [2.585, 2.115, 2.081, 1.898, 1.282, 0.0, 0.0]
 multiscale_fused :a robust fusion of both mutliscale dim
 2.124
+
+
+___________________________
+angle :
+gid of the patch
+924272
+cov_descriptor
+[0.507, 0.31, 0.183]
+dim from cov descriptor
+1.676
+LOD
+points_per_level
+[  1   6  28 119 408 932]
+theoretical_dim  : from ransac on coef
+2.126
+confidence on theoretical dim
+0.892323703347
+multiscale_dim : from lod
+[2.585, 2.404, 2.298, 2.168, 1.973]
+multiscale dim : from variation of dim in lod
+[2.585, 2.222, 2.087, 1.778, 1.192]
+multiscale_fused :a robust fusion of both mutliscale dim
+2.236
