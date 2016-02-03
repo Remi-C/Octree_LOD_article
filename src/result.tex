@@ -177,9 +177,23 @@
 		Those patches represent 93\% of the data set (0.96 \% of points), with a correlation of 0.80.
 		Overall the proposed dimensions are similar for the majority of patch, especially for well filled 1D and 2D patches.
 		
-		We display the 684 remaining patches to look for possible explanations of the difference in dimension.
-		See Fig. \ref{fig:explaining_failure_case}
+		
 		\myimage{"./illustrations/comparing_dim_desc/explaining_failure_case"}{Example of patches explaining most fo the differences between $Dim_{LOD}$ and $Dim_{cov}$ }{fig:explaining_failure_case}
+		We display the 684 remaining patches to look for possible explanations of the difference in dimension (See Fig. \ref{fig:explaining_failure_case}).
+		
+		We consider the following four main sources of limitations from $Dim_{cov}$.
+		\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+			\item Elongated patch. If the patch is not roughly a square, $Dim_{cov}$ gives a bad estimation as it is biased by the un-symmetry of point distribution.
+			\item Sensed objects too complex. $Dim_{cov}$ fits an ellipsoid, which can not cope with complex objects, especially when the barycentre is not in a favourable place for it.
+			\item Definition of dimension different.[0.267, 0.078, 0.656] 2.389  [ 1  8 36 74]
+			multiscale_dim : from lod
+			[3.0, 2.585, 2.07 
+			multiscale dim : from variation of dim in lod
+			[3.0, 2.17, 1.04 
+			multiscale_fusion : 2.105
+			
+			\item Coping with heterogeneous sampling. $Dim_{cov}$ is sensitive to difference in point density. The points on the bottom plan are much less dense (spacing 3 and 4 cm) than the vertical plan (spacing 1 and 4 cm), leading to a wrong estimate.
+		\end{itemize}
 		
 		\todoall{ellongated patch
 			limitation ellipsoid
