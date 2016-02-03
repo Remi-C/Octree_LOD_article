@@ -116,12 +116,18 @@
 			     
 		
 			 
-	 \subsection{Dimensionality descriptor and patch classification}
-		 %\subsubsection{Ppl as a crude dimensionality descriptor }
-		 As expected, $ppl$ descriptor are  not sufficient to correctly separate complex objects, which is the main limitation for a classification application.
+	\subsection{Dimensionality descriptor and patch classification}
+		 %\subsubsection{Ppl as a crude dimensionality descriptor 
+		 %% @TODO
+		 \todoall{parler des avantages/desavatnage comparé au descripteur classic, avec une petite illustration}
+		 
+		 
+		 $ppl$ descriptor contains lots of information about the patch. This information is leveraged by the Random Forest method and permit a rough classification based on geometric differences.
+		 As expected, $ppl$ descriptor are  not sufficient to correctly separate complex objects,
+		 which is the main limitation for a classification application.
 		 \\
-		 There is a more fundamental limitation of $ppl$ as crude dimensionality descriptor. Because $ppl$ are per patch and not per point, dimensionality can only be estimated for objects that are bigger than a patch (1 \cubic \meter for paris dataset).
-		 And for this estimation to be possible, a patch must also contains a sufficient number of points, which is not completely the case for distant tree patches for example.
+		 Moreover, the descriptor can be used only if patches contain enough points,
+		 which is not completely the case for distant tree patches for example.
 	
 	\subsection{Patch Classification}
 		%\subsubsection{Introducing other features}
@@ -170,7 +176,7 @@
 			 Because the propose methods are preprocess of filtering step, it can be advantageous to increase precision or recall.
 			
 			%\paragraph{Artificial increase of precision}
-			\myimage{./illustrations/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class = f(random forest confidence score).}{fig:precision-vs-confidence} 
+			\myimage{./illustrations/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class is a roughly rising function of random forest confidence scores.}{fig:precision-vs-confidence} 
 			In the figure \ref{fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
 			In this case it would be much easier to perform line detection starting from red patches rather than blue patches.
 			\\

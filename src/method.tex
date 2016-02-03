@@ -76,7 +76,7 @@
 	\subsection{MidOc : an ordering for gradual geometrical approximation}
 		\label{method:midoc}
 		\subsubsection{Requirements and hypothesis}
-		
+		\label{method.midoc.hypothesis}
 		The method exploits the order of points to store LOD information, so that the more points are read, the more details we have on the point cloud.
 		Obviously an ordering method that class the points from first LOD to last LOD is needed.
 		So this ordering is in fact a measure of point relevance, that is how well a point represents the point cloud (in a neighbourhood depending of the LOD).
@@ -163,34 +163,65 @@
 		When building the MidOc ordering process, the number of chosen points per level can be stored.
 		Each ordered patch is then associated with a vector of number of points per level $ppl=(N_{L_{1}},..,N_{L_{\text{max}}})$.
 		The number of picked point is directly the voxel occupancy for this level of the octree.
-		In theory for a level $L$, a centred line would occupy $2^L$ cells, a centred plan $4^L$ cells, and a volume all of the cells ($8^L cells$).
-		Thus, by comparing $ppl$ to theoretical $L_i  \rightarrow (2^i)^L,i \in [1..3]$ functions we retrieve information about the dimensionality of the patch (See Figure \ref{fig:dim_descriptor}). 
-		\myimage{"./illustrations/dim_descriptor/dim_descriptor"}{Voxel occupancy is a crude dimensionality descriptor: 3D line, surface or volume occupy a different amount of voxels.}{fig:dim_descriptor}
+		Occupancy over a voxel grid has already been used as a descriptor (See \cite{Bustos2005}).
+		However we can go a step further.
 		
+		In theory for a level $L_i$, a centred line would occupy $2^L_i$ cells, a centred plan $4^L_i$ cells, and a volume all of the cells ($8^L_i cells$).
+		Thus, by comparing $ppl[L_i]$ to theoretical $2^L_i, 4^L_i, 8^L_i$ we retrieve a dimensionality indice  $Dim_{LOD}[i]$  about the dimensionality of the patch at the level $L$ (See Figure \ref{fig:dim_descriptor}). 
+		\myimage{"./illustrations/dim_descriptor/dim_descriptor"}{Voxel occupancy is a crude dimensionality descriptor: 3D line, surface or volume occupy a different amount of voxels.}{fig:dim_descriptor}
+		This occupancy is only correctly estimated when the patch is fully filled and homogeneous. 
+		However, we can also characterize the dimensionality $dimdiff_{indice}$ by the way the occupancy evolves (difference mode).
+		Indeed, a line occupying $k$ cells of an octree at level $L_i$ will occupy $2*k$ cells at the level $L_{i+1}$, if enough points.
+		
+		We stress that the information contained in $ppl$ is akin to a multiscale dimensionality indice,
+		with the scale being the level of the octree.
+		For the rest of this article we do not consider explicitly the multiscale aspect,
+		 and consider that the dimensionality is roughly the same across level 
+		 (which is entirely false in some case).
 		
 		The Figure \ref{fig:lod-common-objects} illustrate this. Typical parts of a street in the Paris dataset were segmented: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
 		\\
 		Due to the geometry of acquisition and sampling, the public light is almost a 3D line, resulting in the occupation of very few octree cells.
-		A typical number of points chosen per level for a public light patch would then be $(1,2,4,8)$, which looks like a $2^L$ function.
+		A typical number of points chosen per level for a public light patch would then be $(1,2,4,8,...)$, which looks like a $2^L$ function.
 		A piece of ground is often extremely flat and very similar to a planar surface,
-		which means that the points chosen per level could be $(1,4,16,64)$, a $4^L$ function.
+		which means that the points chosen per level could be $(1,4,16,64...)$, a $4^L$ function.
 		Lastly a piece of tree foliage is going to be very volumetric in nature,
 		due to the fact that a leaf is about the same size as point spacing and is partly transparent to laser (leading to several echo).
-		Then a foliage patch would typically be $(1,8,64,512)$ (if enough points), so a $8^L$ function.
+		Then a foliage patch would typically be $(1,8,64...)$ (if enough points), so a $8^L$ function.
+		 
+				
+		\subsubsection{Comparing crude dimensionality descriptor with covariance-based descriptors}
 		
-		\subsubsection{Usage}
+		Dimensionality descriptors are  well researched for point clouds (\cite{Demantke2014, Weinmann2015}), 
+		although at the point level and not the patch level.
+		At the patch level, we do not need to find the scale at which compute dimensionality is necessary,
+		the descriptor is computed on the whole patch.
+		
+		These dimensionality descriptors ($Dim_{cov}$) rely on the computing of covariance of points centred to the barycentre (3D structure tensor), then a normalisation.
+		As such, the method is similar, and has the same advantages and limitation, as the Principal Component Analysis (See \cite{Shlens2014} for a reader friendly introduction ).
+		It can be seen as fitting an ellipsoid to the points.
+		
+		First this method is sensible to density variations because all the points are considered for the fitting. 
+		As opposite to our hypothesis (See Section \ref{method.midoc.hypothesis}),
+		this method considers implicitly that density holds information about the nature of sensed objects. 
+		Second, this methods only fits one ellipse, which is insufficient to capture complex geometric forms. 
+		Last, this method does not allow to explore different scale for a point cloud as a whole. Indeed this method is classically used on points within a growing sphere to extend the scale. However scale should be defined as the size of the features being analysed in sensed objects, and ot the scale of the neighbourhood of the centroid.
+		
+		We compute both dimensionality descriptor and then compare them for the Paris dataset.
+		
+		\subsubsection{crude dimensionality descriptor as a feature}
 
-		Real Dimensionality feature for point clouds are already well researched, and can be more precisely computed (\cite{Demantke2014}), with less sensibility to outliers (but more to density variation). However This kind of feature is generally designed at the point level, and is more complex.
-		Using the result of the MidOc ordering has the advantage of not necessitate extra computing and be extremely simple.
+		Using the result of the MidOc ordering has the advantage of not necessitate extra computing,
+		the patch being ordered following MidOc for LOD anyway.
 		
 		Moreover, because $x_1 \rightarrow (2^1)^x$,
 		$x_2 \rightarrow (2^2)^x$, $x_3 \rightarrow (2^3)^x$ diverge very fast,
 		we only need to use few levels to have a quite good descriptor.
 		For instance, using $L=2$, we have $D=4$, $16$ or $64$ , which are very distinguishable values, and don't require a total density above $70$ points \per patch.  
-		As long as the patch contains a minimal number of points, the descriptors is density and scale invariant. 
+		As long as the patch contains a minimal number of points, the descriptors is density and scale invariant.
 		Lastly a mixed result (following neither of the $x_i \rightarrow (2^i)^x$ function) can be used as an indicator that the patch contains mixed geometry, either due to nature of the objects in the patch, or due to the way the patch is defined (sampling).
 		
-		Although it might be possible to go a step further and decompose a patch $ppl$ vector on the base of $x_i \rightarrow (2^i)^x, i \in [1..3]$, the direct and exact decomposition can't be used because the decomposition might depends on L. For instance a plane with a small line could appear as a plan for $L_1$ and $L_2$, and starts to appear differently over $L_3$ and higher level. In this case, an Expectation-Maximization scheme might be able to decompose robustly.
+		Although it might be possible to go a step further and decompose a patch $ppl$ vector on the base of $x_i \rightarrow (2^i)^x, i \in [1..3]$, the direct and exact decomposition can't be used because the decomposition might depends on $L_i$. For instance a plane with a small line could appear as a plan for $L_1$ and $L_2$, and starts to appear differently over $L_3$ and higher level. In this case, an Expectation-Maximization scheme might be able to decompose robustly.
  
 	\subsection{Excessive Density detection and correction}
 		\label{method.density}

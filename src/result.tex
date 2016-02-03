@@ -111,7 +111,11 @@
 		%\paragraph{Computing on very large dataset}
 		We successively order all the Paris and Vosges data sets with MidOc, using 20 parallel workers, with a plpgsql implementation.
 		The ordering is successful on all patches, even in very challenging areas where there are big singularities in density, and many outliers.
-		The total speed is about 100 millions points/hour.
+		The total speed is about 100 millions points/hour using in-base processing.
+		We prototyped an out-of-base processing where the extraction of points from patch is done on the client, and reached a 180 \mega pts \per \hour.
+		The same method, without any ordering (only converting pathc to point then point to patch) reach a 2.3 B pts\per\hour.
+		% with python patch reading writting, 10 process : 50k pts/sec
+		%only data (no processing) : 650k pts/s
 		We consider it to be at least 10 times too slow for practical use.
 		We briefly analyse performances, and conclude that only 10 workers are efficient, and that most of the time is spent on getting the points and writing them back.
 		
@@ -132,13 +136,61 @@
 		%\paragraph{Simple correction}
 		If the patch are ordered following MidOc, unneeded points are removed by simply putting a threshold on points per patch (bottom left, 1 to 5k points \per \cubic \meter , bottom right , 5k to 24 k pts \per \cubic \meter). It considerably reduces the number of points (-33\%). 
 	
-	\subsection{Dimensionality descriptor}
+	\subsection{Rough Dimensionality descriptor}
 		\label{result.dim_descriptor}
-		We test the dimensionality descriptor ($ppl$)by analysing how well it
-		can be used to separate classes, and how much it is used when 
+		We test the dimensionality descriptor ($ppl$) in two ways.
+		First we compare the extracted ($Dim_{LOD}$) it to the classical structure tensor based descriptor ($Dim_{cov}$).
+		Second we assess how useful it is for classification, 
+		by analysing how well it separates classes, and how much it is used when 
 		several other features are available.
 		
-		%\subsubsection{Separator power of ppl descriptor for Paris data set}
+		\subsubsection{Comparing LOD-based descriptor with Structure tensor-based descriptor}
+		%\paragraph{Computing ($Dim_{cov}$)}
+		We compute $Dim_{cov}$ following the indications of \cite{Weinmann2015} to get $p_{dim}->[0..1]^3$, i.e. the probability to belong to [1D,2D,3D].
+		We convert this to $Dim_{cov}$ with $Dim_{cov}=\sum_{i=1}^{3}{i*p_{dim}[i]}$.
+		
+		Optionally, we test a filtering option so that the maximum distance in biggest two dimensions is more equivalent. However this approach fails to improve results.
+		
+		%\paragraph{Computing ($Dim_{LOD}$)}
+		We test several method to extract $Dim_{LOD}$ from $ppl$.
+		The first method is to compute $ Dim_{LODs}[i] = log2(ppl[i])/i$,
+		which gives the simple dimensionality indice for each level.
+		The second method is the same but work on occupancy evolution, with
+		$Dim_{LODd}[i] = log2(ppl[i]/ppl[i-1])$ (discarding $L_0$).
+		In both case the result is a dimensionality indice between 0 and 3 for each Level.
+		We use both indices to fusion the dimensionality across Levels (  working on $Dim_{LODA} = Dim_{LODs}\bigcup Dim_{LODd}$).
+		The first method uses a RANSAC (\cite{SciPy2014} implementation of \cite{Choi2009}) 
+		to find the best linear regression. The slope gives an idea of confidence (ideally, should be 0),
+		and the value of the line at the middle of abscissa is an estimate of $Dim_{LOD}$.
+		The second method robustly filters $Dim_{LODA}$ based on median distance to median value and
+		average the inliers to estimate $Dim_{LOD}$.
+		
+		$Dim_{cov}$ and $Dim_{LOD}$ are computed with in-base and out-of-base processing, the latter 
+		being executed in parallel (8 workers).
+		For 10k patches, 12 \mega pts, retrieving data and writing result accounts for $48\second$, computing $Dim_{LOD}$ to $8\second$, $Dim_{cov}$ to $64\second$.
+		
+		%\paragraph{Comparing $Dim_{cov}$ and $Dim_{LOD}$}
+		Comparing $Dim_{cov}$ and $Dim_{LOD}$ is not straightforward because the implicit definition of dimension is very different in the two methods.
+		We analyse the patches where $\lvert Dim_{LOD} -  Dim_{cov}\rvert <=0.5$.
+		0.5 is an arbitrary threshold,
+		but we feel that it represents the point above which descriptors will predict unreconcilable dimensions.
+		Those patches represent 93\% of the data set (0.96 \% of points), with a correlation of 0.80.
+		Overall the proposed dimensions are similar for the majority of patch, especially for well filled 1D and 2D patches.
+		
+		We display the 684 remaining patches to look for possible explanations of the difference in dimension.
+		
+		ellongated patch
+		limitation ellipsoid
+		pas la meme def
+		inhomogene sampling
+		
+		
+		
+		
+		
+		
+		
+		\subsubsection{Usefulness of rough descriptor for classification}
 		\myimage{./illustrations/classif/class_clustering/only_lod_feature_2.png}{Spectral clustering of confusion matrix of Paris data set classification using only $ppl$ descriptor. Edge width and colour are proportional to affinity. Node position is determined fully automatically. Red-ish arrows are manually placed to help understand}{fig:ppl-separator-power}
 		
 		Using only the $ppl$ descriptor, a classification is performed on paris data set, then a confusion matrix is computed.
@@ -171,6 +223,7 @@
 		- average of $number\_of\_echo$ (P+V) 
 		- average Z (V)
 		
+		For Vosges data set, we reach a speed of 1 \mega points\per \second \per worker.
 		\subsubsection{Classification Setting} 
 		Undersampling and weighting are used on the paris dataset. First Undersampling to reduce the over dominant building classe to a 100 factor of the smallest class support. Then weighting is used to compensate for differences in support. 
 		For the Vosges data set only the weighting strategy is used. 
