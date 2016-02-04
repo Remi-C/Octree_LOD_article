@@ -169,46 +169,48 @@
 		being executed in parallel (8 workers).
 		For 10k patches, 12 \mega pts, retrieving data and writing result accounts for $48\second$, computing $Dim_{LOD}$ to $8\second$, $Dim_{cov}$ to $64\second$.
 		
+		\myimage{"./illustrations/comparing_dim_desc/success_case"}{$Dim_{LOD}$ and $Dim_{cov}$ are mostly comparable, except for few patches (5\%, coloured)}{fig:success_case}
+		
+		
 		%\paragraph{Comparing $Dim_{cov}$ and $Dim_{LOD}$}
 		Comparing $Dim_{cov}$ and $Dim_{LOD}$ is not straightforward because the implicit definition of dimension is very different in the two methods.
-		We analyse the patches where $\lvert Dim_{LOD} -  Dim_{cov}\rvert <=0.5$.
+		We analyse the patches where $\lvert Dim_{LOD} -  Dim_{cov}\rvert <=0.5$. 
 		0.5 is an arbitrary threshold,
 		but we feel that it represents the point above which descriptors will predict unreconcilable dimensions.
 		Those patches represent 93\% of the data set (0.96 \% of points), with a correlation of 0.80.
-		Overall the proposed dimensions are similar for the majority of patch, especially for well filled 1D and 2D patches.
+		Overall the proposed dimensions are similar for the majority of patch, especially for well filled 1D and 2D patches (See Fig. \ref{fig:success_case}).
+		
 		
 		
 		\myimage{"./illustrations/comparing_dim_desc/explaining_failure_case"}{Example of patches explaining most fo the differences between $Dim_{LOD}$ and $Dim_{cov}$ }{fig:explaining_failure_case}
-		We display the 684 remaining patches to look for possible explanations of the difference in dimension (See Fig. \ref{fig:explaining_failure_case}).
+		We analyse the 684 remaining patches to look for possible explanations of the difference in dimension (See Fig. \ref{fig:explaining_failure_case}).
 		
 		We consider the following four main sources of limitations from $Dim_{cov}$.
-		\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-			\item Elongated patch. If the patch is not roughly a square, $Dim_{cov}$ gives a bad estimation as it is biased by the un-symmetry of point distribution.
-			\item Sensed objects too complex. $Dim_{cov}$ fits an ellipsoid, which can not cope with complex objects, especially when the barycentre is not in a favourable place for it.
-			\item Definition of dimension different.[0.267, 0.078, 0.656] 2.389  [ 1  8 36 74]
-			multiscale_dim : from lod
-			[3.0, 2.585, 2.07 
-			multiscale dim : from variation of dim in lod
-			[3.0, 2.17, 1.04 
-			multiscale_fusion : 2.105
-			
-			\item Coping with heterogeneous sampling. $Dim_{cov}$ is sensitive to difference in point density. The points on the bottom plan are much less dense (spacing 3 and 4 cm) than the vertical plan (spacing 1 and 4 cm), leading to a wrong estimate.
+		\begin{itemize}%[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+			\item Elongated patch.\\
+				$Dim_{cov}$=1.42
+				,$Dim_{LOD}$=1.92. 
+				If the patch is not roughly a square,$Dim_{cov}$ gives a bad estimation as it is biased by the un-symmetry of point distribution.
+			\item Sensed objects too complex.\\
+				$Dim_{cov}$=1.68,
+				$Dim_{LOD}$=2.24.
+				$Dim_{cov}$ fits an ellipsoid, which can not cope with complex objects, especially when the barycentre does not happen to be at a favourable place. 
+			\item Coping with heterogeneous sampling.\\
+				$p_{dim}$=[0.56,0.32,0.12],
+				$Dim_{cov}$=1.57,
+				$Dim_{LOD}$=2.24.\\
+				$Dim_{cov}$ is sensitive to difference in point density. The points on the bottom plan are much 3 times less dense than in the vertical plan, leading to a wrong estimate.
+			\item Definition of dimension different.\\
+				General:$Dim_{cov}\in[1.2..2.6],Dim_{LOD}\in[1.7..2.7]$\\
+				This patch: $p_{dim}$=[0.11, 0.23, 0.66]\\
+				$ppl$=[1,8,36,74..],
+				$Dim_{LODD}$=[3.0,2.17,1.04].
+				Trees are a good example of how the two descriptors rely on a different dimension definition. For $Dim_{cov}$ points may be well spread out, so usually $p_{3D}$ is high.
+				Yet, tree patches are also subject to density variation, and may also be elongate, which renders $Dim_{cov}$ very variable.
+				On the opposite, $Dim_{LOD}$ considers the dimensionality at different scale (See Fig. \ref{fig:analysing_tree}). From afar a tree-patch is volumetric, at lower scal, it seems planar (leaf and small sticks form rough plans together). Lastly at small scale, the tree looks linear (sticks). 
 		\end{itemize}
-		
-		\todoall{ellongated patch
-			limitation ellipsoid
-			pas la meme def
-			inhomogene sampling
-			(en bas3cm, 1cm en haut, 4 entre bande)
-			}
-		
-		
-		
-		
-		
-		
-		
-		
+		 
+  
 		\subsubsection{Usefulness of rough descriptor for classification}
 		\myimage{./illustrations/classif/class_clustering/only_lod_feature_2.png}{Spectral clustering of confusion matrix of Paris data set classification using only $ppl$ descriptor. Edge width and colour are proportional to affinity. Node position is determined fully automatically. Red-ish arrows are manually placed to help understand}{fig:ppl-separator-power}
 		

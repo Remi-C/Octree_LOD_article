@@ -162,9 +162,11 @@
 		\subsubsection{Principle}
 		When building the MidOc ordering process, the number of chosen points per level can be stored.
 		Each ordered patch is then associated with a vector of number of points per level $ppl=(N_{L_{1}},..,N_{L_{\text{max}}})$.
-		The number of picked point is directly the voxel occupancy for this level of the octree.
+		The number of picked point is almost the voxel occupancy for this level of the octree.
+		Almost because in MidOc points picked at a level do not count for the next Levels.
 		Occupancy over a voxel grid has already been used as a descriptor (See \cite{Bustos2005}).
 		However we can go a step further.
+		For the following we consider that patch contains enough points and levels are low enough so that the removing of picked points has no influence.
 		
 		In theory for a level $L_i$, a centred line would occupy $2^L_i$ cells, a centred plan $4^L_i$ cells, and a volume all of the cells ($8^L_i cells$).
 		Thus, by comparing $ppl[L_i]$ to theoretical $2^L_i, 4^L_i, 8^L_i$ we retrieve a dimensionality indice  $Dim_{LOD}[i]$  about the dimensionality of the patch at the level $L$ (See Figure \ref{fig:dim_descriptor}). 

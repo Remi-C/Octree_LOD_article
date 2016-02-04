@@ -109,29 +109,31 @@
 		For instance if an application requires 1000 points \per \cubic \meter for ground patches, all the patches must have more than 1000 points, and patch must have been ordered with MidOc for level 0 to at least 5 ($4^5=1024$). 
 		The homogeneous density may also be compromised when the patch are not only split spatially, but with other logics (in our case, points in patch can't be separated by more than 30 seconds, and all points in a patch must come from the same original acquisition file).
 		
-	\subsection{Crude dimensionality descriptor (MidOc by-product)}	  
-			 
-			 
+	\subsection{Crude dimensionality descriptor (MidOc by-product)}	 
+		\myimage{"./illustrations/comparing_dim_desc/hist_comparison_for_tree"}{Histogram of $Dim_{LOD}$ and $Dim_{cov}$ for patch in trees.}{fig:hist_comparison_for_tree} 
 		
-			     
+		Tree patches are challenging for both dimensionality descriptor.
+		There possible dimension changes a lot (See Fig. \ref{fig:hist_comparison_for_tree}), although $Dim_{LOD}$ is more concentrated.
+		Yet, $ppl$ is extremely useful to classify trees.
+		Indeed, $ppl$ contains the dimensionality at various scale, and potentially the variation of it, which is quite specific for trees (See Fig. \ref{fig:analysing_tree}).
+		  
+		\myimage{"./illustrations/comparing_dim_desc/analysing_tree/analysing_tree"}{Evolution of tree patch octree cells occupancy, illustrating the various dimensions of trees depending on the scale.}{fig:analysing_tree} 
+			
+		We stress that a true octree cell occupancy (i.e. without picking points as in the $ppl$) can be obtained without computing the octree, simply by using the binary coordinates (See \ref{fig:binary_coordinates_example}).
 		
-			 
-	\subsection{Dimensionality descriptor and patch classification}
-		 %\subsubsection{Ppl as a crude dimensionality descriptor 
-		 %% @TODO
-		 \todoall{parler des avantages/desavatnage comparé au descripteur classic, avec une petite illustration}
-		 
-		 
-		 $ppl$ descriptor contains lots of information about the patch. This information is leveraged by the Random Forest method and permit a rough classification based on geometric differences.
-		 As expected, $ppl$ descriptor are  not sufficient to correctly separate complex objects,
-		 which is the main limitation for a classification application.
-		 \\
-		 Moreover, the descriptor can be used only if patches contain enough points,
-		 which is not completely the case for distant tree patches for example.
-	
+		Overall, $ppl$ offers a good alternative to the classical dimensionality descriptor ($Dim_{cov}$), being more robust and multiscale. 
+		However the $ppl$ also has limitations. 
+		First the quality of the dimensionality description may be affected by a low number of points in the patch. 
+		Second in some case it is hard to reduce it to a meaningful $Dim_{LOD}]$.
+		Last because of assumption on density, it is sensible to geometric noise.
+			  
 	\subsection{Patch Classification}
+		$ppl$ descriptor contains lots of information about the patch. This information is leveraged by the Random Forest method and permit a rough classification based on geometric differences.
+		As expected, $ppl$ descriptor are  not sufficient to correctly separate complex objects,
+		which is the main limitation for a classification application. 
+		
 		%\subsubsection{Introducing other features}
-		The additional features are eextremely simple, and far from the one used in state of the art.
+		The additional features are extremely simple, and far from the one used in state of the art.
 		Notably, we don't use any contextual feature.
 		%\subsubsection{Classification Setting}
 		We choose to classify directly in N classes, whereas due to the large unbalance indataset, cacade or 1 versus all approaches would be more adapted.
@@ -167,34 +169,63 @@
 		  $ppl$ descriptor are less used than for the Vosges data set, but is still useful, particularly when there are few classes.
 		  It is interesting to note that the mean intensity descriptor seems to be used to distinguish between objects, which makes it less useful in the 7 classes case.
 		  The patch classifier for Paris data set is clearly limited to separate simple classes. In particular, the performances for objects are clearly lower than the state of the art. A dedicated approach should be used (cascaded or one versus all classifier). 
-		  
+	  
+	  
+	  \subsubsection{Estimating the speed and performance of patch based classification compared to point based classification}
 		  %\paragraph{Timing consideration}
-		  \todoall{comparer avec etat de l'art : article de Martin qu'il a envoyé et qui sont sur zotero}
-			\todoall{penser à parler de \cite{Weinmann2015,Weinmann2015a,shapovalov2010} pour la comparaison de perf et de timings.}
-			   
-		 \subsubsection{Precision or Recall increase}
-			 Because the propose methods are preprocess of filtering step, it can be advantageous to increase precision or recall.
-			
-			%\paragraph{Artificial increase of precision}
-			\myimage{./illustrations/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class is a roughly rising function of random forest confidence scores.}{fig:precision-vs-confidence} 
-			In the figure \ref{fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
-			In this case it would be much easier to perform line detection starting from red patches rather than blue patches.
-			\\
-			The limitation of artificial precision increase is 
-			that it is only possible when precision is roughly a rising function of random forest confidence, as seen on the illustration \ref{fig:precision-vs-confidence}.
-			For this class, by accepting only prediction of random forest that have a confidence over $0.3$ the precision goes from $0.68$ to $0.86$, at the cost of ignoring half the predictions for this class.
-			This method necessitates that the precision is roughly a rising function of the confidence, as for the 4+wheeler class for instance (See Figure \ref{fig:precision-vs-confidence}).   
-			This strategy is not possible for incoherent class, like unclassified class.
- 
-			%\paragraph{Filtering: artificial increase of recall}
-			The method we present for artificial recall increase is only possible if at least one patch of each object is retrieved, and objects are spatially dense.
-			This is because a spatial dilatation operation is used.
-			This is the case for "4+wheelers" objects in the paris data set for instance.
-			The whole method is possible because spatial dilatation is very fast in point cloud server (because of index).
-			Moreover, because the global goal is to find all patches of a class while leaving out some patches,
-			it would be senseless to dilate with a very big distance.
-			In such case recall would be $1$, but all patches would be in the result, thus there would be no filtering, and no speeding.
-			\\
-			The limitation is that this recall increase method is more like a deformation of already correct results 
-			rather than a magical method that will work with all classes.
+		  The Point Cloud Server is designed to work on patches, which in turns enable massive scaling.
+		  
+		  %\paragraph{speed}
+		  Timing a server is difficult because of different layer of caches, and background workers. Therefore, timing should be considered as order of magnitude.
+		  
+		  For Paris data set,extracting extra classification features requires $\sim \frac{400 \second},{n_{workers}}$( 1 to 8 workers), learning $\sim 210 \second$,
+		  and classification $\sim few second$.
+		  We refer to \cite{Weinmann2015}(Table 5) for point classification timing on the same dataset (4.28\hour, 2\second,90\second ) (please note that the training set is much reduced by data balancing, whereas we keep the full training set and use weight for balancing).
+		  As expected the speed gain is high for complex feature computing (not required) and point classification (done on patch and not points in our case).
+		  
+		  For Vosges data set, features are extracted at $1 \mega pts \per \second \per worker$, learning $\sim few \minute$, classification $\sim 10 \second$.
+		  The Vosges data set has not been used in other articles, therefore we propose to compare the timings to \cite{shapovalov2010} (Table 3). Keeping only feature computation and random forest training (again on a reduced data set), they process 2 \mega points in 2 \minute, whereas our method process the equivalent of 5.5 B points in few minutes.
+		  
+		  
+		  Learning and classification are monothreaded (3 folds validation), although the latter is easy to parallelise.
+		  Overall, the proposed method is one to three orders of magnitude faster.
+		  %\paragraph{performance}
+		  
+		  For Paris data set (Fig. \ref{fig:result-paris}), we compare to \cite{Weinmann2015}(Table 5). As expected there results are better, particularly in terms of precision (except for the class of vegetation). This trend is aggravated by taking into account the "mix." factor.
+		  Indeed we perform patch classification, and patch may not pertain to only one class, which is measured by the mix factor (amount of points in the main class divided by the total number of point).
+		  However, including the mix factor the results are still within the 85 to 90 \% precision for the main classes (ground, building, natural).
+		  
+		  For Vosges data set (Fig \ref{fig:result-vosges}), we refer to \cite{shapovalov2010} (Table 2). There random forest classifier get trees with 93\% precision and  89\% recall.
+		  Including the mix factor we get trees with a precision of 87\% and 80\% recall.
+		  As a comparison to image based classification, an informal experiment of classification with satellite image reaches between 85 \% and 93 \% of precision for forest class depending on the pixel size (between 5 and 0.5 \metre).
+		  
+		  Overall, the proposed method get reasonably good results compared to more sophisticated methods,
+		  while being much faster.
+		  It so makes a good candidate as a preprocessing filtering step.
+		  
+	 \subsubsection{Precision or Recall increase}
+	 Because the propose methods are preprocess of filtering step, it can be advantageous to increase precision or recall.
+		
+		%\paragraph{Artificial increase of precision}
+		\myimage{./illustrations/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class is a roughly rising function of random forest confidence scores.}{fig:precision-vs-confidence} 
+		In the figure \ref{fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
+		In this case it would be much easier to perform line detection starting from red patches rather than blue patches.
+		\\
+		The limitation of artificial precision increase is 
+		that it is only possible when precision is roughly a rising function of random forest confidence, as seen on the illustration \ref{fig:precision-vs-confidence}.
+		For this class, by accepting only prediction of random forest that have a confidence over $0.3$ the precision goes from $0.68$ to $0.86$, at the cost of ignoring half the predictions for this class.
+		This method necessitates that the precision is roughly a rising function of the confidence, as for the 4+wheeler class for instance (See Figure \ref{fig:precision-vs-confidence}).   
+		This strategy is not possible for incoherent class, like unclassified class.
+
+		%\paragraph{Filtering: artificial increase of recall}
+		The method we present for artificial recall increase is only possible if at least one patch of each object is retrieved, and objects are spatially dense.
+		This is because a spatial dilatation operation is used.
+		This is the case for "4+wheelers" objects in the paris data set for instance.
+		The whole method is possible because spatial dilatation is very fast in point cloud server (because of index).
+		Moreover, because the global goal is to find all patches of a class while leaving out some patches,
+		it would be senseless to dilate with a very big distance.
+		In such case recall would be $1$, but all patches would be in the result, thus there would be no filtering, and no speeding.
+		\\
+		The limitation is that this recall increase method is more like a deformation of already correct results 
+		rather than a magical method that will work with all classes.
 				
