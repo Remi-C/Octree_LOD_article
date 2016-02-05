@@ -66,7 +66,7 @@
 		The point cloud is then quantized into $[0..2**L-1]$ for each coordinate.
 		The coordinates are now integers, and for each point, reading its coordinates bitwise left to right gives the position of the point in the octree for level of the bit read.
 		This means performing that this centring/scaling/quantization directly gives the octree. Moreover, further operations can be performed using bit arithmetic, which is extremely fast.
-		\myimage{./illustrations/chap2/LOD/principle_of_binary_coordinate.png}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{lod.fig:binary_coordinates_example}
+		\myimage{./illustrations/chap2/octree_binary/principle_of_binary_coordinate}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{lod.fig:binary_coordinates_example}
 		
 		On this illustration the point $P$ has coordinates $(5,2)$ in a $[0,2^3-1]^2$ system. Reading the coordinates as binary gives $(b'101',b'010')$.
 		Thus we now that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
