@@ -179,7 +179,7 @@
 		  Timing a server is difficult because of different layer of caches, and background workers. Therefore, timing should be considered as order of magnitude.
 		  
 		  For Paris data set,extracting extra classification features requires $\sim \frac{400 \second},{n_{workers}}$( 1 to 8 workers), learning $\sim 210 \second$,
-		  and classification $\sim few second$.
+		  and classification $\sim$ few \second.
 		  We refer to \cite{Weinmann2015}(Table 5) for point classification timing on the same dataset (4.28\hour, 2\second,90\second ) (please note that the training set is much reduced by data balancing, whereas we keep the full training set and use weight for balancing).
 		  As expected the speed gain is high for complex feature computing (not required) and point classification (done on patch and not points in our case).
 		  
