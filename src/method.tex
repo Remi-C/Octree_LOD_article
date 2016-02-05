@@ -6,21 +6,21 @@
 
 
 \section{Method}
-	\label{sec:method}
+	\label{lod.sec:method}
 	
-	In this section, we first present the Point Cloud Server (section \ref{method.PCS})(PCS \cite{cura2015})
+	In this section, we first present the Point Cloud Server (section \ref{lod.method.PCS})(PCS \cite{cura2015})
 	upon which this article is based. Then we introduce the LOD solution that we propose 
-	, which consists of reordering groups of points from less to more details (\ref{method.order}), and then choose which LOD is needed.
-	Although any ordering can be used, we propose a simple geometric one (\ref{method:midoc}) which is fast and robust to density variation. 
-	Furthermore, constructing this ordering produces a rough dimensionality descriptor (\ref{method.dimdescriptor}). 
-	This descriptor can be used in the PCS to perform classification at the patch level (\ref{method.classif}). This classification can be directly transferred to points, or indirectly exploited in a pre-filtering step.
+	, which consists of reordering groups of points from less to more details (\ref{lod.method.order}), and then choose which LOD is needed.
+	Although any ordering can be used, we propose a simple geometric one (\ref{lod.method:midoc}) which is fast and robust to density variation. 
+	Furthermore, constructing this ordering produces a rough dimensionality descriptor (\ref{lod.method.dimdescriptor}). 
+	This descriptor can be used in the PCS to perform classification at the patch level (\ref{lod.method.classif}). This classification can be directly transferred to points, or indirectly exploited in a pre-filtering step.
 	
 	\subsection{The Point Cloud Server}
-	\label{method.PCS}
-		\myimage{./illustrations/PCS/PCS}{Overall and storage organisations of the Point Cloud Server.}{fig:PCS}
+	\label{lod.method.PCS}
+		\myimage{./illustrations/chap2/PCS/PCS}{Overall and storage organisations of the Point Cloud Server.}{lod.fig:PCS}
 		
 		This article strongly depends on using the Point Cloud Server described in \cite{cura2015},
-		therefore we introduce its principle and key relevant features (see figure \ref{fig:PCS}).
+		therefore we introduce its principle and key relevant features (see figure \ref{lod.fig:PCS}).
 		
 		The PCS is a complete and efficient point cloud management system based on a database server that works on groups of points rather than individual points.
 		This system is specifically designed to solve all the needs of point cloud users:
@@ -40,15 +40,15 @@
  	 
 	 	 
 	\subsection{Exploiting the order of points}
-		\label{method.order}
+		\label{lod.method.order}
 		%\subsubsection{Principle} 
 			
-			\myimage{./illustrations/LOD/short_illustration_concept_lod/concept_Level_Of_Detail.png}{3 geometrical Level Of Detail (LOD) for the same point cloud. Starting from very low detail by reading the first point of the patch, reading further points increases the details.}{fig:lod-principle}
+			\myimage{./illustrations/chap2/LOD/short_illustration_concept_lod/concept_Level_Of_Detail.png}{3 geometrical Level Of Detail (LOD) for the same point cloud. Starting from very low detail by reading the first point of the patch, reading further points increases the details.}{lod.fig:lod-principle}
 			
 			We propose to exploit the ordering of points to indirectly store LOD information.
 			Indeed, whatever the format, be it file or database based, points ends up as a list, which is ordered. 
 			The idea is then to exploit the order of this list, 
-			that when reading the points from the beginning to the end, we get gradually a more accurate geometrical approximation of the point cloud (see figure \ref{fig:lod-principle}). 
+			that when reading the points from the beginning to the end, we get gradually a more accurate geometrical approximation of the point cloud (see figure \ref{lod.fig:lod-principle}). 
 			 
 			For instance, for a given list $L$ of points ordered from $1$ to $N$.
 			Reading the points $1$ to $5$ is going to give a rough approximation of the point cloud, and reading another $16$ points (points $1$ to $21$) is going to give a slightly better approximation. Reading points $1$ to $N$ is going to get the exact point cloud, so there is no data loss, nor data duplication.
@@ -58,7 +58,7 @@
 			%\paragraph{No on-line processing time}
 			Except a pre-processing step to write the point cloud following a given ordering, each time the user wants to get a Level Of Detail version of the point cloud, there is no computing at all (only data reading).
 			This may not make a big difference for non-frequent reading, but in a context where the same point cloud is going to get used several times at several levels and by several users simultaneously (for instance Point Cloud as a Service), no processing time makes a big difference.
-			%(See figure \ref{fig:all_lod_illustration} for an example with LOD visualisation.) 		
+			%(See figure \ref{lod.fig:all_lod_illustration} for an example with LOD visualisation.) 		
 		
 			%\paragraph{No data duplication}
 			Another big advantage is that exploiting point ordering does not necessitate additional storage.
@@ -68,15 +68,15 @@
 			
 			%\paragraph{Portable}
 			The last advantage comes from the simplicity of using the ordering. 
-			Because it is already something that all point cloud tools can deal with (a list of points!), it is portable. Most softwares do not change the points order inside a cloud (See Section \ref{result.os_softwares}).
+			Because it is already something that all point cloud tools can deal with (a list of points!), it is portable. Most softwares do not change the points order inside a cloud (See Section \ref{lod.result.os_softwares}).
 			Even if a tool were to change the order, it is easy to add the ordering number as an attribute, which increases slightly the storage requirement, but is totally portable and can be used with all existing tools.
 			This simplicity also implies that adapting tools to use this ordering is very easy.
 	
 	
 	\subsection{MidOc : an ordering for gradual geometrical approximation}
-		\label{method:midoc}
+		\label{lod.method:midoc}
 		\subsubsection{Requirements and hypothesis}
-		\label{method.midoc.hypothesis}
+		\label{lod.method.midoc.hypothesis}
 		The method exploits the order of points to store LOD information, so that the more points are read, the more details we have on the point cloud.
 		Obviously an ordering method that class the points from first LOD to last LOD is needed.
 		So this ordering is in fact a measure of point relevance, that is how well a point represents the point cloud (in a neighbourhood depending of the LOD).
@@ -100,7 +100,7 @@
 		
 		\subsubsection{Introducing the MidOc ordering}
 		
-		\myimage{./illustrations/octree_ordering/octree_ordering_legend}{MidOc explained in 2D. Given a point cloud (Blue) and quad tree cells (dashed grey), the chosen point (green ellipse) is the one closest to the centre (black point) of the cell.}{fig:midoc-principle}
+		\myimage{./illustrations/chap2/octree_ordering/octree_ordering_legend}{MidOc explained in 2D. Given a point cloud (Blue) and quad tree cells (dashed grey), the chosen point (green ellipse) is the one closest to the centre (black point) of the cell.}{lod.fig:midoc-principle}
 		
 		We propose to re-use of well known and well proven existing methods that is the octree subsampling (for instance, the octree subsampling is used in \cite{Girardeau-Montaut2014}.
 		An octree is built over a point cloud, then for each cell of the octree the LOD point is the barycentre of the points in the cell.  With this, browsing the octree breadth-first provides the points of the different levels.
@@ -109,7 +109,7 @@
 		We name this ordering MidOc (middle of octree subsampling) for clarity of this article, nonetheless we are probably not the first to use it.
 		
 		The principle is very simple, and necessitate an octree over the point cloud (octree can be implicit though).
-		We illustrate it on Figure \ref{fig:midoc-principle} (in 2D for graphical comfort).
+		We illustrate it on Figure \ref{lod.fig:midoc-principle} (in 2D for graphical comfort).
 		We walk the octree breadth-first.
 		For each non-empty cell, the point closest to the cell centre is chosen and assigned the cell level,
 		and removed from the available point to pick.
@@ -117,25 +117,25 @@
 		in which case the remaining points are added to the list, with the level $L_\infty$.
 		
 		The result is a set of points with level $(P,L_i)$.
-		Inside one level $L_i$, points can be ordered following various strategies (see Section \ref{method.intralevel}).
+		Inside one level $L_i$, points can be ordered following various strategies (see Section \ref{lod.method.intralevel}).
 		
-		Because each point is assigned a level, we can store the total number of points per level (which produce a dimensionality descriptor, see Section \ref{method.dimdescriptor}).
+		Because each point is assigned a level, we can store the total number of points per level (which produce a dimensionality descriptor, see Section \ref{lod.method.dimdescriptor}).
 		
 		\subsubsection{Implementation}
-		\label{method.midoc.implementation}
+		\label{lod.method.midoc.implementation}
 		MidOc ordering is similar to octree building. Because Octree building has been widely researched, we test only two basic solutions.
 		
 		The first kind of implementation uses SQL queries. For each level, we compute the centres of the occupied cells using bit shifts and the closest point to these. Picked points are removed, and the process is repeated on the next level.
-		It relies on the fact that knowing each point octree cell occupancy does not require to compute the octree (see Figure \ref{fig:binary_coordinates_example}).
+		It relies on the fact that knowing each point octree cell occupancy does not require to compute the octree (see Figure \ref{lod.fig:binary_coordinates_example}).
 		
 		The second implementation uses python with a recursive strategy. it only necessitates a function that given a cell and a list of points chose the point closest to the centre of the cell, then split the cell and the list of points for the next level, and recursively calls itself on this subcells with the sublists.
 		
 		A more efficient and simpler implementation is possible by first ordering the points following the Morton curve, as  in \cite{Feng2014} (Section 2.5.1, page 37). 
 		
 		\subsubsection{Intra-level ordering}
-		\label{method.intralevel}
+		\label{lod.method.intralevel}
 		
-		\myimage{./illustrations/intralevel_ordering/intralevel_ordering_combined}{Several possible orders with various coverage from bad to good. Revert Morton and Revert Hilbert have offset for illustration.}{fig:intralevel_ordering}
+		\myimage{./illustrations/chap2/intralevel_ordering/intralevel_ordering_combined}{Several possible orders with various coverage from bad to good. Revert Morton and Revert Hilbert have offset for illustration.}{lod.fig:intralevel_ordering}
 		
 		The intra-level ordering will have an impact if the LOD is used in a continuous way,
 		and moreover may influence methods that relies on low-discrepancy.
@@ -146,7 +146,7 @@
 		and the method to do so in online (for instance it could be based on online robust PCA like in (\cite{Feng2013})).
 		The plan fitting method reads one by one the points of a designated level $L_i$, and compute successively better plan estimation.
 		
-		The Figure \ref{fig:intralevel_ordering} presents some possible ordering. 
+		The Figure \ref{lod.fig:intralevel_ordering} presents some possible ordering. 
 		If the plan detection method was applied on the Y ordering, it would necessitate a great number of points to compute a stable plan. For instance the first 16 points (1 column) would not permit to compute a plan.
 		Similarly, if the point were ordered randomly, estimating a plan would still require lots of points, because uniform randomly chosen points are not well spread out (on the figure, the first 25 points are over represented in the upper left part).
 		
@@ -158,7 +158,7 @@
 		
 
 	\subsection{Crude dimensionality descriptor (MidOc by-product)} 
-		\label{method.dimdescriptor}
+		\label{lod.method.dimdescriptor}
 		\subsubsection{Principle}
 		When building the MidOc ordering process, the number of chosen points per level can be stored.
 		Each ordered patch is then associated with a vector of number of points per level $ppl=(N_{L_{1}},..,N_{L_{\text{max}}})$.
@@ -169,8 +169,8 @@
 		For the following we consider that patch contains enough points and levels are low enough so that the removing of picked points has no influence.
 		
 		In theory for a level $L_i$, a centred line would occupy $2^L_i$ cells, a centred plan $4^L_i$ cells, and a volume all of the cells ($8^L_i cells$).
-		Thus, by comparing $ppl[L_i]$ to theoretical $2^L_i, 4^L_i, 8^L_i$ we retrieve a dimensionality indice  $Dim_{LOD}[i]$  about the dimensionality of the patch at the level $L$ (See Figure \ref{fig:dim_descriptor}). 
-		\myimage{"./illustrations/dim_descriptor/dim_descriptor"}{Voxel occupancy is a crude dimensionality descriptor: 3D line, surface or volume occupy a different amount of voxels.}{fig:dim_descriptor}
+		Thus, by comparing $ppl[L_i]$ to theoretical $2^L_i, 4^L_i, 8^L_i$ we retrieve a dimensionality indice  $Dim_{LOD}[i]$  about the dimensionality of the patch at the level $L$ (See Figure \ref{lod.fig:dim_descriptor}). 
+		\myimage{"./illustrations/chap2/dim_descriptor/dim_descriptor"}{Voxel occupancy is a crude dimensionality descriptor: 3D line, surface or volume occupy a different amount of voxels.}{lod.fig:dim_descriptor}
 		This occupancy is only correctly estimated when the patch is fully filled and homogeneous. 
 		However, we can also characterize the dimensionality $dimdiff_{indice}$ by the way the occupancy evolves (difference mode).
 		Indeed, a line occupying $k$ cells of an octree at level $L_i$ will occupy $2*k$ cells at the level $L_{i+1}$, if enough points.
@@ -181,7 +181,7 @@
 		 and consider that the dimensionality is roughly the same across level 
 		 (which is entirely false in some case).
 		
-		The Figure \ref{fig:lod-common-objects} illustrate this. Typical parts of a street in the Paris dataset were segmented: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
+		The Figure \ref{lod.fig:lod-common-objects} illustrate this. Typical parts of a street in the Paris dataset were segmented: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
 		\\
 		Due to the geometry of acquisition and sampling, the public light is almost a 3D line, resulting in the occupation of very few octree cells.
 		A typical number of points chosen per level for a public light patch would then be $(1,2,4,8,...)$, which looks like a $2^L$ function.
@@ -204,7 +204,7 @@
 		It can be seen as fitting an ellipsoid to the points.
 		
 		First this method is sensible to density variations because all the points are considered for the fitting. 
-		As opposite to our hypothesis (See Section \ref{method.midoc.hypothesis}),
+		As opposite to our hypothesis (See Section \ref{lod.method.midoc.hypothesis}),
 		this method considers implicitly that density holds information about the nature of sensed objects. 
 		Second, this methods only fits one ellipse, which is insufficient to capture complex geometric forms. 
 		Last, this method does not allow to explore different scale for a point cloud as a whole. Indeed this method is classically used on points within a growing sphere to extend the scale. However scale should be defined as the size of the features being analysed in sensed objects, and ot the scale of the neighbourhood of the centroid.
@@ -226,7 +226,7 @@
 		Although it might be possible to go a step further and decompose a patch $ppl$ vector on the base of $x_i \rightarrow (2^i)^x, i \in [1..3]$, the direct and exact decomposition can't be used because the decomposition might depends on $L_i$. For instance a plane with a small line could appear as a plan for $L_1$ and $L_2$, and starts to appear differently over $L_3$ and higher level. In this case, an Expectation-Maximization scheme might be able to decompose robustly.
  
 	\subsection{Excessive Density detection and correction}
-		\label{method.density}
+		\label{lod.method.density}
 		Lidar point cloud do not have a constant density, because the acquisition is performed at a constant sensing rate, but the sensing device may vary in speed.
 		
 		Important variation of density can be a serious issue for some processing methods. 
@@ -235,7 +235,7 @@
 		Large density variation are also bad for performances in parallel environment.
 		Indeed, efficient parallel computing may require that all the worker have about the same amount of work.
 		One worker stumbling upon a very dense part of the point cloud would have much more points to process than the other workers.
-		The figure \ref{fig:density-correction} shows a place in the Paris dataset where the density is 5 times over the average value of this data set.
+		The figure \ref{lod.fig:density-correction} shows a place in the Paris dataset where the density is 5 times over the average value of this data set.
 		In this context of terrestrial Lidar, this density peak is simply due to the fact that the acquisition vehicle stopped at this place
 		, while continuing to sense data.
 		
@@ -249,7 +249,7 @@
 		
 		
 	\subsection{Classification with the Point Cloud Server}
-		\label{method.classif}
+		\label{lod.method.classif}
 		\subsubsection{Principle}
 		
 		We propose to perform patch classification using the Point Cloud Server and the previously introduced crude dimensionality descriptor, along with other basic descriptors, using a Random Forest classifier.
@@ -262,7 +262,7 @@
 		
 		
 		Patch classification can be used as a fast preprocess to another slower point classification,
-		be it to speed it (an artificial recall increase for patch classification may be needed, see Figure \ref{fig:recall-increase}), or to better a point classification.
+		be it to speed it (an artificial recall increase for patch classification may be needed, see Figure \ref{lod.fig:recall-increase}), or to better a point classification.
 		The patch classification can provide a rough classification.
 		Based on that the most adapted point classifier is chosen 
 		(similarly to Cascaded classifiers),
@@ -289,11 +289,11 @@
 		\subsubsection{Classification details}  
 		\paragraph{Features}
 		%\paragraph{Crude dimensionality descriptor}
-		The first descriptor is the crude dimensionality descriptor produced by the MidOc ordering (see Section \ref{method.dimdescriptor}).
+		The first descriptor is the crude dimensionality descriptor produced by the MidOc ordering (see Section \ref{lod.method.dimdescriptor}).
 		We use the number of points for the level $[1..4]$. For each level $L$, the number of points is normalized by the maximum number of points possible ($8^L$), so that every feature is in $[0,1]$.
 		
 		%\paragraph{Other simple features}
-		\label{method.classification.other_feature}
+		\label{lod.method.classification.other_feature}
 		We also use other simple features that require very limited computing (avoiding complex features like contextual features). 
 		Due to the PCS patch compression mechanism,
 		min, max, and average of any attributes of the points are directly available.
@@ -307,7 +307,7 @@
 		and so a way to determine what level of hierarchy will be used is needed.
 		We propose to perform this choice with the help of a graph of similarity between classes.
 
-		\label{method.classification.spectral_layout}
+		\label{lod.method.classification.spectral_layout}
 		We first determinate how similar the classes are for the simple descriptors, classifying with all the classes, and computing a class to class confusion matrix.
 		This confusion matrix can be interpreted as an affinity between class matrix, and thus as a graph.
 		We draw the graph using a spectral layout (\cite{Networkx2014}),
@@ -326,7 +326,7 @@
 		This weight is then used in the learning process when building the Random Forest.
 		
 		\subsubsection{Using the confidence from the classifier} 
-		\label{method.classification.using_confidence}
+		\label{lod.method.classification.using_confidence}
 		Contrary to classical classification method, we are not only interested in precision and recall per class, but also by the evolution of precision when prediction confidence varies.
 		
 		In fact, for a filtering application, we can leverage the confidence information provided by the Random Forest method to artificially boost precision (at the cost of recall diminution). We can do this by limiting the minimal confidence allowed for every prediction.

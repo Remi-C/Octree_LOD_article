@@ -6,9 +6,9 @@
 
 
  \section{ Result }
-	 \label{sec:result}
+	 \label{lod.sec:result}
  	\subsection{Introduction to results}
- 		We design and execute several experiments in order to validate all points that have been introduced in the Section \ref{sec:method}.
+ 		We design and execute several experiments in order to validate all points that have been introduced in the Section \ref{lod.sec:method}.
  		First we prove that is it effectively possible to leverage points order, even using canonical open sources software out of the box.
  		Second we perform MidOc ordering on very large point cloud and analyse the efficiency, quality and applications of the results.
  		Third we use the number of points chosen in the MidOc ordering as a descriptors for a random forest classifier on two large data sets, proving their usefulness.
@@ -21,7 +21,7 @@
  		Timings are only orders of magnitude due to the influence of database caching.
  	
 	%\subsection{Data set used}
-		\myimage{./illustrations/histogram_of_density/paris_vosges_density_histogramm.png}{ Histogram of number of points per patch, with a logarithmic scale for X and Y axis}{fig:hist-density-dataset}
+		\myimage{./illustrations/chap2/histogram_of_density/paris_vosges_density_histogramm.png}{ Histogram of number of points per patch, with a logarithmic scale for X and Y axis}{lod.fig:hist-density-dataset}
 	 
  		We use two data sets. There were chosen as different as possible to further evaluate how proposed methods can generalise on different data (See Figure fig:hist-density-dataset for histogram of patch density ). 
  		%\subsubsection{IQmulus data set}
@@ -29,7 +29,7 @@
  		Every point is labelled with a hierarchy of 100 classes.
  		The training set is only 12 millions points.
  		Only 22 classes are represented. We group points in $1 \cubic \metre$ cubes.
- 		The histogram of density seems to follow an exponential law (See figure \ref{fig:hist-density-dataset}), the effect being that many patches with few points exist. 
+ 		The histogram of density seems to follow an exponential law (See figure \ref{lod.fig:hist-density-dataset}), the effect being that many patches with few points exist. 
  		
  		%\subsubsection{Vosges data set}
  		We also use the Vosges data set, which is a very wide spread, aerial Lidar, 5.5 Billions point cloud. 
@@ -60,8 +60,8 @@
 
 	\subsection{Exploiting the order of points}
 		%\subsubsection{Experiment summary}
-		\label{result.os_softwares}
-		We proposed to implicitly store LOD in the order of the points (Section \ref{method.order}).
+		\label{lod.result.os_softwares}
+		We proposed to implicitly store LOD in the order of the points (Section \ref{lod.method.order}).
 		In this first experiment we check that point cloud ordering is correctly preserved by common open source point cloud processing software.
 		For this, we use a real point cloud, which we order by MidOc ordering. 
 		We export it as a text file as the reference file.
@@ -72,7 +72,7 @@
 			
 	\subsection{MidOc: an ordering for gradual geometrical approximation}
 		%\subsubsection{Experiment summary}
-		\myimageFullPageWidth{./illustrations/LOD/visual_result_left_right}{Schematic illustration of different LOD. Left to right, all points, then LOD 4 to 0. Visualized in cloud compare with ambient occlusion. Point size varies for better visual result.}{fig:visual_LOD_left_right}
+		\myimageFullPageWidth{./illustrations/chap2/LOD/visual_result_left_right}{Schematic illustration of different LOD. Left to right, all points, then LOD 4 to 0. Visualized in cloud compare with ambient occlusion. Point size varies for better visual result.}{lod.fig:visual_LOD_left_right}
 		
 		
 		We first test the visual fitness of MidOc ordering.
@@ -80,8 +80,8 @@
 		As a proof of concept we stream a 3D point cloud with LOD to a browser.
 		
 		%\subsubsection{Visual evaluation}
-		The figure \ref{fig:visual_LOD_left_right} illustrates LOD on a typical street of Paris dataset
-		The figure \ref{fig:lod-common-objects} shows LOD on common street objects of various dimensionality.
+		The figure \ref{lod.fig:visual_LOD_left_right} illustrates LOD on a typical street of Paris dataset
+		The figure \ref{lod.fig:lod-common-objects} shows LOD on common street objects of various dimensionality.
 			  
 		%\subsubsection{Size versus LOD trade-off}
 		We compute the size and canonical transfer time associated for a representative street point cloud.
@@ -89,9 +89,9 @@
 		
 		\begin{table}[ht]
 			\centering
-			\caption{Number of points per LOD for the point cloud in the Figure \ref{fig:visual_LOD_left_right}
+			\caption{Number of points per LOD for the point cloud in the Figure \ref{lod.fig:visual_LOD_left_right}
 				, plus estimated transfer time at 1 \mega $byte$\per \second.}
-			\label{tab:lod-size-time}
+			\label{lod.tab:lod-size-time}
 			\scriptsize 
 			\begin{tabular}{cccccc}
 				\bf{Level} & \shortstack{\bf{Typical} \\ \bf{spacing (\centi \meter)}} & \shortstack{ \bf{Points} \\ \bf{number (k)}} & \shortstack{\bf{Percent of} \\ \bf{total size}} & \shortstack{\bf{Estimated} \\ \bf{time (\second)}}   \\
@@ -107,7 +107,7 @@
 		%\subsubsection{Large scale computing}
 		
 		%\paragraph{MidOc implementation} 
-		We use 3 implementations of MidOc, two being pure plpgsql (postgreSQL script langage), and one Python (See Section \ref{method.midoc.implementation}).
+		We use 3 implementations of MidOc, two being pure plpgsql (postgreSQL script langage), and one Python (See Section \ref{lod.method.midoc.implementation}).
 		%\paragraph{Computing on very large dataset}
 		We successively order all the Paris and Vosges data sets with MidOc, using 20 parallel workers, with a plpgsql implementation.
 		The ordering is successful on all patches, even in very challenging areas where there are big singularities in density, and many outliers.
@@ -126,18 +126,18 @@
 
 
 	\subsection{Excessive Density detection and correction} 
-		\myimage{./illustrations/density/density_detection_and_correction}{Abnormal density detection and correction. Top points per patch (left) or density (right), green-yellow-red. Bottom reflectance in grey. }{fig:density-correction}
+		\myimage{./illustrations/chap2/density/density_detection_and_correction}{Abnormal density detection and correction. Top points per patch (left) or density (right), green-yellow-red. Bottom reflectance in grey. }{lod.fig:density-correction}
 		
 		%\paragraph{Density abnormality (peak)}
-		We detect the abnormal density (explained in Section \ref{method.density}) in the Paris data set in $\sim 100 \milli \second$ 
-		(See Figure \ref{fig:density-correction}). 
+		We detect the abnormal density (explained in Section \ref{lod.method.density}) in the Paris data set in $\sim 100 \milli \second$ 
+		(See Figure \ref{lod.fig:density-correction}). 
 		In comparison, computing the density per point with neighbourhood is extremely slow (only for this 1.5 Million extract, 1 minute with CloudCompare,4x2.5GHz, 10cm rad) (top right illustration), and after the density is computed for each points, all the point cloud still need to be filtered to find abnormal density spot.
 		
 		%\paragraph{Simple correction}
 		If the patch are ordered following MidOc, unneeded points are removed by simply putting a threshold on points per patch (bottom left, 1 to 5k points \per \cubic \meter , bottom right , 5k to 24 k pts \per \cubic \meter). It considerably reduces the number of points (-33\%). 
 	
 	\subsection{Rough Dimensionality descriptor}
-		\label{result.dim_descriptor}
+		\label{lod.result.dim_descriptor}
 		We test the dimensionality descriptor ($ppl$) in two ways.
 		First we compare the extracted ($Dim_{LOD}$) it to the classical structure tensor based descriptor ($Dim_{cov}$).
 		Second we assess how useful it is for classification, 
@@ -169,7 +169,7 @@
 		being executed in parallel (8 workers).
 		For 10k patches, 12 \mega pts, retrieving data and writing result accounts for $48\second$, computing $Dim_{LOD}$ to $8\second$, $Dim_{cov}$ to $64\second$.
 		
-		\myimage{"./illustrations/comparing_dim_desc/success_case"}{$Dim_{LOD}$ and $Dim_{cov}$ are mostly comparable, except for few patches (5\%, coloured)}{fig:success_case}
+		\myimage{"./illustrations/chap2/comparing_dim_desc/success_case"}{$Dim_{LOD}$ and $Dim_{cov}$ are mostly comparable, except for few patches (5\%, coloured)}{lod.fig:success_case}
 		
 		
 		%\paragraph{Comparing $Dim_{cov}$ and $Dim_{LOD}$}
@@ -178,12 +178,12 @@
 		0.5 is an arbitrary threshold,
 		but we feel that it represents the point above which descriptors will predict unreconcilable dimensions.
 		Those patches represent 93\% of the data set (0.96 \% of points), with a correlation of 0.80.
-		Overall the proposed dimensions are similar for the majority of patch, especially for well filled 1D and 2D patches (See Fig. \ref{fig:success_case}).
+		Overall the proposed dimensions are similar for the majority of patch, especially for well filled 1D and 2D patches (See Fig. \ref{lod.fig:success_case}).
 		
 		
 		
-		\myimage{"./illustrations/comparing_dim_desc/explaining_failure_case"}{Example of patches explaining most fo the differences between $Dim_{LOD}$ and $Dim_{cov}$ }{fig:explaining_failure_case}
-		We analyse the 684 remaining patches to look for possible explanations of the difference in dimension (See Fig. \ref{fig:explaining_failure_case}).
+		\myimage{"./illustrations/chap2/comparing_dim_desc/explaining_failure_case"}{Example of patches explaining most fo the differences between $Dim_{LOD}$ and $Dim_{cov}$ }{lod.fig:explaining_failure_case}
+		We analyse the 684 remaining patches to look for possible explanations of the difference in dimension (See Fig. \ref{lod.fig:explaining_failure_case}).
 		
 		We consider the following four main sources of limitations from $Dim_{cov}$.
 		\begin{itemize}%[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
@@ -207,26 +207,26 @@
 				$Dim_{LODD}$=[3.0,2.17,1.04].
 				Trees are a good example of how the two descriptors rely on a different dimension definition. For $Dim_{cov}$ points may be well spread out, so usually $p_{3D}$ is high.
 				Yet, tree patches are also subject to density variation, and may also be elongate, which renders $Dim_{cov}$ very variable.
-				On the opposite, $Dim_{LOD}$ considers the dimensionality at different scale (See Fig. \ref{fig:analysing_tree}). From afar a tree-patch is volumetric, at lower scal, it seems planar (leaf and small sticks form rough plans together). Lastly at small scale, the tree looks linear (sticks). 
+				On the opposite, $Dim_{LOD}$ considers the dimensionality at different scale (See Fig. \ref{lod.fig:analysing_tree}). From afar a tree-patch is volumetric, at lower scal, it seems planar (leaf and small sticks form rough plans together). Lastly at small scale, the tree looks linear (sticks). 
 		\end{itemize}
 		 
   
 		\subsubsection{Usefulness of rough descriptor for classification}
-		\myimage{./illustrations/classif/class_clustering/only_lod_feature_2.png}{Spectral clustering of confusion matrix of Paris data set classification using only $ppl$ descriptor. Edge width and colour are proportional to affinity. Node position is determined fully automatically. Red-ish arrows are manually placed to help understand}{fig:ppl-separator-power}
+		\myimage{./illustrations/chap2/classif/class_clustering/only_lod_feature_2.png}{Spectral clustering of confusion matrix of Paris data set classification using only $ppl$ descriptor. Edge width and colour are proportional to affinity. Node position is determined fully automatically. Red-ish arrows are manually placed to help understand}{lod.fig:ppl-separator-power}
 		
 		Using only the $ppl$ descriptor, a classification is performed on paris data set, then a confusion matrix is computed.
-		We use the spectral layout (see Section \ref{method.classification.spectral_layout}) to automatically produce the graph in Figure \ref{fig:ppl-separator-power}. 
+		We use the spectral layout (see Section \ref{lod.method.classification.spectral_layout}) to automatically produce the graph in Figure \ref{lod.fig:ppl-separator-power}. 
 		We manually ad 1D,2D and 3D arrows.
 		On this graph, classes that are most similar according to the classification with $ppl$ are close. The graph clearly present an organisation following 3 axis. Those axis coincide with the dimensionality of the classes. For instance the "tree" classe as a strong 3D dimensionality. The "Punctual object" class, defined by "Objects which representation on a map should be a point", is strongly 1D (lines), with object like bollard and public light. The "Road" class is strongly 2D, the road being locally roughly a plan. The center of the graph is occupied by classes that may have mixed dimensionality, for instance "4+ wheeler" (i.e. car) may be a plan or more volumetric, because of the $1 \cubic \metre$ sampling.
-		"Building" and "sidewalk" are not as clearly 2D as  the "road" class. Indeed, the patch of "sidewalk" class are strongly mixed (containing 22\mypercent of non-sidewalk points, See figure fig:result-paris). The building class is also not pure 2D because building facade in Paris contains balcony, building decoration and floors, whcih introduce lots of object-like patches, which explain that building is closer to the object cluster. (See Figure \ref{fig:visual_LOD_left_right}, in the Level 3 for instance).
+		"Building" and "sidewalk" are not as clearly 2D as  the "road" class. Indeed, the patch of "sidewalk" class are strongly mixed (containing 22\mypercent of non-sidewalk points, See figure \ref{lod.fig:result-paris}). The building class is also not pure 2D because building facade in Paris contains balcony, building decoration and floors, whcih introduce lots of object-like patches, which explain that building is closer to the object cluster. (See Figure \ref{lod.fig:visual_LOD_left_right}, in the Level 3 for instance).
 		The dimensionality descriptor clearly separate classes following there dimensionality, but can't separate classes with mixed dimensionality.
 		
 		
-		To further evaluate the dimensionality descriptor, we introduce other classification features (see \ref{result.classification}), perform classification and compute each feature importance.
-		The overall precision and recall result of these classification is correct, and the $ppl$ descriptor is of significant use (See Figure \ref{fig:result-paris} and \ref{fig:result-vosges}), especially in the Vosges data set. The $ppl$ descriptor is less used in Paris data set, maybe because lots of classes can not really be defined geometrically, but more with the context.
+		To further evaluate the dimensionality descriptor, we introduce other classification features (see \ref{lod.result.classification}), perform classification and compute each feature importance.
+		The overall precision and recall result of these classification is correct, and the $ppl$ descriptor is of significant use (See Figure \ref{lod.fig:result-paris} and \ref{lod.fig:result-vosges}), especially in the Vosges data set. The $ppl$ descriptor is less used in Paris data set, maybe because lots of classes can not really be defined geometrically, but more with the context.
 		  
 	\subsection{Patch Classification}
-		\label{result.classification}
+		\label{lod.result.classification}
 		%\subsubsection{Experiment summary}
 		 
 		\subsubsection{Introducing other features}
@@ -234,7 +234,7 @@
 		because many semantically different objects have similar dimension 
 		(for instance, a piece of wall and of ground are dimensionally very similar
 		, yet semantically very different).
-		We introduce additional simple features for classification (See Section \ref{method.classification.other_feature}). All use already stored patch statistics, and thus are extremely fast to compute.
+		We introduce additional simple features for classification (See Section \ref{lod.method.classification.other_feature}). All use already stored patch statistics, and thus are extremely fast to compute.
 		(P : for Paris , V : for Vosges: 
 		- average of altitude regarding sensing device origin(P)
 		- area of $patch\_bounding\_box$ (P) : 
@@ -255,7 +255,7 @@
 		
 		
 		\subsubsection{Analysing class hierarchy} 
-		\myimage{./illustrations/classif/class_clustering/class_clustering_macro_all}{Result of automatic spectral clustering over confusion matrix for patch classification of Paris data set with all simple features. Edges width and colour are proportional to confusion. We manually draw clusters for easier understanding.}{fig:class-clustering-all-features}
+		\myimage{./illustrations/chap2/classif/class_clustering/class_clustering_macro_all}{Result of automatic spectral clustering over confusion matrix for patch classification of Paris data set with all simple features. Edges width and colour are proportional to confusion. We manually draw clusters for easier understanding.}{lod.fig:class-clustering-all-features}
 		
 		Choosing which level of the class hierarchy to use depends on data set and applications.
 		In a canonical classification perspective, we have to strongly reduce the number of classes if we want to have significant results.
@@ -265,16 +265,16 @@
 		
 		For Vosges data set a short analysis convince us to use 3 classes: Forest, Land, and other, on this three classes, the Land class is statistically overweighted by the 2 others.
 		
-		For the Paris data set, we again use a spectral layout to represent the affinity graph (See Figure \ref{fig:class-clustering-all-features}).
+		For the Paris data set, we again use a spectral layout to represent the affinity graph (See Figure \ref{lod.fig:class-clustering-all-features}).
 		Introducing other features clearly helps to separate more classes.
 		The graph also shows the limit of the classification, because some class cannot be properly defined without context (e.g. the side-walk, which is by definition the space between building and road, hence is defined contextually). 
 		
 		\subsubsection{Classification results}
-		\myimage{./illustrations/classif/result_vosges/result_vosges_2.png}{Feature usage (first table).  Precision(prec.), recall (rec.), support (supp.), and average percent of points of the class in the patches, for comparison with point based method (mix.).}{fig:result-vosges}
+		\myimage{./illustrations/chap2/classif/result_vosges/result_vosges_2.png}{Feature usage (first table).  Precision(prec.), recall (rec.), support (supp.), and average percent of points of the class in the patches, for comparison with point based method (mix.).}{lod.fig:result-vosges}
 		We perform a analysis of error on Vosges dataset and we remark that the error seems to be significantly correlated to distance to borders.
 		The learning time is few minutes (monoprocess, python), the predicting time is few seconds (same).
 				 
-		\myimageFullPageWidth{./illustrations/classif/result_paris/result_per_class_multilevel_paris_2.pdf}{Results for Paris data set: at various level of class hierarchy. Precision(prec.), recall (rec.), support (sup.) and average percent of points of the class in the patches of the class, for comparison with point based method (mix.). Classes of the same type are in the same continuous tone. Feature usage is evaluated for each level in the class hierarchy.}{fig:result-paris} 
+		\myimageFullPageWidth{./illustrations/chap2/classif/result_paris/result_per_class_multilevel_paris_2.pdf}{Results for Paris data set: at various level of class hierarchy. Precision(prec.), recall (rec.), support (sup.) and average percent of points of the class in the patches of the class, for comparison with point based method (mix.). Classes of the same type are in the same continuous tone. Feature usage is evaluated for each level in the class hierarchy.}{lod.fig:result-paris} 
 		The learning time is less than a minute, the predicting time is less than a second. 
 		
 		For both dataset, patches main contain points from several classes. We measure how much of the patch points pertain to the dominant class. The result is given in the columns "mix". For instance the patch of the class "building" contains an average of 98.6 \mypercent points of the class "building", whereas the patch from the class "forest" contains 88.3\mypercent points of the class "forest".
@@ -283,23 +283,23 @@
 		\subsubsection{Precision or Recall increase} 
 		
 		%\paragraph{precision increase}
-		As explained in Section \ref{method.classification.using_confidence}, we can leverage the random forest confidence score to artificially increase the precision.
-		\myimage{./illustrations/precision_vs_recall/patch_classification_for_building.pdf}{Plotting of patches classified as building, using confidence to increase precision. Ground truth from IGN and Open Data Paris}{fig:precision-increase}.
+		As explained in Section \ref{lod.method.classification.using_confidence}, we can leverage the random forest confidence score to artificially increase the precision.
+		\myimage{./illustrations/chap2/precision_vs_recall/patch_classification_for_building.pdf}{Plotting of patches classified as building, using confidence to increase precision. Ground truth from IGN and Open Data Paris}{lod.fig:precision-increase}.
 		
 		We focus on the building class.
-		As seen in the Figure \ref{fig:precision-increase}, initial classification results (blue) are mostly correct.
+		As seen in the Figure \ref{lod.fig:precision-increase}, initial classification results (blue) are mostly correct.
 		Yet, only keeping patches with high confidence may greatly increase precision (to $100$\mypercent).
 		Further filtering on confidence can not increase precision, but will reduce the variability of the found building patches. 
 		This result (red) provides a much better base for building reconstruction. 
 				
 		%\paragraph{Filtering: artificial increase of recall}
-		\myimage{./illustrations/precision_vs_recall/ground_recall_increase.png}{Map of patch clustering result for ground. The classical result finds few extra patches that are not ground (blue), and misses some ground patches (red). Recall is increased by adding to the ground class all patches that are less than 2 meters in X,Y and 0.5 meter in Z around the found patches. Extra patches are much more numerous, but all the ground patches are found.}{fig:recall-increase}
+		\myimage{./illustrations/chap2/precision_vs_recall/ground_recall_increase.png}{Map of patch clustering result for ground. The classical result finds few extra patches that are not ground (blue), and misses some ground patches (red). Recall is increased by adding to the ground class all patches that are less than 2 meters in X,Y and 0.5 meter in Z around the found patches. Extra patches are much more numerous, but all the ground patches are found.}{lod.fig:recall-increase}
 
 		The patch classifier can also be used as a filtering preprocess.
 		In this case, the goal is not to have a great precision, but to be fast and with a good recall.
 		Such recall may be increased artificially for class of objects bigger than the sampling size ($1\cubic\metre$ for Paris).
 		
-		We take the example of ground classification (See Figure \ref{fig:recall-increase}). 
+		We take the example of ground classification (See Figure \ref{lod.fig:recall-increase}). 
 		The goal is to find all ground patches very fast.
 		We focus on a small area for illustration purpose. This area contains $3086$ patches, including $439$ ground patches.
 		Patch classification finds $421$ ground patch, 

@@ -9,12 +9,12 @@
 
 \begin{figure*}[t!]
 	\begin{center}
-		\fbox{\includegraphics[width=\textwidth,keepaspectratio ]{./illustrations/banner_for_paper.png}}
+		\fbox{\includegraphics[width=\textwidth,keepaspectratio ]{./illustrations/chap2/banner_for_paper.png}}
 		\caption{Graphical Abstract : a Lidar point cloud (1), is split it into patches (2) 
 		and stored in the PCS (\cite{Cura2015}), patches are re-ordered to obtain free LOD 
 		(3 : a gradient of LOD here).
 		Lastly the ordering is used as a feature for learning and efficient filtering (4) } 
-		\label{fig:banner_image}
+		\label{lod.fig:banner_image}
 	\end{center}
 \end{figure*} 
 
@@ -33,8 +33,8 @@
 		
 		For instance, to visualize the parts of a massive point cloud, we might fetch only the points that are visible (filtering),
 		and not display all the points but only the sufficient number to understand the scene (generalisation).
-		(See Figure \ref{fig:two_reduction})
-		\myimage{"./illustrations/two_reduction_strategy/two_reduction_strategy"}{Two strategies to limit the amount of points to work on.}{fig:two_reduction}
+		(See Figure \ref{lod.fig:two_reduction})
+		\myimage{"./illustrations/chap2/two_reduction_strategy/two_reduction_strategy"}{Two strategies to limit the amount of points to work on.}{lod.fig:two_reduction}
 		
 		The system we propose un \cite{cura2015} is compatible with both, and extensively covers the filtering and abstracting part. In this article we focus on the generalisation problem using points.
 		
@@ -42,7 +42,7 @@
 		 
 		This problematic is very commons accross research field, and could be seen as a problem of compression, clustering, dimensionality reduction, etc.
 	  
-		This particular problem applied to visualisation is commonly called Level Of Details (LOD, cf \href{banner_image}{figure ~\ref{fig:banner_image}}).
+		This particular problem applied to visualisation is commonly called Level Of Details (LOD, cf \href{lod.banner_image}{figure ~\ref{lod.fig:banner_image}}).
 		
 		The problem is then how to reduce the amount of points while preserving the geometric characteristics of the underlying sensed object, in an efficient manner, and while being robust to the way the sensing was done?
 		Indeed LOD approaches sacrifices of a part of information in exchange of a massive reduction of data size which is necessary for efficient usage/visualisation. In this regard, a LOD method must by nature be efficient, or the information loss would be pointless.
@@ -84,8 +84,8 @@
 		One way to tackle data size is to use a Level Of Detail strategy. Octree methods have been common in computer graphics for several decades \citep{Meagher1982}. They are used in many methods to speed computing, or compress data, like in the work of \cite{Schnabel2006,Huang2006} (which have not been designed to scale).
 		
 		
-		We can see point cloud as a sampling of a surface (or volume) of the sensed object. This sensing may be structured for the sensing device (for instance a Lidar may sense point using a constant angle), but not necessary for the sensed object (see figure \ref{fig:irregular_sampling})
-		\myimage{"./illustrations/problem_in_sampling/regular_vs_irregular_sampling"}{Regular sensing does not imply regular sampling.}{fig:irregular_sampling}.
+		We can see point cloud as a sampling of a surface (or volume) of the sensed object. This sensing may be structured for the sensing device (for instance a Lidar may sense point using a constant angle), but not necessary for the sensed object (see figure \ref{lod.fig:irregular_sampling})
+		\myimage{"./illustrations/chap2/problem_in_sampling/regular_vs_irregular_sampling"}{Regular sensing does not imply regular sampling.}{lod.fig:irregular_sampling}.
 		
 		\cite{Elseberg2013} give a good overview of octree usage for point clouds. Their method proposes to directly store the points and octree in a file. They explore many applications that could benefit from our method (visual LOD, registration, processing). We share many objectives. It is an extremely effective approach that also enables visual LOD, but is very specialized on geometry. In particular, this method is not integrated with other GIS data (Geographical Information System), point cloud fast querying is not possible on attributes or metadata, and point cloud format is extremely specific.
 		\\
@@ -112,12 +112,12 @@
 		
 	\subsection{Plan of the article}
 		The rest of this article is organized as follows:
-		in the next section \ref{sec:method} we present the methods.  
-		In the result section \ref{sec:result} we give the results.
-		We discuss it and the possible limitations in section \ref{sec:discussion}.
+		in the next section \ref{lod.sec:method} we present the methods.  
+		In the result section \ref{lod.sec:result} we give the results.
+		We discuss it and the possible limitations in section \ref{lod.sec:discussion}.
 		
 		Following the IMRAD format~\citep{Wu2011}, the remainder of this article is divided into three sections.
-		Section~\ref{sec:method} presents the LOD solution, how it produces a dimensionality descriptor, and how this can leveraged for classification.  
-		Section~\ref{sec:result} reports on the experiments validating the methods.
-		Finally, the details, the limitations, and potential applications are discussed in Section~\ref{sec:detailed-discussion}.
+		Section~\ref{lod.sec:method} presents the LOD solution, how it produces a dimensionality descriptor, and how this can leveraged for classification.  
+		Section~\ref{lod.sec:result} reports on the experiments validating the methods.
+		Finally, the details, the limitations, and potential applications are discussed in Section~\ref{lod.sec:discussion}.
 		

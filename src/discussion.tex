@@ -6,10 +6,10 @@
 
 
  \section{ Discussion }
-	 \label{sec:discussion} 
+	 \label{lod.sec:discussion} 
 	 
 	 \subsection{Point cloud server}
-	\label{par:pointcloudserver-limitation}
+	\label{lod.par:pointcloudserver-limitation}
 	We refer the reader to \cite{Cura2014} for an exhaustive analyse of the Point Cloud Server.
 	Briefly, the PCS has demonstrated all the required capacitites to manage point clouds and scale well.
 	To the best of our knowledge the fastest and easiest way to filter very big point cloud using complex spatial and temporal criteria, as well as natively integrate point cloud with other GIS data (raster, vector).
@@ -30,8 +30,8 @@
 	A software like LasTool using delta compressing might suffer heavily from this. 
 			 
 	 \subsection{MidOc : an ordering for gradual geometrical approximation}
-	 	We stress that the LOD are in fact almost continuous (as in the third illustrations of \ref{fig:banner_image}).
-	 	\myimage{./illustrations/Objects/Objects_assembled.jpg}{All successive levels for common objects (car, window, 2 wheelers, light, tree, people, pole, ground), color is intensity for other points.}{fig:lod-common-objects} 
+	 	We stress that the LOD are in fact almost continuous (as in the third illustrations of \ref{lod.fig:banner_image}).
+	 	\myimage{./illustrations/chap2/Objects/Objects_assembled.jpg}{All successive levels for common objects (car, window, 2 wheelers, light, tree, people, pole, ground), color is intensity for other points.}{lod.fig:lod-common-objects} 
 		 	
 		MidOc is a way to order points based on their importance. In MidOc,
 		the importance is defined geometrically.
@@ -52,21 +52,21 @@
 		Third the ordering can be used for point cloud generalisation,
 		as a service for processing methods that may only be able to deal with a fraction of the points. 
 		
-		The illustration \ref{fig:visual_LOD_left_right} gives visual example of LOD result and how it could be used to vary density depending on the distance to camera. 
-		Figure \ref{fig:lod-common-objects} also gives visual examples for common objects of different dimensionality.
+		The illustration \ref{lod.fig:visual_LOD_left_right} gives visual example of LOD result and how it could be used to vary density depending on the distance to camera. 
+		Figure \ref{lod.fig:lod-common-objects} also gives visual examples for common objects of different dimensionality.
 		It is visually clear that the rate of increase of points from LOD 0 to 4 for floor lamp (1D) window (2D) and tree (3D) is very different.
 		Small details are also preserved like the poles or the antenna of the car. preserving those detail with random or distance based subsampling would be difficult.
 		
 		 
 	\subsubsection{Implementation}
 			%\subsubsection{Efficiency and performance}
-		\label{subsubsec:bit_coordinates}
+		\label{lod.subsubsec:bit_coordinates}
 		Octree construction may be avoided by simply reading coordinates bitwise in a correctly centred/scaled point cloud.
 		We centre a point cloud so that the lowest point of all dimension is $(0,0,0)$, and scale it so that the biggest dimension is in $[0,1[$.
 		The point cloud is then quantized into $[0..2**L-1]$ for each coordinate.
 		The coordinates are now integers, and for each point, reading its coordinates bitwise left to right gives the position of the point in the octree for level of the bit read.
 		This means performing that this centring/scaling/quantization directly gives the octree. Moreover, further operations can be performed using bit arithmetic, which is extremely fast.
-		\myimage{./illustrations/LOD/principle_of_binary_coordinate.png}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{fig:binary_coordinates_example}
+		\myimage{./illustrations/chap2/LOD/principle_of_binary_coordinate.png}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{lod.fig:binary_coordinates_example}
 		
 		On this illustration the point $P$ has coordinates $(5,2)$ in a $[0,2^3-1]^2$ system. Reading the coordinates as binary gives $(b'101',b'010')$.
 		Thus we now that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
@@ -76,10 +76,10 @@
 		It may also be possible to use the revert Hilbert ordering to directly compute MidOc.
 		Furthermore, octree construction has been commonly done on GPU for more than a decade.
 	 \subsubsection{Size versus LOD trade-off}
-		 \label{point-cloud-server-troughput}
-		 The table \ref{tab:lod-size-time} shows that using the level 3 may speed the transfer time by a 10 factor.
+		 \label{lod.point-cloud-server-troughput}
+		 The table \ref{lod.tab:lod-size-time} shows that using the level 3 may speed the transfer time by a 10 factor.
 		 The point cloud server throughput is about 2-3 \mega $byte$ \per \second  (monoprocess),  sufficient for an internet troughput, but not fast enough for a LAN 10 \mega $byte$ \per \second.
-		 This relatively slow troughput is due to current point cloud server limitation (cf \ref{par:pointcloudserver-limitation}).
+		 This relatively slow troughput is due to current point cloud server limitation (cf \ref{lod.par:pointcloudserver-limitation}).
 	 \subsubsection{Large scale computing} 
 		 The relatively slow computing (100 Millions points \per \second ) is a very strong limitation.
 		 About $2/3$ of the computing time is spend on data transformation because algorithm works and output a list of points, which must then be desagregated/aggregated from/to a patch.
@@ -88,10 +88,10 @@
 	 \subsubsection{LOD stream}
 		 Streaming low level of detail patches greatly accelerate visualisation,
 		 which is very useful when the full point cloud is not needed.
-		 To further accelerate transmission, patch LOD can be determined according to the distance to camera. (See Figure \ref{fig:lod-dist-to-camera} for a naive visual explanation.)
-		 \myimage{./illustrations/LOD/visual_result_distance_dependent.png}{Schematique example of LOD depending on distance to camera}{fig:lod-dist-to-camera}
+		 To further accelerate transmission, patch LOD can be determined according to the distance to camera. (See Figure \ref{lod.fig:lod-dist-to-camera} for a naive visual explanation.)
+		 \myimage{./illustrations/chap2/LOD/visual_result_distance_dependent.png}{Schematique example of LOD depending on distance to camera}{lod.fig:lod-dist-to-camera}
 		 \\
-		 As seen before (See Section \ref{point-cloud-server-troughput}), the point cloud server is fast enough for an internet connection, but is currently slower than a file-based points streaming. Thus for the moment LOD stream is interesting only when bandwidth is limited.
+		 As seen before (See Section \ref{lod.point-cloud-server-troughput}), the point cloud server is fast enough for an internet connection, but is currently slower than a file-based points streaming. Thus for the moment LOD stream is interesting only when bandwidth is limited.
 	
 	\subsection{Excessive Density detection and correction}
 		\subsubsection{Fast detection}
@@ -110,16 +110,16 @@
 		The homogeneous density may also be compromised when the patch are not only split spatially, but with other logics (in our case, points in patch can't be separated by more than 30 seconds, and all points in a patch must come from the same original acquisition file).
 		
 	\subsection{Crude dimensionality descriptor (MidOc by-product)}	 
-		\myimage{"./illustrations/comparing_dim_desc/hist_comparison_for_tree"}{Histogram of $Dim_{LOD}$ and $Dim_{cov}$ for patch in trees.}{fig:hist_comparison_for_tree} 
+		\myimage{"./illustrations/chap2/comparing_dim_desc/hist_comparison_for_tree"}{Histogram of $Dim_{LOD}$ and $Dim_{cov}$ for patch in trees.}{lod.fig:hist_comparison_for_tree} 
 		
 		Tree patches are challenging for both dimensionality descriptor.
-		There possible dimension changes a lot (See Fig. \ref{fig:hist_comparison_for_tree}), although $Dim_{LOD}$ is more concentrated.
+		There possible dimension changes a lot (See Fig. \ref{lod.fig:hist_comparison_for_tree}), although $Dim_{LOD}$ is more concentrated.
 		Yet, $ppl$ is extremely useful to classify trees.
-		Indeed, $ppl$ contains the dimensionality at various scale, and potentially the variation of it, which is quite specific for trees (See Fig. \ref{fig:analysing_tree}).
+		Indeed, $ppl$ contains the dimensionality at various scale, and potentially the variation of it, which is quite specific for trees (See Fig. \ref{lod.fig:analysing_tree}).
 		  
-		\myimage{"./illustrations/comparing_dim_desc/analysing_tree/analysing_tree"}{Evolution of tree patch octree cells occupancy, illustrating the various dimensions of trees depending on the scale.}{fig:analysing_tree} 
+		\myimage{"./illustrations/chap2/comparing_dim_desc/analysing_tree/analysing_tree"}{Evolution of tree patch octree cells occupancy, illustrating the various dimensions of trees depending on the scale.}{lod.fig:analysing_tree} 
 			
-		We stress that a true octree cell occupancy (i.e. without picking points as in the $ppl$) can be obtained without computing the octree, simply by using the binary coordinates (See \ref{fig:binary_coordinates_example}).
+		We stress that a true octree cell occupancy (i.e. without picking points as in the $ppl$) can be obtained without computing the octree, simply by using the binary coordinates (See \ref{lod.fig:binary_coordinates_example}).
 		
 		Overall, $ppl$ offers a good alternative to the classical dimensionality descriptor ($Dim_{cov}$), being more robust and multiscale. 
 		However the $ppl$ also has limitations. 
@@ -139,7 +139,7 @@
 		We choose to classify directly in N classes, whereas due to the large unbalance indataset, cacade or 1 versus all approaches would be more adapted.
 		
 	\subsubsection{Analysing class hierarchy} 
-		The figure \ref{fig:class-clustering-all-features} shows the limit of a classification without contextual information. For instance the class grid and buildings are similar because in Paris buildings balcony are typically made of grids.
+		The figure \ref{lod.fig:class-clustering-all-features} shows the limit of a classification without contextual information. For instance the class grid and buildings are similar because in Paris buildings balcony are typically made of grids.
 		
 		To better identify confusion between classes, we use a spectral layout on the affinity matrix.
 		Graphing this matrix in 2D ammount to a problem of dimensionality reduction.
@@ -160,7 +160,7 @@
 		  The principal limitation is that for this kind of aerial Lidar data set the 2.5D approximation may be sufficient, which enables many raster based methods that may perform better or faster.
 		  
 		  %\paragraph{Paris data set}
-		  The figure \ref{fig:result-paris} gives full results for paris data set, at various class hierarchy level.
+		  The figure \ref{lod.fig:result-paris} gives full results for paris data set, at various class hierarchy level.
 		  Because the goal is filtering and not pure classification, we only comment the 7 classes result. The proposed methods appears very effective to find building, ground and trees.
 		  Even taking into consideration the fact that patch may contains mixed classes (column mix.), the result are in the range of state of the art point classifier, while being extremely fast. 
 		  This result are sufficient to increase recall or precision to 1 if necessary.
@@ -191,11 +191,11 @@
 		  Overall, the proposed method is one to three orders of magnitude faster.
 		  %\paragraph{performance}
 		  
-		  For Paris data set (Fig. \ref{fig:result-paris}), we compare to \cite{Weinmann2015}(Table 5). As expected there results are better, particularly in terms of precision (except for the class of vegetation). This trend is aggravated by taking into account the "mix." factor.
+		  For Paris data set (Fig. \ref{lod.fig:result-paris}), we compare to \cite{Weinmann2015}(Table 5). As expected there results are better, particularly in terms of precision (except for the class of vegetation). This trend is aggravated by taking into account the "mix." factor.
 		  Indeed we perform patch classification, and patch may not pertain to only one class, which is measured by the mix factor (amount of points in the main class divided by the total number of point).
 		  However, including the mix factor the results are still within the 85 to 90 \% precision for the main classes (ground, building, natural).
 		  
-		  For Vosges data set (Fig \ref{fig:result-vosges}), we refer to \cite{shapovalov2010} (Table 2). There random forest classifier get trees with 93\% precision and  89\% recall.
+		  For Vosges data set (Fig \ref{lod.fig:result-vosges}), we refer to \cite{shapovalov2010} (Table 2). There random forest classifier get trees with 93\% precision and  89\% recall.
 		  Including the mix factor we get trees with a precision of 87\% and 80\% recall.
 		  As a comparison to image based classification, an informal experiment of classification with satellite image reaches between 85 \% and 93 \% of precision for forest class depending on the pixel size (between 5 and 0.5 \metre).
 		  
@@ -207,14 +207,14 @@
 	 Because the propose methods are preprocess of filtering step, it can be advantageous to increase precision or recall.
 		
 		%\paragraph{Artificial increase of precision}
-		\myimage{./illustrations/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class is a roughly rising function of random forest confidence scores.}{fig:precision-vs-confidence} 
-		In the figure \ref{fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
+		\myimage{./illustrations/chap2/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class is a roughly rising function of random forest confidence scores.}{lod.fig:precision-vs-confidence} 
+		In the figure \ref{lod.fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
 		In this case it would be much easier to perform line detection starting from red patches rather than blue patches.
 		\\
 		The limitation of artificial precision increase is 
-		that it is only possible when precision is roughly a rising function of random forest confidence, as seen on the illustration \ref{fig:precision-vs-confidence}.
+		that it is only possible when precision is roughly a rising function of random forest confidence, as seen on the illustration \ref{lod.fig:precision-vs-confidence}.
 		For this class, by accepting only prediction of random forest that have a confidence over $0.3$ the precision goes from $0.68$ to $0.86$, at the cost of ignoring half the predictions for this class.
-		This method necessitates that the precision is roughly a rising function of the confidence, as for the 4+wheeler class for instance (See Figure \ref{fig:precision-vs-confidence}).   
+		This method necessitates that the precision is roughly a rising function of the confidence, as for the 4+wheeler class for instance (See Figure \ref{lod.fig:precision-vs-confidence}).   
 		This strategy is not possible for incoherent class, like unclassified class.
 
 		%\paragraph{Filtering: artificial increase of recall}
