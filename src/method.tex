@@ -141,6 +141,7 @@
 		and moreover may influence methods that relies on low-discrepancy.
 		More precisely, if only a part of the points in a level are going to be used,
 		it may be essential that they cover well the spatial layout of the totality of points.
+		Several methods give this kind of coverage (see \cite{Rainville2012})
 		
 		Lets take the example where the goal is to find the plan that best fits a set of points
 		and the method to do so in online (for instance it could be based on online robust PCA like in (\cite{Feng2013})).
@@ -194,10 +195,11 @@
 				
 		\subsubsection{Comparing crude dimensionality descriptor with covariance-based descriptors}
 		
-		Dimensionality descriptors are  well researched for point clouds (\cite{Demantke2014, Weinmann2015}), 
-		although at the point level and not the patch level.
+		\cite{Demantke2014, Weinmann2015} introduces a sophisticated per-point dimensionality descriptor, which is used to find optimal neighbourhood size. A main difference is that this feature is computed for each point (thus is extremely costly to compute), and that dimensionality is influenced by density variation.
+			 
 		At the patch level, we do not need to find the scale at which compute dimensionality is necessary,
 		the descriptor is computed on the whole patch.
+		
 		
 		These dimensionality descriptors ($Dim_{cov}$) rely on the computing of covariance of points centred to the barycentre (3D structure tensor), then a normalisation.
 		As such, the method is similar, and has the same advantages and limitation, as the Principal Component Analysis (See \cite{Shlens2014} for a reader friendly introduction ).
@@ -284,6 +286,11 @@
 		(for point cloud to point cloud or point cloud to 3D model registration),
 		or patches of objects and trees (for points cloud to landmark registration).
 		In other applications, finding only a part of the points may be sufficient, for instance when computing a building map from façade patches.
+		
+		
+		
+		Random Forest method started with \cite{Amit97shapequantization} and theorized by \cite{Breiman2001} and has been very popular since then. They are for instance used by \cite{Golovinskiy2009} who perform object detection, segmentation and classification. They analyse separately each task on an urban data set, thus providing valuable comparison. Their method is uniquely dedicated to this task, like \cite{Serna2014} who provide another method and a state of the art of the segmentation/classification subject.
+		Both of this methods are in fact 2D methods, working on an elevation image obtained by projecting the point cloud. However we observe that street point clouds are dominated by vertical surfaces, like building (about 70\% in Paris data set). Our method is fully 3D and can then easily be used to detect vertical object details, like windows or doors on buildings.
 		
 		
 		\subsubsection{Classification details}  
