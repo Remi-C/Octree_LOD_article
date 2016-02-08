@@ -26,30 +26,54 @@
 		The now common datasets in the multi billion point range can not fit in computer memory. 
 		Furthermore, having the complete and fully detailed point cloud is impracticable, unnecessary, or even damageable for most applications.
 		
-		Reducing the number of point is then a vital need for practical point cloud management.
+		The ability to reduce the number of points is then vital for practical point cloud management and usage.
+		 
+		\myimage{"./illustrations/chap2/two_reduction_strategy/two_reduction_strategy"}{Two strategies to limit the amount of points to work on.}{lod.fig:two_reduction} 
 		
-		There are basically two levers to reduce the amount of data considered. The first would be \textbf{filtering} data based on characteristics (position, time, semantic, etc.), thus keeping the original data, but only a portion of it.
-		The second lever would be to generalise the data, that is replace many points with few objects that represent them well. Those objects can be more abstract (geometric primitives like plane for example), or simply some well chosen points (subset).
+		There are basically two levers to reduce the amount of data considered (See Figure \ref{lod.fig:two_reduction}). The first would be \textbf{filtering} data based on characteristics (position, time, semantic, etc.), thus keeping the original data, but only a portion of it.
+		The second lever would be to \textbf{generalise} the data, that is replace many points with few objects that represent them well. Those objects can be more abstract (geometric primitives like plane for example), or of the same type, i.e. simply some well chosen points (subset).
 		
 		For instance, to visualize the parts of a massive point cloud, we might fetch only the points that are visible (filtering),
-		and not display all the points but only the sufficient number to understand the scene (generalisation).
-		(See Figure \ref{lod.fig:two_reduction})
-		\myimage{"./illustrations/chap2/two_reduction_strategy/two_reduction_strategy"}{Two strategies to limit the amount of points to work on.}{lod.fig:two_reduction}
+		and not display the totality of selected points, but only points better representing the scene (generalisation).
 		
-		The system we propose un \cite{cura2015} is compatible with both, and extensively covers the filtering and abstracting part. In this article we focus on the generalisation problem using points.
+		The Point Cloud Server (PCS) we propose un \cite{cura2015} is compatible with filtering and generalization. It extensively covers the filtering part, with many possibilities (spatial, semantic, attributes, using vector and raster data, using metadata). The PCS also use geenralization of points in the form of more abstract types (bounding box, planes, stats, etc.).
+		In this article, we explore how to generalise groups of points by choosing a representative subset of points.
 		
-		Thus we deal with a simpler version of a problem common for Geographical Information System (GIS): how to generalize information contained in huge datasets, that is reduce the details of the data while retaining its principal organisation.
-		 
-		This problematic is very commons accross research field, and could be seen as a problem of compression, clustering, dimensionality reduction, etc.
-	  
-		This particular problem applied to visualisation is commonly called Level Of Details (LOD, cf \href{lod.banner_image}{figure ~\ref{lod.fig:banner_image}}).
+		This kind of problem is common in Geographical Information System (GIS): how to generalize information contained in huge datasets, that is reduce the details of data while retaining its principal organisation.
 		
-		The problem is then how to reduce the amount of points while preserving the geometric characteristics of the underlying sensed object, in an efficient manner, and while being robust to the way the sensing was done?
-		Indeed LOD approaches sacrifices of a part of information in exchange of a massive reduction of data size which is necessary for efficient usage/visualisation. In this regard, a LOD method must by nature be efficient, or the information loss would be pointless.
+		This problem is also much broader, very commons across research field, and could be seen as compression, clustering, dimensionality reduction, or Level Of Detail (LOD) if the goal is visualisation.
 		
+		In this article, we consider reducing the amount of points while preserving the geometric characteristics of the underlying sensed object, in an efficient manner, and while being robust to the way sensing was done.
 		
 
 	\subsection{Related Work} 
+		
+		Bereuter2015 : using quad tree to generalise points, 4 types of generalisation : selection, simplification, aggregation, displacement
+		Schwartges2013: cone to display points at various lod, no flicker, not too close, maximally spaced
+		Sester2001: propose un reseau pour simplifier les points. (pense au passage en 3D). Probleme : son critere est de garder plus de points aux endroits qui change bcp -> donne pas un sampling homogene
+		 
+		McKay1979 Latin Hypercube : only one sample per cell : ce qu'on fait : Orthogonal sampling
+		
+		Rainville2012 : parle de low discrepancy, latin hypercube, et surtout halton. Utilisation pour algo genetique
+		
+		Feng2014 : explique vaguement qu'il est possible de construire un octree à partir des points ordonné selon morton
+	
+		Baert2014 : cnstruction massive d'octree offline, utilise massivement morton
+		
+		Trapp2008 : visu 3D lens sur un quartier avec des generalisation differentes -> generalisation : pas que visualisation, mais aussi uen façon demettre en avant certains trucs (parallele realisateur utilise le flou)
+		
+		Sabo2014 : geohash tree : use morton curve
+		
+		Hornung2013 : octomap: une faon de stocker l'information d'occupation de manière probabiliste (occupation = [0..1]) --> modelise aussi l'espace vide 
+		
+		Elseberg2011 : utilisation d'un octree pour du ransac -< pour du processing
+		Elseberg 2013 : un pointcloud de 1 milliard de points
+		
+		limite des approches sig : toujours un critère d'eparpillement / de  distance entre les points. Pour etre applicable,  necessiterait une reconstruction de surface
+		
+		
+		
+		
 		
         \todoall{ajouter citation de bereuter \protect\cite{Bereuter2015} , \protect\cite{Schwartges2013} \protect\cite{sester2001}  }
         
@@ -68,7 +92,10 @@
 	    
 	    \todoall{citer  Baert2014 , pour les considérations off line d'octree enormes}
 	    
-	 
+	    
+	    
+		%Indeed LOD approaches sacrifices a part of information in exchange of a massive reduction of data size which is necessary for efficient usage/visualisation. In this regard, a LOD method must by nature be efficient, or the information loss would be pointless.
+		
         Fil rouge à raconter : on veut en fait sampler les fonctions x,y,z, attributs.
         Ce dont on est sur c est x,y,z, donc dans l ideal on trouverait le sampling sur la surface qui minimise la perte d erreur. Comme on est meme pas sur d avoir une surface, on peut pas faire ça. On a meme pas un sampling uniforme, ce qui nous interdit d utiliser les moindres carrées (pas le choix, c est la variation de densité qui le veut).
         A la place on prend l autre approche, on crée un sampling regulier, et comme on veut pas se dépatouiller des attributs, on prend un point déjà existant.
