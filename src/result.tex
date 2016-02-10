@@ -113,7 +113,7 @@
 		The ordering is successful on all patches, even in very challenging areas where there are big singularities in density, and many outliers.
 		The total speed is about 100 millions points/hour using in-base processing.
 		We prototyped an out-of-base processing where the extraction of points from patch is done on the client, and reached a 180 \mega pts \per \hour.
-		The same method, without any ordering (only converting pathc to point then point to patch) reach a 2.3 B pts\per\hour.
+		The same method, without any ordering (only converting patch to point then point to patch) reach a 2.3 B pts\per\hour.
 		% with python patch reading writting, 10 process : 50k pts/sec
 		%only data (no processing) : 650k pts/s
 		We consider it to be at least 10 times too slow for practical use.
@@ -167,8 +167,8 @@
 		
 		$Dim_{cov}$ and $Dim_{LOD}$ are computed with in-base and out-of-base processing, the latter 
 		being executed in parallel (8 workers).
-		For 10k patches, 12 \mega pts, retrieving data and writing result accounts for $48\second$, computing $Dim_{LOD}$ to $8\second$, $Dim_{cov}$ to $64\second$.
-		
+		For 10k patches, 12 \mega pts, retrieving data and writing result accounts for $48\second$, computing $Dim_{LOD}$ to $8\second$, $Dim_{cov}$ to $64\second$. Computing $ppl$ (which is multiscale) using a linear octree takes between $58$ $L_6$ and $85 \second$ $L_8$.
+		 (
 		\myimage{"./illustrations/chap2/comparing_dim_desc/success_case"}{$Dim_{LOD}$ and $Dim_{cov}$ are mostly comparable, except for few patches (5\%, coloured)}{lod.fig:success_case}
 		
 		
