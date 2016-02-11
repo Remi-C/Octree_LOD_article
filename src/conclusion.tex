@@ -6,12 +6,13 @@
 
 
 \section{Conclusion} 
-	We propose 
-	todo 
-	to store LOD in the order of points. For visualization application, the best ordering may not be geometrical (like MidOc), but may depends on visual saliency of the points. In this case the LOD of each patch should be adapted to the distance to camera.
-	\\
-	Theoretically $ppl$ descriptor could be decomposed on a pure dimensionality base.
-	For all applications, it could be interesting to find methods to group patches (and merge $ppl$) to enable dimensionality analysis at several scales.
-	\\
-	Because some patches contain mixed classes, a bias is introduced which mechanically lower the average per points results. The random forest classifier should be in fact a random forest regressor, predicting for each patch not a class, but classes distribution.
+	Using the Point Cloud Server, we propose a new paradigm by separating the spatial indexing and LOD scheme. Subdivision of point clouds into groups of points (patches) allows us to implicitly store LOD into the order of points rather than externally. 
+	After an ordering step, exploiting this LOD does not require any further computation. 
+	We propose an geometrical ordering (MidOc) based on the closest point to octree cell centre that produces reliable LOD, successfully used for visualization or as a service for other processing methods (density correction/reduction).
+	By also performing intra-level dedicated ordering, we create LOD that can be used partially and still provide good coverage.
+	Furthermore, by collecting the number of points per octree level, an information available during MidOc ordering, we create a multi-scale dimensionality descriptor.
+	We show the interest of this descriptor, both by comparison to the state of the art and by proof of its usefulness in real Lidar dataset classification.
+	Classification is extremely fast, sometime at the price of performance (precision / recall). 
+	However we prove that those results can be used as a pre-processing step for more complex methods, using if necessary precision-increase or recall-increase strategies. 
+	
 	 

@@ -13,7 +13,7 @@
 	We refer the reader to \cite{Cura2014} for an exhaustive analyse of the Point Cloud Server.
 	Briefly, the PCS has demonstrated all the required capacitites to manage point clouds and scale well.
 	To the best of our knowledge the fastest and easiest way to filter very big point cloud using complex spatial and temporal criteria, as well as natively integrate point cloud with other GIS data (raster, vector).
-	The main limitation is based on the hypothesis than points can be regrouped into meaningful (regarding further point utilisation) patch. If this hypothesis is false, the PCS loose most of its interest.
+	The main limitation is based on the hypothesis than points can be regrouped into meaningful (regarding further point utilisation) patches. If this hypothesis is false, the PCS lose most of its interest.
 	 
 		 
 	\subsection{Exploiting the order of points}
@@ -30,8 +30,7 @@
 	A software like LasTool using delta compressing might suffer heavily from this. 
 			 
 	 \subsection{MidOc : an ordering for gradual geometrical approximation}
-	 	We stress that the LOD are in fact almost continuous (as in the third illustrations of \ref{lod.fig:banner_image}).
-	 	\myimage{./illustrations/chap2/Objects/Objects_assembled.jpg}{All successive levels for common objects (car, window, 2 wheelers, light, tree, people, pole, ground), color is intensity for other points.}{lod.fig:lod-common-objects} 
+	 	We stress that the LOD are in fact almost continuous (as in the third illustrations of Fig.  \ref{lod.fig:banner_image}). 
 		 	
 		MidOc is a way to order points based on their importance. In MidOc,
 		the importance is defined geometrically.
@@ -65,30 +64,31 @@
 		We centre a point cloud so that the lowest point of all dimension is $(0,0,0)$, and scale it so that the biggest dimension is in $[0,1[$.
 		The point cloud is then quantized into $[0..2**L-1]$ for each coordinate.
 		The coordinates are now integers, and for each point, reading its coordinates bitwise left to right gives the position of the point in the octree for level of the bit read.
-		This means performing that this centring/scaling/quantization directly gives the octree. Moreover, further operations can be performed using bit arithmetic, which is extremely fast.
+		This means performing this centring/scaling/quantization directly gives the octree. Moreover, further operations can be performed using bit arithmetic, which is extremely fast.
 		\myimage{./illustrations/chap2/octree_binary/principle_of_binary_coordinate}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{lod.fig:binary_coordinates_example}
 		
 		On this illustration the point $P$ has coordinates $(5,2)$ in a $[0,2^3-1]^2$ system. Reading the coordinates as binary gives $(b'101',b'010')$.
-		Thus we now that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
+		Thus we know that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
 		For the next level, we divide the previous cell in 2, and read the next binary coordinate. $P$ will be in the left (x=$b'x0x'$) up (y=$b'y1y'$) cell. There is no computing required, only bit mask and data reading.
 			
 		Regarding implementation, the three we propose are much too slow, by an order of magnitude to be easily used in real situation. We stress however that the slowness comes from ineficient data manipulation, rather than from the complexity of the ordering. 
 		It may also be possible to use the revert Hilbert ordering to directly compute MidOc.
 		Furthermore, octree construction has been commonly done on GPU for more than a decade.
+	 
 	 \subsubsection{Size versus LOD trade-off}
 		 \label{lod.point-cloud-server-troughput}
 		 The table \ref{lod.tab:lod-size-time} shows that using the level 3 may speed the transfer time by a 10 factor.
 		 The point cloud server throughput is about 2-3 \mega $byte$ \per \second  (monoprocess),  sufficient for an internet troughput, but not fast enough for a LAN 10 \mega $byte$ \per \second.
 		 This relatively slow troughput is due to current point cloud server limitation (cf \ref{lod.par:pointcloudserver-limitation}).
+	 
 	 \subsubsection{Large scale computing} 
-		 The relatively slow computing (100 Millions points \per \second ) is a very strong limitation.
-		 About $2/3$ of the computing time is spend on data transformation because algorithm works and output a list of points, which must then be desagregated/aggregated from/to a patch.
-		 This could be avoided by a C implementation which can access raw patch, and would also be faster for ordering points.
+		 The relatively slow computing (180 Millions points \per \hour ) is a very strong limitation.
+		 This could be avoided. A C implementation which can access raw patch would also be faster for ordering points.
 		 
 	 \subsubsection{LOD stream}
 		 Streaming low level of detail patches greatly accelerate visualisation,
 		 which is very useful when the full point cloud is not needed.
-		 To further accelerate transmission, patch LOD can be determined according to the distance to camera. (See Figure \ref{lod.fig:lod-dist-to-camera} for a naive visual explanation.)
+		 To further accelerate transmission, patch LOD can be determined according to the distance to camera (frustrum culling). (See Figure \ref{lod.fig:lod-dist-to-camera} for a naive visual explanation.)
 		 \myimage{./illustrations/chap2/LOD/visual_result_distance_dependent.png}{Schematique example of LOD depending on distance to camera}{lod.fig:lod-dist-to-camera}
 		 \\
 		 As seen before (See Section \ref{lod.point-cloud-server-troughput}), the point cloud server is fast enough for an internet connection, but is currently slower than a file-based points streaming. Thus for the moment LOD stream is interesting only when bandwidth is limited.
@@ -99,7 +99,7 @@
 		\\
 		The limitations stems from the aggregated nature of patch. the number of points per patch doesn't give the density per point, but a quantized version of this per patch.
 		So it is not possible to have a fine per point density.
-		It also introduces the classical sampling limits : only density abnormalities spatially bigger than a patch  (at least $1 \meter$ wide for Paris) can be detected.
+	 
 		
 		\subsubsection{Simple correction}
 		The correction of density peak we propose has the advantage of being instantaneous and not induce any data loss.
@@ -107,19 +107,20 @@
 		\\
 		The most important limitation this method doesn't guarantee homogeneous density, only a maximum density.
 		For instance if an application requires 1000 points \per \cubic \meter for ground patches, all the patches must have more than 1000 points, and patch must have been ordered with MidOc for level 0 to at least 5 ($4^5=1024$). 
-		The homogeneous density may also be compromised when the patch are not only split spatially, but with other logics (in our case, points in patch can't be separated by more than 30 seconds, and all points in a patch must come from the same original acquisition file).
+		The homogeneous density may also be compromised when the patch are not only split spatially, but with other logics (in our case, points in patch can not be separated by more than 30 seconds, and all points in a patch must come from the same original acquisition file).
 		
 	\subsection{Crude dimensionality descriptor (MidOc by-product)}	 
-		\myimage{"./illustrations/chap2/comparing_dim_desc/hist_comparison_for_tree"}{Histogram of $Dim_{LOD}$ and $Dim_{cov}$ for patch in trees.}{lod.fig:hist_comparison_for_tree} 
+		\myimage{"./illustrations/chap2/comparing_dim_desc/hist_comparison_for_tree"}{Histogram of $Dim_{LOD}$ and $Dim_{cov}$ for patch in trees (500 \kilo pts). Tree dimension could be from 1.2 to 2.6, yet $Dim_{LOD}$ is less ambiguous than $Dim_{cov}$}{lod.fig:hist_comparison_for_tree} 
 		
 		Tree patches are challenging for both dimensionality descriptor.
 		There possible dimension changes a lot (See Fig. \ref{lod.fig:hist_comparison_for_tree}), although $Dim_{LOD}$ is more concentrated.
 		Yet, $ppl$ is extremely useful to classify trees.
 		Indeed, $ppl$ contains the dimensionality at various scale, and potentially the variation of it, which is quite specific for trees (See Fig. \ref{lod.fig:analysing_tree}).
 		  
-		\myimage{"./illustrations/chap2/comparing_dim_desc/analysing_tree/analysing_tree"}{Evolution of tree patch octree cells occupancy, illustrating the various dimensions of trees depending on the scale.}{lod.fig:analysing_tree} 
+		\myimage{"./illustrations/chap2/comparing_dim_desc/analysing_tree/analysing_tree"}{Evolution of tree patch octree cells occupancy, illustrating the various dimensions of trees depending on the scale. (Dimension is embeded it the power of 2).}{lod.fig:analysing_tree} 
 			
 		We stress that a true octree cell occupancy (i.e. without picking points as in the $ppl$) can be obtained without computing the octree, simply by using the binary coordinates (See \ref{lod.fig:binary_coordinates_example}).
+		We implement it in python as a proof of concept. Computing it is about as fast as computing $Dim_{cov}$.
 		
 		Overall, $ppl$ offers a good alternative to the classical dimensionality descriptor ($Dim_{cov}$), being more robust and multiscale. 
 		However the $ppl$ also has limitations. 
@@ -128,7 +129,7 @@
 		Last because of assumption on density, it is sensible to geometric noise.
 			  
 	\subsection{Patch Classification}
-		$ppl$ descriptor contains lots of information about the patch. This information is leveraged by the Random Forest method and permit a rough classification based on geometric differences.
+		The $ppl$ descriptor contains lots of information about the patch. This information is leveraged by the Random Forest method and permit a rough classification based on geometric differences.
 		As expected, $ppl$ descriptor are  not sufficient to correctly separate complex objects,
 		which is the main limitation for a classification application. 
 		
@@ -144,14 +145,14 @@
 		To better identify confusion between classes, we use a spectral layout on the affinity matrix.
 		Graphing this matrix in 2D ammount to a problem of dimensionality reduction.
 		It could use more advanced method than simply using the first two eigen vector,
-		in perticular the two vector wouldn't need to be orthogonal (for instance, like in \cite{Hyvarinen2000})
+		in perticular the two vector wouldn't need to be orthogonal (for instance, like in \cite{Hyvarinen2000}).
 				 
 	\subsubsection{Classification results}
 		  %\paragraph{Vosges data set}	
 		  First the feature usage for vosges data set clearly shows that amongst all the simple descriptor, the $ppl$ descriptor is largely favored.
 		  This may be explained by the fact that forest and bare land have very different dimensionality, which is conveyed by the $ppl$ descriptor.
 		  
-		  Second the patch classifier appears to have very good result to predict if a patch is forest or not. The precision is almost perfect for forest.
+		  Second the patch classifier appears to have very good result to predict if a patch is forest or not. The precision is almost perfect for forest. We reach the limit of precision of ground truth.
 		  Because most of the errors are on border area, the recall for forest can also be easily artificially increased. The percent of points in patch that are in the patch class allow to compare result with a point based method. 
 		  For instance the average precision per point for closed forest would be $0.99*0.883=0.874$ . We stress that this is averaged results, and better precision per point could be achieved because we may use random forest confidence to guess border area (with a separate learning for instance).
 		  For comparison with point methods, the patch classifier predict with very good precision and support over 6 billions points in few seconds (few minutes for training). We don't know other method that have similar result while being as fast and natively 3D.
@@ -166,21 +167,20 @@
 		  This result are sufficient to increase recall or precision to 1 if necessary.
 		  We stress that even results appearing less good (4+wheelers , 0.69 precision, 0.45 recall) are in fact sufficient to increase recall to 1 (by spatial dilatation of the result), which enables then to use more subtle methods on filtered patches.
 		  
-		  $ppl$ descriptor are less used than for the Vosges data set, but is still useful, particularly when there are few classes.
+		  $ppl$ descriptor is less used than for the Vosges data set, but is still useful, particularly when there are few classes.
 		  It is interesting to note that the mean intensity descriptor seems to be used to distinguish between objects, which makes it less useful in the 7 classes case.
 		  The patch classifier for Paris data set is clearly limited to separate simple classes. In particular, the performances for objects are clearly lower than the state of the art. A dedicated approach should be used (cascaded or one versus all classifier). 
 	  
 	  
 	  \subsubsection{Estimating the speed and performance of patch based classification compared to point based classification}
 		  %\paragraph{Timing consideration}
-		  The Point Cloud Server is designed to work on patches, which in turns enable massive scaling.
+		  The Point Cloud Server is designed to work on patches, which in turns enable massive scaling. 
 		  
-		  %\paragraph{speed}
 		  Timing a server is difficult because of different layer of caches, and background workers. Therefore, timing should be considered as order of magnitude.
-		  
-		  For Paris data set,extracting extra classification features requires $\sim \frac{400 \second},{n_{workers}}$( 1 to 8 workers), learning $\sim 210 \second$,
+		  %\paragraph{speed}
+		  For Paris data set,extracting extra classification features requires $\sim \frac{400 \second}{n_{workers}}$( 1 to 8 workers), learning $\sim 210 \second$,
 		  and classification $\sim$ few \second.
-		  We refer to \cite{Weinmann2015}(Table 5) for point classification timing on the same dataset (4.28\hour, 2\second,90\second ) (please note that the training set is much reduced by data balancing, whereas we keep the full training set and use weight for balancing).
+		  We refer to \cite{Weinmann2015}(Table 5) for point classification timing on the same dataset (4.28\hour, 2\second, 90\second ) (please note that the training set is much reduced by data balancing).
 		  As expected the speed gain is high for complex feature computing (not required) and point classification (done on patch and not points in our case).
 		  
 		  For Vosges data set, features are extracted at $1 \mega pts \per \second \per worker$, learning $\sim few \minute$, classification $\sim 10 \second$.
@@ -208,7 +208,7 @@
 		
 		%\paragraph{Artificial increase of precision}
 		\myimage{./illustrations/chap2/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class is a roughly rising function of random forest confidence scores.}{lod.fig:precision-vs-confidence} 
-		In the figure \ref{lod.fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
+		In the Figure \ref{lod.fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
 		In this case it would be much easier to perform line detection starting from red patches rather than blue patches.
 		\\
 		The limitation of artificial precision increase is 

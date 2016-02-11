@@ -6,14 +6,13 @@
  
 %\begin{abstract}   
 \section{Abstract}
-	We introduce a new ordering for point cloud based on octree, which allows, after a pre-computing phase, 
-	to effortlessly get a portable representative geometric Level Of Details (LOD).
+	We propose a new paradigm to effortlessly get a portable geometric Level Of Details (LOD) for a point cloud inside a Point Cloud Server. The point cloud is divided into groups of points (patch), then each patch is reordered (MidOc ordering) so that reading points following this order provides more and more details on the patch.
 	This LOD have then multiple applications: point cloud size reduction for 
 	visualisation (point cloud streaming) or speeding of slow algorithm,
 	 fast density peak detection and correction as well as safeguard for methods that may be sensible to density variations.
 	The LOD method also embeds information about the sensed object geometric nature, 
 	and thus can be used as a crude multi-scale dimensionality descriptor, 
-	enabling fast classification and on-the-fly filtering with basic classes. 
+	enabling fast classification and on-the-fly filtering for basic classes. 
 	 
 %\end{abstract}	
 	
