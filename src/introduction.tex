@@ -97,9 +97,14 @@
 	Moreover, their regularity allows efficient representation and compression (\cite{Schnabel2006,Huang2006}), as well as fast geospatial access to data (\cite{Elseberg2013}).
 	\todoall{parler du fait qu'en general les octree sont utiliser que de l indexation}
 	Octree are also natural condidates to nesting (i.e. create a hierarchy of octrees with various resolution and occupancy, as in \cite{Hornung2013}). 
+
 	\todoall{conclusion sur les octree : probleme des octree : stockage en exterieur, compatibilité, etc.
 		toutes les methodes prennent le centroide
 		}
+
+    	Octree construction into file system hierarchy approach is still popular today (\cite{OscarMartinez-Rubi2015}), with point cloud in the 600 Billions points range.
+	It has also been adapted to distributed file system (cloud-computing)  \footnote{\url{https://github.com/connormanning/entwine}}, with processing of 100 Billions points at 2 Billions pts \per hour using a 32 cores 64 GB computer.
+
 	
 	
 	\todoall[]{neanmoins, en 3D, choix ps vraiment justifier alors que c'est important, mais en 2D, choix etudier par .. preiciser que quadtree est un octree dimension 2.
