@@ -6,13 +6,13 @@
  
 %\begin{abstract}   
 \section{Abstract}
-	We propose a new paradigm to effortlessly get a portable geometric Level Of Details (LOD) for a point cloud inside a Point Cloud Server. The point cloud is divided into groups of points (patch), then each patch is reordered (MidOc ordering) so that reading points following this order provides more and more details on the patch.
-	This LOD have then multiple applications: point cloud size reduction for 
-	visualisation (point cloud streaming) or speeding of slow algorithm,
-	 fast density peak detection and correction as well as safeguard for methods that may be sensible to density variations.
-	The LOD method also embeds information about the sensed object geometric nature, 
-	and thus can be used as a crude multi-scale dimensionality descriptor, 
-	enabling fast classification and on-the-fly filtering for basic classes. 
+	We propose a new paradigm to easily get a portable geometric Level Of Details (LOD) inside a Point Cloud Server.
+	The point cloud is divided into groups (patches) which are reordered so that reading patches points following this order gradually provides more and more details on the patch.
+	\todoall{cette phrase est un peu longue, faire plus simple}
+	Using a LOD has multiple applications: visualisation of massive point cloud, algorithm acceleration,
+	 fast density peak detection and correction.
+	Our method also embeds information about the sensed object geometric nature that can be used as a crude multi-scale dimensionality descriptor,
+	enabling fast classification for basic classes and on-the-fly filtering. 
 	 
 %\end{abstract}	
 	

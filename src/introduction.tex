@@ -5,6 +5,8 @@
 %% ---------------------------------------------------------------------
 
 
+\todoall{utiliser point-set à la place de point cloud}
+
 \section{Introduction}
 
 \begin{figure*}[t!]
@@ -17,57 +19,91 @@
 	\end{center}
 \end{figure*} 
 
-\subsection{Problem}  
-	Point cloud data is becoming more and more common. Following the same trend, the acquisition frequency and precision of the Lidar device are also increasing.
-	Thus point cloud processing is entering in the Big Data realm.
-	Point cloud data usage is also spreading and going out of their traditional user communities. 
-	Lidar data are now commonly used by non-specialized users. 
-	The now common datasets in the multi billion point range can not fit in computer memory. 
-	Furthermore, having the complete and fully detailed point cloud is impracticable, unnecessary, or even damageable for most applications.
+\subsection{Problem}   
+	Democratisation of sensing device have resulted into an expansion of acquired point clouds.
+	In the same time, acquisition frequency and precision of the Lidar device are also increasing,
+	resulting in an explosion of number of points.
 	
-	The ability to reduce the number of points is then vital for practical point cloud management and usage.
+	Point cloud data usage is more common and no more limited to a specialized community.
+	Datasets are now commonly in the multi billion point range and can not fit in computer memory.
+	Furthermore, having the complete and fully detailed point cloud is impracticable, unnecessary, or even damageable for most applications.
+	\todoall{
+		point - prob de stockage car les tailles sont grandes,  -> problem d'utilisation . De plus les usages changes, se sont ouverts, donc il faut un accès facile
+		Accès (simple pour les noob) , processing, stockage ->Big Data issue.
+		} 
  
 	\myimage{"./illustrations/chap2/two_reduction_strategy/two_reduction_strategy"}{Two strategies to limit the amount of points to work on.}{lod.fig:two_reduction} 
+	\todoall{illustration : generalize , mettre un truc qui va avec filtering. , mettre un s et pas un z . 
+		separation en noir fine plutot que gris}
+	The ability to reduce the number of points is a key point for practical point cloud management and usage.
+	There are basically two approaches to reduce the amount of data considered (See Figure \ref{lod.fig:two_reduction}) :
+	by a \textbf{filtering} strategy based on data characteristics (position, time, semantic, etc.) which keeps only a portion the original data and/or a 
+	\textbf{generalisation} of the data by replacing many points with fewer objects that represent appropriately those points. 
+	For instance, in order to visualize massive point cloud, it's important to fetch only the appropriate points by selecting the ones which are visible (filtering) and which are the most representative of the scene (generalisation) at the same time.
 	
-	There are basically two levers to reduce the amount of data considered (See Figure \ref{lod.fig:two_reduction}). The first would be \textbf{filtering} data based on its characteristics (position, time, semantic, etc.), thus keeping the original data, but only a portion of it.
-	The second lever would be to \textbf{generalise} the data, that is replace many points with few objects that represent  well those points. Those objects can be more abstract (geometric primitives like plane for example), or of the same type, i.e. simply some well chosen points (subset).
+	Many methods re compatible with filterign and/or generalisation.
+	\todoall{many ùmethods perform filtering (petite liste, 3 papiers). Some other perform generalisation (petite liste).
+		Cura2015 filtering et intorduit la generalisation avec des objets abstraits, mais n'utilise pasd de generalisation avec des points}
+%	The Point Cloud Server (PCS) introduced by \cite{Cura2015} is compatible with both filtering and generalisation.
+%	It covers the filtering part, with many possibilities (spatial, semantic, attributes, using vector and raster data, using metadata).
+%	Nevertheless it uses a generalisation approach based only abstract types (bounding box, planes, stats, etc.), which limits its use to methods that are adapted to those types.
+%	
+%	Yet generalisation can be done generalised objects can be more abstract (geometric primitives like plane for example), or of the same type, i.e. simply some well chosen points (subset).
+	Nevertheless it does not covers generalisation of points by points.
 	
-	For instance, to visualize a part of a massive point cloud, we might fetch only the points that are visible (filtering),
-	and not display the totality of selected points, but only points better representing the scene (generalisation).
-	
-	The Point Cloud Server (PCS) we propose un \cite{Cura2015} is compatible with filtering and generalization. It extensively covers the filtering part, with many possibilities (spatial, semantic, attributes, using vector and raster data, using metadata). The PCS also use generalisation of points in the form of more abstract types (bounding box, planes, stats, etc.).
-	In this article, we explore the last option: how to generalise groups of points by choosing a representative subset of points (See Fig. \ref{lod.fig:two_reduction}).
-	
-	This kind of problem is common in Geographical Information System (GIS): how to generalize information contained in huge datasets, that is reduce the details of data while retaining its principal organisation.
-	
-	This problem is also much broader and very commons across research field. It could be seen as compression, clustering, dimensionality reduction, or Level Of Detail (LOD) if the goal is visualisation.
-	
-	In this article, we consider successive reducion of the amount of points in several levels while preserving the geometric characteristics of the underlying sensed object, in an efficient manner, and while being robust point density variation. The goal is not only visualization of large point cloud, but mainly processing of large point clouds.
-	
+	\todoall{ paragrpahe suivant doit etre reecrit pour bien s'integrer}
 	Robustness to variation of density is necessary because the sensing may be structured for the sensing device (for instance a Lidar may sense point using a constant angle), but not necessary for the sensed object (see Fig. \ref{lod.fig:irregular_sampling}). Furthermore,fusing multiple point clouds also produce non regular density.
 	\myimage{"./illustrations/chap2/problem_in_sampling/regular_vs_irregular_sampling"}{Regular sensing does not imply regular sampling.}{lod.fig:irregular_sampling}.
 	
-
+	
+	In this work we propose to extend the PCS to explore the generalisation of groups of points by choosing a representative subset of points (See Fig. \ref{lod.fig:two_reduction}).
+	TODO
+	We reduce successively the number of points by defining level which preserves the geometric characteristics of the underlying sensed object.
+	Our method is designed to be efficient, robust to point density variation and can be used for many large point clouds processing, including visualisation.
+	
 \subsection{Related Work} 
 
-	Sophisticated methods have been proposed to generalise 2D points for cartographic applications. \cite{Sester2001} uses Self Organizing Maps, \cite{Schwartges2013} uses Active Range and (mixed) integer
-	linear programming.
+	\todoall{
+		generalisation : etudier dans les GIS
+		
+		ne pas melanger 2D et 3D 
+		dire que la generalisation de point n a ete faite serieusement que en 2D, pas torp en 3D.
+		Donc ocmmencer par la 2D.
+		
+		dire que la solution la plus puissante )(ui vient des GIS) est bonne n est pas transposable.
+		Donc on cherche autre chose
+		}
+		
+	This type of problem has been extensively studied in Geographical Information System (GIS)and other research field.
+	It could be seen as compression, clustering, dimensionality reduction, or Level Of Detail (LOD) for visualisation.
+	Sophisticated methods have been proposed to generalise 2D points for cartographic applications (\cite{Sester2001}, \cite{Schwartges2013}).
+	\todoall{neanmoint : notre probleme données 3D lidar, et leur mehtods êuvent pas etre reutiliséées
+		reparler de densité
+		parler de complexité des methods (trop longs a calculer)}
 	In both case, the goal is a very specific type of visualisation (cartography), and it obviously relies on having a 2D plan on which perform the methods.
 	Applying directly such methods to point clouds would thus require to have access to surfaces of sensed objects.
-	
 	Yet, getting this surface (reconstruction) is a very hard challenge, sometime not even possible, and thus we can not rely on it.
+	\todoall{conclusion : on peut pas utiliser leur truc}
 	
-	Because the goal si to produce hierarchical levels of points, it seems natural to use a hierarchical structure to compute those levels.
+	
+	\todoall{reecrire en parlant a chaque fois des problemes et des oslutions apportées par les autres }
+	Because the goal is to produce hierarchical levels of points, it seems natural to use a hierarchical structure to compute those levels.
 	\cite{Rusinkiewicz2000} use a Bounding Sphere Hierarchy for a visualisation application.
 	On the other hand, Octree (\cite{Meagher1982}) have become the de-facto choice.
-	Indeed, they can be build efficiently ordering points by Morton order (\cite{Feng2014}),
-	which is similar in principle to GeoHash (\cite{Sabo2014}).
+	Indeed, they can be build efficiently ordering points by Morton (or GeoHash \cite{Sabo2014}) order (\cite{Feng2014}).
+	\todoall{mettre une citation sur morton}
 	Octree can even be created out of memory for extremely large point clouds (\cite{Baert2014}). 
-	
+	\todoall{mettre sous forme d avantage de l octree}
 	Moreover, their regularity allows efficient representation and compression (\cite{Schnabel2006,Huang2006}), as well as fast geospatial access to data (\cite{Elseberg2013}).
+	\todoall{parler du fait qu'en general les octree sont utiliser que de l indexation}
 	Octree are also natural condidates to nesting (i.e. create a hierarchy of octrees with various resolution and occupancy, as in \cite{Hornung2013}). 
+	\todoall{conclusion sur les octree : probleme des octree : stockage en exterieur, compatibilité, etc.
+		toutes les methodes prennent le centroide
+		}
 	
 	
+	\todoall[]{neanmoins, en 3D, choix ps vraiment justifier alors que c'est important, mais en 2D, choix etudier par .. preiciser que quadtree est un octree dimension 2.
+		Preciser qu'on utiliser les conclusions de la 2D pour la 3D, car l etude n existe pas en 3D}
 	\cite{Bereuter2015} recently gave an overview of how quad tree can be used for point generalisation.
 	The steps are first to compute a tree for the point cloud.
 	Then, the point generalisation at a given level is obtained for each cell of the same tree level, by having one point represent all the points of this cell.
@@ -107,25 +143,21 @@
 
 \subsection{Contribution}
 
-	This paper re-uses and combines existing and well established methods with a focus on simplicity and efficiency. As such, all the methods are tested on billions scale point cloud, and are Open Source for sake of reproducibility test and improvements.
+	This work re-uses and combines existing and well established methods with a focus on simplicity and efficiency. As such, all the methods are tested on billions scale point cloud, and are Open Source for sake of reproducibility test and improvements
 	
-	Our first contribution is to store the LOD implicitly in the ordering of the points rather than externally, avoiding any data duplication.
+	\todoall{mettre une liste latex item} 
+	
+	Our first contribution (Section \ref{lod.method.order}) is to store the LOD implicitly in the ordering of the points rather than externally, avoiding any data duplication.
 	Thus, we don't duplicate information, and the more we read points, the more precise of an approximation of the point cloud we get. If we read all the points, we have the original point cloud.
 	
-	The second contribution (MidOc) is a simple way to order points in order to have an increasingly better geometric approximation of the point cloud when following this order.
+	The second contribution (MidOc, Section \ref{lod.method:midoc}) is a simple way to order points in order to have an increasingly better geometric approximation of the point cloud when following this order.
 	
-	The third contribution is to show that this ordering embed information about the dimensionality of the sensed object,
+	The third contribution (Section \ref{lod.method.dimdescriptor}) is to show that this ordering embed information about the dimensionality of the sensed object,
 	to the point of being a simple multi-scale dimensionality descriptor.
 	We demonstrate the interest of this descriptor by comparing it to a state of the art dimensionality descriptor, then by assessing it potential by performing a Random Forest classification that can then be used for very fast pre-filtering of points, and other applications.
 		
 	
-\subsection{Plan of the article}
-	The rest of this article is organized as follows:
-	in the next section \ref{lod.sec:method} we present the methods.  
-	In the result section \ref{lod.sec:result} we give the results.
-	We discuss it and the possible limitations in section \ref{lod.sec:discussion}.
-	
-	Following the IMRAD format~\citep{Wu2011}, the remainder of this article is divided into three sections.
+%\subsection{Plan of the article}
 	Section~\ref{lod.sec:method} presents the LOD solution, how it produces a dimensionality descriptor, and how this can leveraged for classification.  
 	Section~\ref{lod.sec:result} reports on the experiments validating the methods.
 	Finally, the details, the limitations, and potential applications are discussed in Section~\ref{lod.sec:discussion}.
