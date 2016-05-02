@@ -65,7 +65,7 @@
 		The point cloud is then quantized into $[0..2**L-1]$ for each coordinate.
 		The coordinates are now integers, and for each point, reading its coordinates bitwise left to right gives the position of the point in the octree for level of the bit read.
 		This means performing this centring/scaling/quantization directly gives the octree. Moreover, further operations can be performed using bit arithmetic, which is extremely fast.
-		\myimage{./illustrations/chap2/octree_binary/principle_of_binary_coordinate}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{lod.fig:binary_coordinates_example}
+		\myimageHL{./illustrations/chap2/octree_binary/principle_of_binary_coordinate}{Principle of binary coordinates for a centered, scaled and quantized point cloud.}{lod.fig:binary_coordinates_example}{0.5}
 		
 		On this illustration the point $P$ has coordinates $(5,2)$ in a $[0,2^3-1]^2$ system. Reading the coordinates as binary gives $(b'101',b'010')$.
 		Thus we know that on the first level of a quad tree, $P$ will be in the right (x=$b'1xx'$) bottom (y=$b'0yy'$) cell.
@@ -89,7 +89,7 @@
 		 Streaming low level of detail patches greatly accelerate visualisation,
 		 which is very useful when the full point cloud is not needed.
 		 To further accelerate transmission, patch LOD can be determined according to the distance to camera (frustrum culling). (See Figure \ref{lod.fig:lod-dist-to-camera} for a naive visual explanation.)
-		 \myimage{./illustrations/chap2/LOD/visual_result_distance_dependent.png}{Schematique example of LOD depending on distance to camera}{lod.fig:lod-dist-to-camera}
+		 \myimageHL{./illustrations/chap2/LOD/visual_result_distance_dependent}{Schematique example of LOD depending on distance to camera}{lod.fig:lod-dist-to-camera}{0.5}
 		 \\
 		 As seen before (See Section \ref{lod.point-cloud-server-troughput}), the point cloud server is fast enough for an internet connection, but is currently slower than a file-based points streaming. Thus for the moment LOD stream is interesting only when bandwidth is limited.
 	
@@ -110,14 +110,14 @@
 		The homogeneous density may also be compromised when the patch are not only split spatially, but with other logics (in our case, points in patch can not be separated by more than 30 seconds, and all points in a patch must come from the same original acquisition file).
 		
 	\subsection{Crude dimensionality descriptor (MidOc by-product)}	 
-		\myimage{"./illustrations/chap2/comparing_dim_desc/hist_comparison_for_tree"}{Histogram of $Dim_{LOD}$ and $Dim_{cov}$ for patch in trees (500 \kilo pts). Tree dimension could be from 1.2 to 2.6, yet $Dim_{LOD}$ is less ambiguous than $Dim_{cov}$}{lod.fig:hist_comparison_for_tree} 
+		\myimageHL{"./illustrations/chap2/comparing_dim_desc/hist_comparison_for_tree"}{Histogram of $Dim_{LOD}$ and $Dim_{cov}$ for patch in trees (500 \kilo pts). Tree dimension could be from 1.2 to 2.6, yet $Dim_{LOD}$ is less ambiguous than $Dim_{cov}$}{lod.fig:hist_comparison_for_tree}{0.5}
 		
 		Tree patches are challenging for both dimensionality descriptor.
 		There possible dimension changes a lot (See Fig. \ref{lod.fig:hist_comparison_for_tree}), although $Dim_{LOD}$ is more concentrated.
 		Yet, $ppl$ is extremely useful to classify trees.
 		Indeed, $ppl$ contains the dimensionality at various scale, and potentially the variation of it, which is quite specific for trees (See Fig. \ref{lod.fig:analysing_tree}).
 		  
-		\myimage{"./illustrations/chap2/comparing_dim_desc/analysing_tree/analysing_tree"}{Evolution of tree patch octree cells occupancy, illustrating the various dimensions of trees depending on the scale. (Dimension is embeded it the power of 2).}{lod.fig:analysing_tree} 
+		\myimageHL{"./illustrations/chap2/comparing_dim_desc/analysing_tree/analysing_tree"}{Evolution of tree patch octree cells occupancy, illustrating the various dimensions of trees depending on the scale. (Dimension is embeded it the power of 2).}{lod.fig:analysing_tree}{0.5}
 			
 		We stress that a true octree cell occupancy (i.e. without picking points as in the $ppl$) can be obtained without computing the octree, simply by using the binary coordinates (See \ref{lod.fig:binary_coordinates_example}).
 		We implement it in python as a proof of concept. Computing it is about as fast as computing $Dim_{cov}$.
@@ -207,7 +207,7 @@
 	 Because the propose methods are preprocess of filtering step, it can be advantageous to increase precision or recall.
 		
 		%\paragraph{Artificial increase of precision}
-		\myimage{./illustrations/chap2/classif/result_paris/4_plus_wheelers_precision_vs_confidence.pdf}{Precision of 4+wheelers class is a roughly rising function of random forest confidence scores.}{lod.fig:precision-vs-confidence} 
+		\myimageHL{./illustrations/chap2/classif/result_paris/4_plus_wheelers_precision_vs_confidence}{Precision of 4+wheelers class is a roughly rising function of random forest confidence scores.}{lod.fig:precision-vs-confidence}{0.5}
 		In the Figure \ref{lod.fig:precision-increase} gives a visual example where increasing precision and reducing class heterogeneity is advantageous. This illustrates that having a $1$ precision or recall is not necessary the ultimate goal.
 		In this case it would be much easier to perform line detection starting from red patches rather than blue patches.
 		\\

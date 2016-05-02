@@ -21,7 +21,7 @@
  		Timings are only orders of magnitude due to the influence of database caching.
  	
 	%\subsection{Data set used}
-		\myimage{./illustrations/chap2/histogram_of_density/paris_vosges_density_histogramm.png}{ Histogram of number of points per patch, with a logarithmic scale for X and Y axis}{lod.fig:hist-density-dataset}
+		\myimageHL{./illustrations/chap2/histogram_of_density/paris_vosges_density_histogramm}{ Histogram of number of points per patch, with a logarithmic scale for X and Y axis}{lod.fig:hist-density-dataset}{0.5}
 	 
  		We use two data sets. There were chosen as different as possible to further evaluate how proposed methods can generalise on different data (See Figure fig:hist-density-dataset for histogram of patch density ). 
  		%\subsubsection{IQmulus data set}
@@ -72,7 +72,7 @@
 			
 	\subsection{MidOc: an ordering for gradual geometrical approximation}
 		%\subsubsection{Experiment summary}
-		\myimageFullPageWidth{./illustrations/chap2/LOD/visual_result_left_right}{Schematic illustration of different LOD. Left to right, all points, then LOD 4 to 0. Visualized in cloud compare with ambient occlusion. Point size varies for better visual result.}{lod.fig:visual_LOD_left_right}
+		\myimageHL{./illustrations/chap2/LOD/visual_result_left_right}{Schematic illustration of different LOD. Left to right, all points, then LOD 4 to 0. Visualized in cloud compare with ambient occlusion. Point size varies for better visual result.}{lod.fig:visual_LOD_left_right}{0.5}
 		
 		
 		We first test the visual fitness of MidOc ordering.
@@ -126,7 +126,7 @@
 
 
 	\subsection{Excessive Density detection and correction} 
-		\myimage{./illustrations/chap2/density/density_detection_and_correction}{Abnormal density detection and correction. Top points per patch (left) or density (right), green-yellow-red. Bottom reflectance in grey. }{lod.fig:density-correction}
+		\myimageHL{./illustrations/chap2/density/density_detection_and_correction}{Abnormal density detection and correction. Top points per patch (left) or density (right), green-yellow-red. Bottom reflectance in grey. }{lod.fig:density-correction}{0.5}
 		
 		%\paragraph{Density abnormality (peak)}
 		We detect the abnormal density (explained in Section \ref{lod.method.density}) in the Paris data set in $\sim 100 \milli \second$ 
@@ -171,7 +171,7 @@
 		being executed in parallel (8 workers).
 		For 10k patches, 12 \mega pts, retrieving data and writing result accounts for $48\second$, computing $Dim_{LOD}$ to $8\second$, $Dim_{cov}$ to $64\second$. Computing $ppl$ (which is multiscale) using a linear octree takes between $58$ $L_6$ and $85 \second$ $L_8$.
 		 (
-		\myimage{"./illustrations/chap2/comparing_dim_desc/success_case"}{$Dim_{LOD}$ and $Dim_{cov}$ are mostly comparable, except for few patches (5\%, coloured)}{lod.fig:success_case}
+		\myimageHL{"./illustrations/chap2/comparing_dim_desc/success_case"}{$Dim_{LOD}$ and $Dim_{cov}$ are mostly comparable, except for few patches (5\%, coloured)}{lod.fig:success_case}{0.5}
 		
 		
 		%\paragraph{Comparing $Dim_{cov}$ and $Dim_{LOD}$}
@@ -184,8 +184,8 @@
 		
 		
 		
-		\myimage{"./illustrations/chap2/comparing_dim_desc/explaining_failure_case"}{Representative patches for $\lvert Dim_{LOD}$-$Dim_{cov}>0.5\rvert$. Most differences are explained by $Dim_{cov}$ limitations (See \ref{lod.result.dim_failure}.)
-		}{lod.fig:explaining_failure_case}
+		\myimageHL{"./illustrations/chap2/comparing_dim_desc/explaining_failure_case"}{Representative patches for $\lvert Dim_{LOD}$-$Dim_{cov}>0.5\rvert$. Most differences are explained by $Dim_{cov}$ limitations (See \ref{lod.result.dim_failure}.)
+		}{lod.fig:explaining_failure_case}{0.5}
 		
 		We analyse the 684 remaining patches to look for possible explanations of the difference in dimension (See Fig. \ref{lod.fig:explaining_failure_case}).
 		
@@ -217,7 +217,7 @@
 		 
   
 		\subsubsection{Usefulness of rough descriptor for classification}
-		\myimage{./illustrations/chap2/classif/class_clustering/only_lod_feature_2.png}{Spectral clustering of confusion matrix of Paris data set classification using only $ppl$ descriptor. Edge width and colour are proportional to affinity. Node position is determined fully automatically. Red-ish arrows are manually placed as visual clues.}{lod.fig:ppl-separator-power}
+		\myimageHL{./illustrations/chap2/classif/class_clustering/only_lod_feature_2}{Spectral clustering of confusion matrix of Paris data set classification using only $ppl$ descriptor. Edge width and colour are proportional to affinity. Node position is determined fully automatically. Red-ish arrows are manually placed as visual clues.}{lod.fig:ppl-separator-power}{0.5}
 		
 		Using only the $ppl$ descriptor, a classification is performed on Paris data set, then a confusion matrix is computed.
 		We use the spectral layout (see Section \ref{lod.method.classification.spectral_layout}) to automatically produce the graph in Figure \ref{lod.fig:ppl-separator-power}. 
@@ -260,7 +260,7 @@
 		
 		
 		\subsubsection{Analysing class hierarchy} 
-		\myimage{./illustrations/chap2/classif/class_clustering/class_clustering_macro_all}{Result of automatic spectral clustering over confusion matrix for patch classification of Paris data set with all simple features. Edges width and colour are proportional to confusion. Manually drawn clusters for easier understanding.}{lod.fig:class-clustering-all-features}
+		\myimageHL{./illustrations/chap2/classif/class_clustering/class_clustering_macro_all}{Result of automatic spectral clustering over confusion matrix for patch classification of Paris data set with all simple features. Edges width and colour are proportional to confusion. Manually drawn clusters for easier understanding.}{lod.fig:class-clustering-all-features}{0.5}
 		
 		Choosing which level of the class hierarchy to use depends on data set and applications.
 		In a canonical classification perspective, we have to strongly reduce the number of classes if we want to have significant results.
@@ -275,17 +275,17 @@
 		The graph also shows the limit of the classification, because some class cannot be properly defined without context (e.g. the side-walk, which is by definition the space between building and road, hence is defined contextually). 
 		
 		\subsubsection{Classification results}
-		\myimage{./illustrations/chap2/classif/result_vosges/result_vosges_2}{Vosges dataset. (table 2) Precision(prec.), recall (rec.), support (supp.), and average percent of points of the class in the patches, for comparison with point based method (mix.). (table 1)Feature usage }{lod.fig:result-vosges}
+		\myimageHL{./illustrations/chap2/classif/result_vosges/result_vosges_2}{Vosges dataset. (table 2) Precision(prec.), recall (rec.), support (supp.), and average percent of points of the class in the patches, for comparison with point based method (mix.). (table 1)Feature usage }{lod.fig:result-vosges}{0.5}
 		We perform a analysis of error on Vosges dataset and we note that errors seem to be significantly correlated to distance to borders. 
 				 
-		\myimageFullPageWidth{./illustrations/chap2/classif/result_paris/result_per_class_multilevel_paris_2.pdf}{Results for Paris data set: at various level of class hierarchy. Precision(prec.), recall (rec.), support (sup.) and average percent of points of the class in the patches of the class, for comparison with point based method (mix.). Classes of the same type are in the same continuous tone. Feature usage is evaluated for each level in the class hierarchy.}{lod.fig:result-paris} 
+		\myimageHL{./illustrations/chap2/classif/result_paris/result_per_class_multilevel_paris_2}{Results for Paris data set: at various level of class hierarchy. Precision(prec.), recall (rec.), support (sup.) and average percent of points of the class in the patches of the class, for comparison with point based method (mix.). Classes of the same type are in the same continuous tone. Feature usage is evaluated for each level in the class hierarchy.}{lod.fig:result-paris}{0.5}
 		The learning time is less than a minute, the predicting time is less than a second. 
 		
 		For both dataset, patches main contain points from several classes. We measure how much of the patch points pertain to the dominant class. The result is given in the columns "mix". For instance the patch of the class "building" contains an average of 98.6 \mypercent points of the class "building", whereas the patch from the class "forest" contains 88.3\mypercent points of the class "forest".
 		Therefore, to provide a comparison with point based classification, we can compute the precision of the classification per point as $Precision_{point} = Precision_{patch} * Mix.$. (Same for recall).
 		
 		\subsubsection{Precision or Recall increase} 
-		\myimage{./illustrations/chap2/precision_vs_recall/patch_classification_for_building.pdf}{Plotting of patches classified as building, using confidence to increase precision. Ground truth from IGN and Open Data Paris}{lod.fig:precision-increase}
+		\myimageHL{./illustrations/chap2/precision_vs_recall/patch_classification_for_building}{Plotting of patches classified as building, using confidence to increase precision. Ground truth from IGN and Open Data Paris}{lod.fig:precision-increase}{0.5}
 		
 		%\paragraph{precision increase}
 		As explained in Section \ref{lod.method.classification.using_confidence}, we can leverage the random forest confidence score to artificially increase the precision.
@@ -297,7 +297,7 @@
 		This result (red) would provides a much better base for building reconstruction for instance. 
 				
 		%\paragraph{Filtering: artificial increase of recall}
-		\myimage{./illustrations/chap2/precision_vs_recall/ground_recall_increase.png}{Map of patch clustering result for ground. The classical result finds few extra patches that are not ground (blue), and misses some ground patches (red). Recall is increased by adding to the ground class all patches that are less than 2 meters in X,Y and 0.5 meter in Z around the found patches. Extra patches are much more numerous, but all the ground patches are found.}{lod.fig:recall-increase}
+		\myimageHL{./illustrations/chap2/precision_vs_recall/ground_recall_increase}{Map of patch clustering result for ground. The classical result finds few extra patches that are not ground (blue), and misses some ground patches (red). Recall is increased by adding to the ground class all patches that are less than 2 meters in X,Y and 0.5 meter in Z around the found patches. Extra patches are much more numerous, but all the ground patches are found.}{lod.fig:recall-increase}{0.5}
 
 		The patch classifier can also be used as a filtering preprocess.
 		In this case, the goal is not to have a great precision, but to be fast and with a good recall.

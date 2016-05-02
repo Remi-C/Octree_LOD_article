@@ -9,7 +9,7 @@
 	\label{lod.sec:method}
 	
 	In this section, we first present the Point Cloud Server (section \ref{lod.method.PCS})(PCS \cite{Cura2015})
-	upon which this article is based. Then we introduce the LOD solution that we propose 
+	that this article extends. Then we introduce the LOD solution that we propose 
 	, which consists of reordering groups of points from less to more details (\ref{lod.method.order}), and then choose which LOD is needed.
 	Although any ordering can be used, we propose a simple geometric one (\ref{lod.method:midoc}) which is fast and robust to density variation. 
 	Furthermore, constructing this ordering produces a rough dimensionality descriptor (\ref{lod.method.dimdescriptor}). 
@@ -17,9 +17,9 @@
 	
 	\subsection{The Point Cloud Server}
 	\label{lod.method.PCS}
-		\myimage{./illustrations/chap2/PCS/PCS}{Overall and storage organisations of the Point Cloud Server.}{lod.fig:PCS}
+		\myimageHL{./illustrations/chap2/PCS/PCS}{Overall and storage organisations of the Point Cloud Server.}{lod.fig:PCS}{0.5}
 		
-		This article strongly depends on using the Point Cloud Server described in \cite{Cura2015},
+		Our method strongly depends on using the Point Cloud Server described in \cite{Cura2015},
 		therefore we introduce its principle and key relevant features (see figure \ref{lod.fig:PCS}).
 		
 		The PCS is a complete and efficient point cloud management system based on a database server that works on groups of points rather than individual points.
@@ -28,9 +28,9 @@
 		
 		The core of the PCS is to store groups of points (called patches) that are multi-indexed (spatially, on attributes, etc.), and represented with different generalisation depending on the applications.
 		Points can be grouped with any rules.
-		In this article, the points are regrouped spatially by cubes $1 \metre$ (Paris) or $50 \metre$ (Vosges) wide.
+		In this work, the points are regrouped spatially by cubes $1 \metre$ (Paris) or $50 \metre$ (Vosges) wide.
 		
-		All the methods described in this article are applied on patches.
+		All the methods described in this work are applied on patches.
 		We propose is to reorder each patch following the MidOc ordering, allowing LOD and producing a dimensionality descriptor per patch. It can then be used to classify patches.
 		
 		We stress that our method used on any point cloud will provide LOD,
@@ -43,8 +43,8 @@
 		\label{lod.method.order}
 		%\subsubsection{Principle} 
 			
-			\myimage{./illustrations/chap2/LOD/short_illustration_concept_lod/concept_Level_Of_Detail}{3 Geometrical Level Of Detail (LOD) for the same point cloud.
-			Reading points from 1 to N gradually increases the details, because of the specific order of points (MidOc).}{lod.fig:lod-principle}
+			\myimageHL{./illustrations/chap2/LOD/short_illustration_concept_lod/concept_Level_Of_Detail}{3 Geometrical Level Of Detail (LOD) for the same point cloud.
+			Reading points from 1 to N gradually increases the details, because of the specific order of points (MidOc).}{lod.fig:lod-principle}{0.5}
 			
 			We propose to exploit the ordering of points to indirectly store LOD information.
 			Indeed, whatever the format, be it file or database based, points ends up as a list, which is ordered.
@@ -103,13 +103,13 @@
 		
 		\subsubsection{Introducing the MidOc ordering}
 		
-		\myimage{./illustrations/chap2/octree_ordering/octree_ordering_legend}{MidOc explained in 2D. Given a point cloud (Blue) and quad tree cells (dashed grey), the chosen point (green ellipse) is the one closest to the centre (black point) of the cell.}{lod.fig:midoc-principle}
+		\myimageHL{./illustrations/chap2/octree_ordering/octree_ordering_legend}{MidOc explained in 2D. Given a point cloud (Blue) and quad tree cells (dashed grey), the chosen point (green ellipse) is the one closest to the centre (black point) of the cell.}{lod.fig:midoc-principle}{0.5}
 		
 		We propose the re-use of well known and well proven existing methods that is the octree subsampling (for instance, the octree subsampling is used in \cite{Girardeau-Montaut2014}).
 		An octree is built over a point cloud, then for each cell of the octree the LOD point is the barycentre of the points in the cell.  With this, browsing the octree breadth-first provides the points of the different levels.
 		
 		We adapt this to cope with density variation, and to avoid creating new point because of aggregation.   
-		We name this ordering MidOc (Middle of Octree subsampling) for clarity of this article, nonetheless we are probably not the first to use it.
+		We name this ordering MidOc (Middle of Octree subsampling) for clarity, nonetheless we are probably not the first to use it.
 		
 		The principle is very simple, and necessitate an octree over the point cloud (octree can be implicit though).
 		We illustrate it on Figure \ref{lod.fig:midoc-principle} (in 2D for graphical comfort).
@@ -138,7 +138,7 @@
 		\subsubsection{Intra-level ordering}
 		\label{lod.method.intralevel}
 		
-		\myimage{./illustrations/chap2/intralevel_ordering/intralevel_ordering_combined}{Several possible intra-level orders with various coverage from bad to good. Revert Morton and Revert Hilbert have offset for illustration.}{lod.fig:intralevel_ordering}
+		\myimageHL{./illustrations/chap2/intralevel_ordering/intralevel_ordering_combined}{Several possible intra-level orders with various coverage from bad to good. Revert Morton and Revert Hilbert have offset for illustration.}{lod.fig:intralevel_ordering}{0.5}
 		
 		Inside one LOD points can be ordered with various methods.
 		The intra-level ordering will have an impact if the LOD is used in a continuous way,
@@ -175,14 +175,14 @@
 		
 		In theory for a level $L_i$, a centred line would occupy $2^{L_i}$ cells, a centred plan $4^{L_i}$ cells, and a volume all of the cells ($8^{L_i}$ cells).
 		Thus, by comparing $ppl[L_i]$ to theoretical $2^{L_i}, 4^{L_i}, 8^{L_i}$ we retrieve a dimensionality indice  $Dim_{LOD}[i]$  about the dimensionality of the patch at the level $L$ (See Figure \ref{lod.fig:dim_descriptor}). 
-		\myimage{"./illustrations/chap2/dim_descriptor/dim_descriptor"}{Voxel occupancy is a crude dimensionality descriptor: 3D line, surface or volume occupy a different amount of voxels.}{lod.fig:dim_descriptor}
+		\myimageHL{"./illustrations/chap2/dim_descriptor/dim_descriptor"}{Voxel occupancy is a crude dimensionality descriptor: 3D line, surface or volume occupy a different amount of voxels.}{lod.fig:dim_descriptor}{0.5}
 		This occupancy is only correctly estimated when the patch is fully filled and homogeneous. 
 		However, we can also characterize the dimensionality $Dim_{LODDiff}$ by the way the occupancy evolves (difference mode).
 		Indeed, a line occupying $k$ cells of an octree at level $L_i$ will occupy $2*k$ cells at the level $L_{i+1}$, if enough points.
 		
 		We stress that the information contained in $ppl$ is akin to a multi-scale dimensionality indice,
 		with the scale being the level of the octree.
-		For the rest of this article we consider that the dimensionality is roughly the same across level 
+		For the rest of this work we consider that the dimensionality is roughly the same across level 
 		 (which is entirely false in some case, see \ref{lod.result.dim_failure}).
 		
 		The Figure \ref{lod.fig:lod-common-objects} illustrate this. Typical parts of a street in the Paris dataset were segmented: a car, a wall with window, a 2 wheelers, a public light, a tree, a person, poles and piece of ground including curbs.
@@ -196,7 +196,7 @@
 		Then a foliage patch would typically be $(1,8,64...)$ (if enough points), so a $8^L$ function.
 		(Tree patches are in fact a special case, see \ref{lod.result.dim_failure}).
 		
-		\myimage{./illustrations/chap2/Objects/Objects_assembled.jpg}{All successive levels for common objects (car, window, 2 wheelers, light, tree, people, pole, ground), color is intensity for other points.}{lod.fig:lod-common-objects} 
+		\myimageHL{./illustrations/chap2/Objects/Objects_assembled}{All successive levels for common objects (car, window, 2 wheelers, light, tree, people, pole, ground), color is intensity for other points.}{lod.fig:lod-common-objects}{0.45}
 				
 		\subsubsection{Comparing crude dimensionality descriptor with covariance - based descriptors}
 		

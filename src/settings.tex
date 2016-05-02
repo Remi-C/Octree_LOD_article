@@ -43,7 +43,7 @@
 
 	%for the images
 		\usepackage{graphicx}
-		\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+		\DeclareGraphicsExtensions{.pdf,.jpg,.png}
 
 %%Useful
 	%adding more default colors%
@@ -142,7 +142,18 @@
 							\end{center}
 					\end{figure} 
 					}
-					
+		
+		
+		\newcommand{\myimageHL}[4]
+		{
+			\begin{figure} [ht!]
+				\begin{center}
+					\includegraphics[width= #4 \textwidth,keepaspectratio]{#1}
+					\caption{#2}  
+					\label{#3}
+				\end{center}
+			\end{figure} 
+		}
 		\newcommand{\myimageFullPageHeight}[3]
 						{
 						\begin{figure*} [!h]

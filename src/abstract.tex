@@ -6,13 +6,14 @@
  
 %\begin{abstract}   
 \section{Abstract}
-	We propose a new paradigm to easily get a portable geometric Level Of Details (LOD) inside a Point Cloud Server.
-	The point cloud is divided into groups (patches) which are reordered so that reading patches points following this order gradually provides more and more details on the patch.
-	\todoall{cette phrase est un peu longue, faire plus simple}
-	Using a LOD has multiple applications: visualisation of massive point cloud, algorithm acceleration,
-	 fast density peak detection and correction.
-	Our method also embeds information about the sensed object geometric nature that can be used as a crude multi-scale dimensionality descriptor,
-	enabling fast classification for basic classes and on-the-fly filtering. 
+	Lidar datasets now commonly reach Billions of points, as their density is often very large. 
+	Using these point cloud becomes challenging, as the high number of points is untractabel for most applications and for visualisation.
+	In this work we propose a new paradigm to easily get a portable geometric Level Of Details (LOD) inside a Point Cloud Server.
+	The main idea is to not store the LOD information in an external additional file, but instead to store it implicitly by exploiting the order of the points.
+	The point cloud is divided into groups (patches). These patches are ordered so that theim in order gradually provides more and more details on the patch. 
+	We demonstrate the interest of our method with several classical uses of LOD, such as visualisation of massive point cloud, algorithm acceleration,  fast density peak detection and correction.
+	Furthermore, our implicit LOD method also embeds information about the sensed object geometric nature, forming a crude multi-scale dimensionality descriptor.
+	We demonstrate the interest of this descriptor by successfully using it for fast classification(basic classes) and on-the-fly filtering. 
 	 
 %\end{abstract}	
 	
